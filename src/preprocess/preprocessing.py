@@ -1,7 +1,9 @@
 from pyspark.sql import DataFrame, Window
 from pyspark.sql import functions as F
 
-import config as cfg
+from pyspark.sql import types as T
+
+from utils import config as cfg
 
 
 def cast_types(df: DataFrame) -> DataFrame:
@@ -10,9 +12,10 @@ def cast_types(df: DataFrame) -> DataFrame:
     """
     return (
         df
-        .withColumn("collector_ts", F.col("collector_ts").cast("timestamp"))
-        .withColumn("event_ts", F.col("event_ts").cast("timestamp"))
-        .withColumn("dt", F.col("dt").cast("date"))
+        .withColumn("collector_ts_long", F.col("collector_timestamp").cast("long"))
+        .withColumn("collector_ts", (F.col("collector_ts_long") / 1000).cast(T.TimestampType()))
+        .withColumn("event_ts", F.col("event_ts").cast(T.TimestampType()))
+        .withColumn("dt", F.col("dt").cast(T.DateType()))
     )
 
 
@@ -95,13 +98,42 @@ def build_events_clean(df_raw: DataFrame) -> DataFrame:
     """
     Pipeline completo de limpeza, devolve o events_clean final.
     """
+    before = df_raw.count()
     df_cast = cast_types(df_raw)
+    after = df_cast.count()
+    print(f"\n[cast_types] antes={before:_} depois={after:_} removidas={(before - after):_}")
+
+    before = df_cast.count()
     df_date = filter_date_range(df_cast)
+    after = df_date.count()
+    print(f"\n[filter_date_range] antes={before:_} depois={after:_} removidas={(before - after):_}")
+
+    before = df_date.count()
     df_ev = filter_events(df_date)
+    after = df_ev.count()
+    print(f"\n[filter_events] antes={before:_} depois={after:_} removidas={(before - after):_}")
+
+    before = df_ev.count()
     df_trunc = truncate_sessions(df_ev)
+    after = df_trunc.count()
+    print(f"\n[truncate_sessions] antes={before:_} depois={after:_} removidas={(before - after):_}")
+
+    before = df_trunc.count()
     df_sess = filter_short_sessions(df_trunc)
+    after = df_sess.count()
+    print(f"\n[filter_short_sessions] antes={before:_} depois={after:_} removidas={(before - after):_}")
+
+    before = df_sess.count()
     df_items = filter_rare_items(df_sess)
-    df_sess2 = filter_short_sessions(df_items)  # refiltra sessões após tirar itens raros
+    after = df_items.count()
+    print(f"\n[filter_rare_items] antes={before:_} depois={after:_} removidas={(before - after):_}")
+
+    # refiltra sessões após tirar itens raros
+    before = df_items.count()
+    df_sess2 = filter_short_sessions(df_items)
+    after = df_sess2.count()
+    print(f"\n[filter_short_sessions 2] antes={before:_} depois={after:_} removidas={(before - after):_}")
+
 
     return df_sess2
 

@@ -1,12 +1,3 @@
-OUTPUT_BASE_PATH = "s3://meu-bucket/imoveisrec/"
-
-# onde salvar o dataset limpo (todas as interações)
-CLEANED_EVENTS_PATH = OUTPUT_BASE_PATH + "events_clean_parquet"
-# onde salvar o dataset no formato SessionId, ItemId, Time
-MODEL_DATA_PATH = OUTPUT_BASE_PATH + "model_df_parquet"
-# onde salvar os CSVs de train/test
-SPLITS_OUTPUT_PATH = OUTPUT_BASE_PATH + "splits/"
-
 # -----------------------------
 # Janela temporal usada
 # -----------------------------
@@ -18,9 +9,15 @@ DATE_END = "2024-03-30"
 # -----------------------------
 # tipos de evento que indicam interesse real no imóvel
 EVENT_TYPES_OF_INTEREST = [
-    "view_listing",
-    "detail_view",
-    "listing_click",
+    "LeadClicked",
+    "RankingClicked",
+    #"GalleryClicked",
+    "DecisionTreeFormClicked",
+    "ShareClicked",
+    "FavoriteClicked",
+    #"RankingRendered",
+    "LeadPanelClicked",
+    "ListingRendered",
 ]
 
 # -----------------------------

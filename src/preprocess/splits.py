@@ -3,7 +3,7 @@ from datetime import timedelta
 from pyspark.sql import DataFrame
 from pyspark.sql import functions as F
 
-import config as cfg
+from utils import config as cfg
 
 
 def get_date_range(model_df: DataFrame):
@@ -56,7 +56,7 @@ def build_slices(min_dt):
     return slices
 
 
-def save_splits(model_df: DataFrame, spark):
+def save_splits(model_df: DataFrame, split_path: str = ""):
     """
     Gera e salva os splits de treino/teste em CSV, no formato:
     - SessionId, ItemId, Time
@@ -98,10 +98,9 @@ def save_splits(model_df: DataFrame, spark):
         test_out = test_df.select(*out_cols).orderBy("SessionId", "Time")
 
         # Caminhos de saída
-        train_path = f"{cfg.SPLITS_OUTPUT_PATH}/slice_{i}/train"
-        test_path = f"{cfg.SPLITS_OUTPUT_PATH}/slice_{i}/test"
+        train_path = f"{split_path}/slice_{i}/train"
+        test_path = f"{split_path}/slice_{i}/test"
 
-        # Salva em CSV (pode mudar para parquet se preferir)
         (
             train_out.write
             .mode("overwrite")
@@ -117,5 +116,5 @@ def save_splits(model_df: DataFrame, spark):
         )
 
         print(f"Saved slice {i}:")
-        print(f"  train -> {train_path}")
-        print(f"  test  -> {test_path}")
+        print(f"  train -> {train_path} - {train_out.count()} rows")
+        print(f"  test  -> {test_path} - {test_out.count()} rows")
