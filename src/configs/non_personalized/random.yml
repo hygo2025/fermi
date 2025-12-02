@@ -28,7 +28,6 @@ metrics:
   length: [20]
 
 algorithms:
-- class: baselines.rand.Random
-  params:
-    sample_size: 5000
-  key: random-sample=5000
+- class: baselines.random.RandomPred
+  params: {}
+  key: random
