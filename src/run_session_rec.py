@@ -16,6 +16,9 @@ SESSION_REC_DIR = PROJECT_DIR / 'session-rec-lib'
 BENCHMARK_DIR = PROJECT_DIR / 'src'
 sys.path.insert(0, str(SESSION_REC_DIR))
 
+# Import session-rec runner at module level
+from run_config import main as run_session_rec_main
+
 print("""
 ╔══════════════════════════════════════════════════════════════════════════════╗
 ║                 Session-Rec Benchmark Runner                                 ║
@@ -54,15 +57,24 @@ def run_benchmark(config_file):
     print("="*80)
     
     # Import session-rec runner
-    config_path = str(BENCHMARK_DIR / config_file)
+    # Convert to absolute path
+    config_path = Path(config_file).resolve()
+    if not config_path.exists():
+        raise FileNotFoundError(f"Config file not found: {config_path}")
+    
     try:
+        # Change to session-rec directory for relative paths
+        original_dir = os.getcwd()
         os.chdir(str(SESSION_REC_DIR))
-        from run_config import main as run_session_rec
         
         # Run with our config
-        run_session_rec(conf=config_path)
+        run_session_rec_main(conf=str(config_path))
+        
+        # Return to original directory
+        os.chdir(original_dir)
         
     except Exception as e:
+        os.chdir(original_dir)  # Ensure we return to original dir
         print(f"\n❌ Error running session-rec: {e}")
         import traceback
         traceback.print_exc()

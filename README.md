@@ -23,26 +23,42 @@ Este projeto implementa e avalia múltiplos modelos de recomendação baseados e
 ```
 fermi/
 ├── src/                        # 🔬 Benchmark implementation
-│   ├── prepare_dataset.py      # Data preparation  
-│   ├── convert_to_session_rec.py  # Format conversion
-│   ├── run_session_rec.py      # Main execution script
+│   ├── run_benchmark.py        # Main execution script
 │   └── configs/                # Experiment configurations
 │
-├── data/                       # 📊 Dataset storage
-│   ├── processed_sample/       # Intermediate CSVs
-│   └── session_rec_format/     # Final format for session-rec
+├── data/                       # 📊 Data processing scripts
+│   ├── prepare_dataset.py      # Spark-based data preparation
+│   └── convert_to_session_rec.py  # Format conversion to session-rec
 │
-├── session-rec-lib/            # 🔧 Session-rec framework (fork)
+├── session-rec-lib/            # 🔧 Session-rec framework (git submodule)
 │   ├── algorithms/             # All models implementations
 │   └── evaluation/             # Metrics and evaluation
 │
 ├── scripts/                    # 🛠️ Installation & utilities
 │   └── install.sh              # Automated installation
 │
+├── utils/                      # 💡 Helper utilities
+│   └── spark_session.py        # Spark configuration
+│
+├── .env                        # Environment variables (BASE_PATH, JAVA_HOME)
 ├── requirements.txt            # Python dependencies
 ├── Makefile                    # Common commands
 └── README.md                   # This file
 ```
+
+## ⚙️ Configuração
+
+### Variáveis de Ambiente
+
+Crie um arquivo `.env` na raiz do projeto:
+
+```bash
+BASE_PATH=/home/hygo2025/Documents/data
+JAVA_HOME=/opt/jdk/amazon-corretto-21
+PYTHONUNBUFFERED=1
+```
+
+**Nota:** `BASE_PATH` aponta para onde seus dados brutos estão armazenados.
 
 ## 🚀 Início Rápido
 
@@ -68,12 +84,9 @@ O projeto usa:
 
 ```bash
 # Preparar dataset (14 dias de dados)
-python src/prepare_dataset.py \
+python data/prepare_dataset.py \
     --start-date 2024-03-01 \
     --end-date 2024-03-15
-
-# Converter para formato session-rec
-python src/convert_to_session_rec.py
 ```
 
 ### 3. Executar Benchmark

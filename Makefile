@@ -3,7 +3,7 @@ VENV_DIR = .venv
 REQUIREMENTS_FILE = requirements.txt
 ACTIVATE = . $(VENV_DIR)/bin/activate
 
-PYTHONPATH ?= $(PWD)/src
+PYTHONPATH ?= $(PWD)/src:$(PWD)/session-rec-lib
 SRC_DIR = src
 SCRIPTS_DIR = scripts
 
@@ -38,12 +38,14 @@ $(VENV_DIR): check_python_version
 install: $(VENV_DIR) ## Install Python dependencies only
 	@echo "✓ Python dependencies installed"
 
+setup: install-benchmark ## Complete setup (alias for install-benchmark)
+	@echo "✓ Setup complete! Run 'make status' to verify"
+
 install-benchmark: install ## Install benchmark (dependencies + session-rec submodule)
 	@echo "Installing benchmark environment..."
 	@echo "Initializing git submodules..."
 	@git submodule update --init --recursive
-	@echo "Installing session-rec in editable mode..."
-	@$(ACTIVATE) && cd session-rec-lib && pip install -e .
+	@echo "✓ Session-rec submodule ready (imported via PYTHONPATH)"
 	@echo "✓ Benchmark environment ready"
 
 update: ## Update Python dependencies
@@ -59,23 +61,24 @@ run-benchmark: ## Run full benchmark (all models)
 	@echo "Running full benchmark..."
 	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/session_rec_config.yml
 
-prepare-data: ## Prepare sample dataset (14 days)
-	@echo "Preparing sample dataset..."
-	$(ACTIVATE) && python $(SRC_DIR)/prepare_dataset.py \
-		--start-date 2024-03-01 \
-		--end-date 2024-03-15
+prepare-data: ## Prepare dataset with Spark (14 days)
+	@echo "Preparing dataset with Spark..."
+	@if [ ! -f .env ]; then echo "ERROR: .env file not found. Create it with BASE_PATH variable."; exit 1; fi
+	$(ACTIVATE) && python data/prepare_dataset.py \
+		--start-date 2024-04-01 \
+		--end-date 2024-04-14
 
-convert-data: ## Convert data to session-rec format
+convert-data: ## Convert data to session-rec Parquet format
 	@echo "Converting to session-rec format..."
-	$(ACTIVATE) && python $(SRC_DIR)/convert_to_session_rec.py
+	$(ACTIVATE) && python data/convert_to_session_rec.py
 
 ##@ Cleanup
 
 clean: ## Remove virtual environment and generated files
 	rm -rf $(VENV_DIR)
 	rm -rf src/results/*
-	rm -rf data/processed_sample
-	rm -rf data/session_rec_format
+	rm -rf data/processed/
+	rm -rf data/session_rec_format/
 	@echo "✓ Cleaned up"
 
 clean-all: clean ## Remove everything including session-rec lib
