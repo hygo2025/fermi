@@ -38,9 +38,12 @@ $(VENV_DIR): check_python_version
 install: $(VENV_DIR) ## Install Python dependencies only
 	@echo "✓ Python dependencies installed"
 
-install-benchmark: install ## Install benchmark (dependencies + session-rec)
+install-benchmark: install ## Install benchmark (dependencies + session-rec submodule)
 	@echo "Installing benchmark environment..."
-	@cd $(SCRIPTS_DIR) && ./install.sh
+	@echo "Initializing git submodules..."
+	@git submodule update --init --recursive
+	@echo "Installing session-rec in editable mode..."
+	@$(ACTIVATE) && cd session-rec-lib && pip install -e .
 	@echo "✓ Benchmark environment ready"
 
 update: ## Update Python dependencies
