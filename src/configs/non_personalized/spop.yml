@@ -1,0 +1,29 @@
+# Session Popularity (SPop) - Session-aware popularity baseline
+# Recommends items based on frequency within current session + global popularity
+
+type: single
+key: realestate_spop_test
+evaluation: evaluation.evaluation.EvaluationSessionBased
+
+data:
+  name: realestate_march
+  folder: ./session_rec_format/
+  prefix: realestate
+  slices: 1
+
+metrics:
+  - class: accuracy.HitRate
+    length: [5, 10, 20]
+  - class: accuracy.MRR
+    length: [5, 10, 20]
+  - class: coverage.Coverage
+    length: [20]
+  - class: popularity.Popularity
+    length: [20]
+
+algorithms:
+  spop:
+    class: baselines.spop.SessionPop
+    params:
+      top_n: 100
+    key: spop-top100

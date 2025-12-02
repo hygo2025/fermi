@@ -51,15 +51,45 @@ install-benchmark: install ## Install benchmark (dependencies + session-rec subm
 update: ## Update Python dependencies
 	$(ACTIVATE) && pip install --upgrade -r $(REQUIREMENTS_FILE)
 
-##@ Benchmark
+##@ Benchmark - Non-Personalized Models
 
-test-pop: ## Run quick test with POP baseline
-	@echo "Running POP baseline test..."
-	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/pop_only.yml
+test-pop: ## Run POP (Popularity) baseline
+	@echo "Running POP baseline..."
+	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/non_personalized/pop.yml
 
-run-benchmark: ## Run full benchmark (all models)
-	@echo "Running full benchmark..."
-	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/session_rec_config.yml
+test-random: ## Run RANDOM baseline  
+	@echo "Running RANDOM baseline..."
+	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/non_personalized/random.yml
+
+test-rpop: ## Run RPOP (Recent Popularity) baseline
+	@echo "Running RPOP baseline..."
+	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/non_personalized/rpop.yml
+
+test-spop: ## Run SPOP (Session Popularity) baseline
+	@echo "Running SPOP baseline..."
+	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/non_personalized/spop.yml
+
+test-non-personalized: test-pop test-random test-rpop test-spop ## Run all non-personalized models
+
+##@ Benchmark - Pattern Mining Models
+
+test-ar: ## Run AR (Association Rules)
+	@echo "Running AR (Association Rules)..."
+	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/pattern_mining/ar.yml
+
+test-markov: ## Run Markov Chain
+	@echo "Running Markov Chain..."
+	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/pattern_mining/markov.yml
+
+test-sr: ## Run SR (Sequential Rules)
+	@echo "Running SR (Sequential Rules)..."
+	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/pattern_mining/sr.yml
+
+test-pattern-mining: test-ar test-markov test-sr ## Run all pattern mining models
+
+##@ Benchmark - Run All
+
+run-all-baselines: test-non-personalized test-pattern-mining ## Run all baseline models
 
 prepare-data: ## Prepare dataset with Spark (14 days)
 	@echo "Preparing dataset with Spark..."

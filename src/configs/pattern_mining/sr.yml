@@ -1,0 +1,30 @@
+# Sequential Rules (SR) Configuration
+# Paper: "A comprehensive quality evaluation..."
+# Algorithm: Sequential Rules for session-based recommendation
+
+type: single
+key: realestate_sr_test
+data:
+  name: realestate_march
+  folder: /home/hygo2025/Development/projects/fermi/session_rec_format/
+  prefix: realestate
+
+evaluation: evaluation.evaluation.EvaluationSessionBased
+
+metrics:
+  - class: accuracy.HitRate
+    length: [5, 10, 20]
+  - class: accuracy.MRR
+    length: [5, 10, 20]
+  - class: coverage.Coverage
+    length: [20]
+  - class: popularity.Popularity
+    length: [20]
+
+algorithms:
+  sr:
+    class: baselines.sr.SequentialRules
+    params:
+      steps: 10
+      weighting: div
+      pruning: 20

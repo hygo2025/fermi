@@ -1,0 +1,37 @@
+# RANDOM - Non-personalized baseline
+# Recommends random items (sanity check baseline)
+
+type: single
+key: realestate_random
+evaluation: evaluation_last
+slices: 1
+
+data:
+  name: realestate_march
+  folder: /home/hygo2025/Development/projects/fermi/session_rec_format/
+  prefix: realestate
+  slices: 
+    - 0
+  
+results:
+  folder: ../results/non_personalized/
+
+metrics:
+- class: accuracy.MRR
+  length: [5, 10, 20]
+- class: accuracy.HitRate  
+  length: [5, 10, 20]
+- class: accuracy.Precision
+  length: [5, 10, 20]
+- class: accuracy.Recall
+  length: [5, 10, 20]
+- class: coverage.Coverage
+  length: [20]
+- class: popularity.Popularity
+  length: [20]
+
+algorithms:
+- class: baselines.rand.Random
+  params:
+    sample_size: 5000
+  key: random-sample=5000

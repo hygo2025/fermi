@@ -1,11 +1,12 @@
 # Fermi - Session-Based Recommendation Benchmark
 
-Benchmark de sistemas de recomendação baseados em sessão para o domínio imobiliário, inspirado no artigo:
+Benchmark implementation based on Domingues et al. (2025) methodology for real estate session-based recommendations.
 
-**"A large scale benchmark for session-based recommendations on the legal domain"**  
+**Reference Paper:**  
+"A large scale benchmark for session-based recommendations on the legal domain"  
 Domingues et al. (2025) - Artificial Intelligence and Law
 
-## 📋 Visão Geral
+## Overview
 
 Este projeto implementa e avalia múltiplos modelos de recomendação baseados em sessão usando dados reais de interações de usuários com listagens de imóveis. O objetivo é predizer o próximo imóvel que um usuário vai interagir baseado na sequência de interações da sessão atual.
 
@@ -22,35 +23,37 @@ Este projeto implementa e avalia múltiplos modelos de recomendação baseados e
 
 ```
 fermi/
-├── src/                        # 🔬 Benchmark implementation
-│   ├── run_benchmark.py        # Main execution script
-│   └── configs/                # Experiment configurations
+├── src/
+│   ├── run_session_rec.py           # Main benchmark runner
+│   └── configs/
+│       ├── non_personalized/        # Random, POP, RPOP, SPOP
+│       └── pattern_mining/          # AR, Markov, SR
 │
-├── data/                       # 📊 Data processing scripts
-│   ├── prepare_dataset.py      # Spark-based data preparation
-│   └── convert_to_session_rec.py  # Format conversion to session-rec
+├── data/
+│   ├── prepare_dataset.py           # Spark-based data preparation
+│   └── convert_to_session_rec.py    # Format conversion
 │
-├── session-rec-lib/            # 🔧 Session-rec framework (git submodule)
-│   ├── algorithms/             # All models implementations
-│   └── evaluation/             # Metrics and evaluation
+├── session-rec-lib/                 # Framework (git submodule)
+│   ├── algorithms/                  # Model implementations
+│   └── evaluation/                  # Metrics and evaluation
 │
-├── scripts/                    # 🛠️ Installation & utilities
-│   └── install.sh              # Automated installation
+├── scripts/
+│   └── install.sh                   # Automated installation
 │
-├── utils/                      # 💡 Helper utilities
-│   └── spark_session.py        # Spark configuration
+├── utils/
+│   └── spark_session.py             # Spark configuration
 │
-├── .env                        # Environment variables (BASE_PATH, JAVA_HOME)
-├── requirements.txt            # Python dependencies
-├── Makefile                    # Common commands
-└── README.md                   # This file
+├── .env                             # Environment variables
+├── requirements.txt
+├── Makefile
+└── README.md
 ```
 
-## ⚙️ Configuração
+## Configuration
 
-### Variáveis de Ambiente
+### Environment Variables
 
-Crie um arquivo `.env` na raiz do projeto:
+Create a `.env` file in the project root:
 
 ```bash
 BASE_PATH=/home/hygo2025/Documents/data
@@ -58,160 +61,319 @@ JAVA_HOME=/opt/jdk/amazon-corretto-21
 PYTHONUNBUFFERED=1
 ```
 
-**Nota:** `BASE_PATH` aponta para onde seus dados brutos estão armazenados.
+Note: `BASE_PATH` points to where your raw data is stored.
 
-## 🚀 Início Rápido
+## Quick Start
 
-### 1. Instalação
+### 1. Installation
 
 ```bash
-# Clone com submódulos
-git clone --recursive <repository-url>
+# Clone with submodules
+git clone --recursive https://github.com/hygo2025/fermi.git
 cd fermi
 
-# Se já clonou sem --recursive
-git submodule update --init --recursive
+# Configure environment variables
+cp .env.example .env
+# Edit .env with your paths (BASE_PATH, JAVA_HOME)
 
-# Instale dependências Python
-pip install -r requirements.txt
+# Complete setup (Python 3.9, venv, dependencies, session-rec)
+make setup
+
+# Verify installation
+make status
 ```
 
-O projeto usa:
-- ✅ **session-rec-lib** como submódulo Git (fork com correções Python 3.9+)
-- ✅ Todas as dependências via `requirements.txt`
+Setup steps:
+- Checks/installs Python 3.9
+- Creates virtual environment (.venv)
+- Installs all dependencies from requirements.txt
+- Initializes session-rec-lib submodule
+- Configures PYTHONPATH
 
-### 2. Preparar Dados
+### 2. Prepare Dataset
 
 ```bash
-# Preparar dataset (14 dias de dados)
+# Using Makefile (recommended)
+make prepare-data    # Prepare data with Spark (2024-04-01 to 2024-04-14)
+
+# Or manually
 python data/prepare_dataset.py \
-    --start-date 2024-03-01 \
-    --end-date 2024-03-15
+    --start-date 2024-04-01 \
+    --end-date 2024-04-14 \
+    --output ./session_rec_format/realestate
 ```
 
-### 3. Executar Benchmark
+What is done:
+- Loads ~30M events from BASE_PATH using PySpark
+- Creates sessions (30min timeout)
+- Removes short sessions (<2 events)
+- Temporal split: last 2 days = test, rest = train
+- Saves in Parquet (fast!) in session-rec format
 
+Expected output:
+```
+session_rec_format/realestate/
+  ├── realestate_train_full.parquet  (~27M events)
+  └── realestate_test.parquet        (~3.6M events)
+```
+
+### 3. Run Benchmark
+
+Non-Personalized Models (from paper):
 ```bash
-# Testar com modelo baseline (POP)
-python src/run_session_rec.py --config src/configs/pop_only.yml
+# Run individually
+make test-pop     # Popularity (POP)
+make test-random  # Random (lower bound)
+make test-rpop    # Recent Popularity
+make test-spop    # Session Popularity
 
-# Executar benchmark completo
-python src/run_session_rec.py --config src/configs/session_rec_config.yml
+# Run all non-personalized
+make test-non-personalized
 ```
 
-## 📊 Dados
+Pattern Mining Models (from paper):
+```bash
+# Run individually
+make test-ar      # Association Rules (AR)
+make test-markov  # Markov Chain
+make test-sr      # Sequential Rules (SR)
 
-Os dados brutos estão em `/home/hygo2025/Documents/data/processed_data/`:
-- **events/** - Eventos de usuários (~25M eventos, 182 dias)
-- **listings/** - Catálogo de imóveis (187k imóveis)
+# Run all pattern mining
+make test-pattern-mining
+```
 
-O pipeline de preparação:
-1. Filtra eventos por período
-2. Cria sessões (30min de inatividade)
-3. Remove sessões curtas (<2 eventos) e itens raros (<5 ocorrências)
-4. Split temporal (80% train, 10% val, 10% test)
-5. Converte para formato session-rec (tab-separated)
+Run all baselines:
+```bash
+make run-all-baselines
+```
 
-## 🔧 Framework: Session-Rec
+Expected time:
+- Data loading: ~2s (optimized Parquet)
+- Fit POP: ~0.3s
+- Evaluation: ~3h (3.6M events, event-by-event)
 
-Utilizamos o **session-rec**, mesmo framework usado no artigo original:
+## Data
+
+Raw data is located at `/home/hygo2025/Documents/data/processed_data/`:
+- **events/** - User events (~25M events, 182 days)
+- **listings/** - Property catalog (187k properties)
+
+Preparation pipeline:
+1. Filter events by period
+2. Create sessions (30min inactivity timeout)
+3. Remove short sessions (<2 events) and rare items (<5 occurrences)
+4. Temporal split (last 2 days = test, rest = train)
+5. Convert to session-rec format (Parquet)
+
+## Framework: Session-Rec
+
+We use **session-rec**, the same framework used in the original paper:
 
 - **Fork Python 3.9+:** https://github.com/hygo2025/session-rec-3-9
-- **Branch:** `python39-compatibility`
 - **Original:** https://github.com/rn5l/session-rec
 
-### Correções Aplicadas no Fork
+### Applied Fixes in Fork
 
-1. ✅ `time.clock()` → `time.perf_counter()` (removido no Python 3.8)
-2. ✅ `yaml.load()` → `yaml.load(Loader=FullLoader)` (segurança)
-3. ✅ `Pop.fit()` signature fix
-4. ✅ Telegram notifications desabilitadas
+1. `time.clock()` to `time.perf_counter()` (removed in Python 3.8)
+2. `yaml.load()` to `yaml.load(Loader=FullLoader)` (security)
+3. `Pop.fit()` signature fix
+4. Telegram notifications disabled
+5. Parquet format support in data loader
 
-### Por Que Session-Rec?
+### Why Session-Rec?
 
-- ✅ Mesmo framework do artigo (comparabilidade)
-- ✅ 20+ modelos session-based implementados
-- ✅ Métricas padronizadas
-- ✅ Benchmark estabelecido na literatura
+- Same framework as the paper (comparability)
+- 20+ session-based models implemented
+- Standardized metrics
+- Established benchmark in literature
 
-## 📊 Modelos Implementados
+## Models (following Domingues et al. 2025)
 
-### Baselines
-- **pop** - Popularity-based recommender
-- **ar** - Association Rules
-- **sr** - Sequential Rules
-- **markov** - Markov Chains
+### Non-Personalized Baselines
+- **pop** - Popularity (global item frequency)
+- **random** - Random list (lower bound)
+- **rpop** - Recent Popularity (last n days)
+- **spop** - Session Popularity (frequency in session)
 
-### KNN-based
-- **iknn** - Item k-Nearest Neighbors
-- **sknn** - Session-based KNN
-- **vsknn** - Vector Multiplication Session-based KNN
+### Pattern Mining
+- **ar** - Association Rules (co-occurrence)
+- **markov** - First-order Markov Chain
+- **sr** - Sequential Rules (with decay function)
+
+### Nearest Neighbors (Future Work)
+- **iknn** - Item k-NN (cosine similarity)
+- **sknn** - Session-based k-NN
+- **vsknn** - Vector Multiplication Session-based k-NN
 - **stan** - Sequence and Time-aware Neighborhood
+- **sfsknn** - Session-based Factorized k-NN
 
-### Deep Learning
+### Matrix Factorization (Future Work)
+- **fism** - Factored Item Similarity Models
+- **fossil** - Factorized Personalized Markov Chains
+
+### Neural Networks (Future Work)
 - **gru4rec** - Gated Recurrent Units for Recommendations
 - **narm** - Neural Attentive Recommendation Machine
-- **STAMP** - Short-Term Attention Memory Priority
+- **stamp** - Short-Term Attention Memory Priority
+- **nextitnet** - Dilated Convolutions
+- **sasrec** - Self-Attentive Sequential Recommendation
 
-## 📈 Métricas de Avaliação
+## Evaluation Metrics (following Domingues et al. 2025)
 
-- **Recall@K** - Taxa de acerto nas top-K recomendações
-- **MRR@K** - Mean Reciprocal Rank
-- **Coverage** - Cobertura do catálogo
+We follow exactly the methodology from the paper:
 
-Com K ∈ {5, 10, 20}
+- **Recall@K** - Hit rate in top-K recommendations
+- **MRR@K** - Mean Reciprocal Rank (position of correct item)
 
-## 🔬 Pipeline Completo
+Configuration:
+- K in {5, 10, 20} - Recommendation list sizes
+- Evaluation: next-item prediction
+- Protocol: Given 1 Predict 1 (each session event used as prediction point)
 
-1. **Preparação:** Filtra eventos → cria sessões → split temporal
-2. **Conversão:** CSV → formato session-rec (tab-separated)
-3. **Treinamento:** Treina modelos com dados de treino
-4. **Avaliação:** Next-item prediction nas sessões de teste
-5. **Análise:** Comparação de métricas entre modelos
+### Metric Interpretation
 
-## 🛠️ Comandos Úteis
+- **Recall@20 = 0.15**: In 15% of predictions, the correct item is in top-20
+- **MRR@20 = 0.05**: On average, the correct item appears at position 20 (1/0.05)
+- **MRR@20 > Recall@20**: Impossible (MRR <= Recall)
 
+## Complete Pipeline
+
+1. **Preparation:** Filter events, create sessions, temporal split
+2. **Conversion:** Raw data to session-rec format (Parquet)
+3. **Training:** Train models with training data
+4. **Evaluation:** Next-item prediction on test sessions
+5. **Analysis:** Compare metrics between models
+
+## Useful Commands (Makefile)
+
+### Installation
 ```bash
-# Ver comandos disponíveis
-make help
-
-# Instalar dependências do projeto
-make install
-
-# Limpar ambiente
-make clean
-
-# Rodar teste rápido
-make test-pop
+make install-benchmark  # Setup complete environment
+make status            # Check installation status
 ```
 
-## 🔍 Troubleshooting
-
-### Erro: `time.clock()` not found
-
-**Solução:** Use o fork Python 3.9+ compatível (já incluído no install.sh)
-
-### Erro: `fit() takes 2 positional arguments but 3 were given`
-
-**Solução:** Fork já contém correção. Reexecute `./scripts/install.sh`
-
-### Dados carregam muito lento
-
-**Solução:** 
-- Use `pyarrow` para leitura de Parquet
-- Aplique filtros de data ao carregar events
-- Considere usar apenas um subset dos dados para testes
-
-### Session-rec não encontrado
-
-**Solução:** 
+### Data Preparation
 ```bash
-export PYTHONPATH=/home/hygo2025/Development/projects/fermi:$PYTHONPATH
+make prepare-data      # Prepare dataset with Spark
+make convert-data      # Convert to session-rec format
 ```
 
-## 📚 Referências
+### Run Benchmarks
+```bash
+# Individual non-personalized models
+make test-pop          # Popularity
+make test-recent       # Most recent items
+make test-random       # Random baseline
+make test-rpop         # Recent popularity
+make test-spop         # Session popularity
 
-**Artigo Principal:**
+# Run all non-personalized at once
+make test-non-personalized
+```
+
+### Cleanup
+```bash
+make clean             # Remove results and processed data
+make clean-all         # Full cleanup including session-rec
+```
+
+## Data Format
+
+### Input (BASE_PATH)
+```
+/home/hygo2025/Documents/data/processed_data/
+├── events/                    # ~25M events, 182 days
+│   └── YYYY/MM/DD/*.parquet
+└── listings/                  # 187k properties
+    └── *.parquet
+```
+
+### Output (session-rec format)
+```
+session_rec_format/realestate/
+├── realestate_train_full.parquet
+└── realestate_test.parquet
+
+Columns: SessionId, ItemId, Time
+```
+
+Parquet Schema:
+- `SessionId`: int64 - Unique session ID
+- `ItemId`: int32 - Property ID
+- `Time`: timestamp - Unix timestamp of interaction
+
+## Troubleshooting
+
+### Error: `time.clock()` not found
+```
+AttributeError: module 'time' has no attribute 'clock'
+```
+Cause: Python 3.8+ removed `time.clock()`  
+Solution: Our fork already fixes this (`time.perf_counter()`). Run `make setup`
+
+### Error: `fit() takes 2 positional arguments but 3 were given`
+```
+TypeError: fit() takes 2 positional arguments but 3 were given
+```
+Cause: Incompatible `fit()` method signature  
+Solution: Already fixed in our fork. Make sure to use correct submodule
+
+### Error: `predict_next() got an unexpected keyword argument 'timestamp'`
+```
+TypeError: predict_next() got an unexpected keyword argument 'timestamp'
+```
+Cause: POP model doesn't accept `timestamp` parameter  
+Solution: Fixed in fork - adds `**kwargs` for compatibility
+
+### Slow data loading (>20 minutes)
+```
+START load data
+Loading train from: .../realestate_train_full.txt
+[waiting...]
+```
+Cause: TSV/TXT is slow for 27M+ lines  
+Solution: We now use Parquet (loads in ~2 seconds)
+
+### Session-rec not found
+```
+ModuleNotFoundError: No module named 'evaluation'
+```
+Solution:
+```bash
+# PYTHONPATH is configured by make, but if needed:
+export PYTHONPATH=/home/hygo2025/Development/projects/fermi/session-rec-lib:$PYTHONPATH
+```
+
+### Submodule not initialized
+```
+fatal: No url found for submodule path 'session-rec-lib'
+```
+Solution:
+```bash
+git submodule update --init --recursive
+```
+
+### PyArrow not installed
+```
+ModuleNotFoundError: No module named 'pyarrow'
+```
+Solution:
+```bash
+pip install pyarrow  # Already in requirements.txt
+```
+
+### Spark cannot find JAVA_HOME
+```
+Exception: Java gateway process exited before sending its port number
+```
+Solution: Configure JAVA_HOME in `.env`:
+```bash
+JAVA_HOME=/opt/jdk/amazon-corretto-21  # or your JDK path
+```
+
+## References
+
+Main Paper:
 ```
 Domingues, M. A., de Moura, E. S., Marinho, L. B., & da Silva, A. (2025).
 A large scale benchmark for session-based recommendations on the legal domain.
@@ -219,20 +381,20 @@ Artificial Intelligence and Law, 33, 43-78.
 DOI: 10.1007/s10506-023-09378-3
 ```
 
-**Session-Rec Framework:**
+Session-Rec Framework:
 ```
 Ludewig, M., & Jannach, D. (2018).
 Evaluation of session-based recommendation algorithms.
 User Modeling and User-Adapted Interaction, 28(4-5), 331-390.
 ```
 
-## 📄 Licença
+## License
 
-Este projeto é parte de pesquisa acadêmica.
+This project is part of academic research.
 
 ---
 
-**Criado em:** 02 de dezembro de 2024  
-**Baseado em:** Domingues et al. (2025)  
-**Framework:** [session-rec](https://github.com/hygo2025/session-rec-3-9) (fork Python 3.9+)  
-**Última atualização:** 02 de dezembro de 2024
+Created: December 2, 2024  
+Based on: Domingues et al. (2025)  
+Framework: [session-rec](https://github.com/hygo2025/session-rec-3-9) (fork Python 3.9+)  
+Last updated: December 2, 2024

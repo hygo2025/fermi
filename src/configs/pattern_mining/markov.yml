@@ -1,0 +1,29 @@
+# Markov Chain (MC) Configuration
+# Paper: "A comprehensive quality evaluation..."
+# Algorithm: First-order Markov Chain
+
+type: single
+key: realestate_markov_test
+data:
+  name: realestate_march
+  folder: /home/hygo2025/Development/projects/fermi/session_rec_format/
+  prefix: realestate
+
+evaluation: evaluation.evaluation.EvaluationSessionBased
+
+metrics:
+  - class: accuracy.HitRate
+    length: [5, 10, 20]
+  - class: accuracy.MRR
+    length: [5, 10, 20]
+  - class: coverage.Coverage
+    length: [20]
+  - class: popularity.Popularity
+    length: [20]
+
+algorithms:
+  markov:
+    class: baselines.markov.MarkovChain
+    params:
+      order: 1
+      weighting: div

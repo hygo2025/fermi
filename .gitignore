@@ -309,3 +309,10 @@ pyrightconfig.json
 ../data
 
 src/gru/dataset
+session_rec_format
+session_rec_format/
+session_rec_format/*
+
+artigo
+artigo/
+artigo/*
