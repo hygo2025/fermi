@@ -93,8 +93,11 @@ Setup steps:
 ### 2. Prepare Dataset
 
 ```bash
-# Using Makefile (recommended)
-make prepare-data    # Prepare data with Spark (2024-04-01 to 2024-04-14)
+# For quick testing (2 days: 2024-04-01 to 2024-04-02)
+make prepare-data START_DATE=2024-04-01 END_DATE=2024-04-02
+
+# For full benchmark (14 days: 2024-04-01 to 2024-04-14)
+make prepare-data START_DATE=2024-04-01 END_DATE=2024-04-14
 
 # Or manually
 python data/prepare_dataset.py \

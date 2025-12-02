@@ -96,7 +96,7 @@ prepare-data: ## Prepare dataset with Spark (14 days)
 	@if [ ! -f .env ]; then echo "ERROR: .env file not found. Create it with BASE_PATH variable."; exit 1; fi
 	$(ACTIVATE) && python data/prepare_dataset.py \
 		--start-date 2024-04-01 \
-		--end-date 2024-04-14
+		--end-date 2024-04-02
 
 convert-data: ## Convert data to session-rec Parquet format
 	@echo "Converting to session-rec format..."
