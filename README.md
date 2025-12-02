@@ -12,14 +12,14 @@ Este projeto implementa e avalia múltiplos modelos de recomendação baseados e
 
 ### Diferenças do Artigo Original
 
-| Aspecto | Artigo (Jusbrasil) | Nosso Benchmark |
-|---------|-------------------|-----------------|
-| Domínio | Legal (documentos jurídicos) | Imobiliário (listings) |
-| Itens | Documentos | Imóveis |
-| Framework | session-rec | session-rec (mesmo) |
-| Métricas | Recall@K, MRR@K, Coverage | Recall@K, MRR@K, Coverage (mesmas) |
+| Aspecto   | Artigo (Jusbrasil)             | Nosso Benchmark                    |
+|-----------|--------------------------------|------------------------------------|
+| Domínio   | Legal (documentos jurídicos)   | Imobiliário (listings)             |
+| Itens     | Documentos                     | Imóveis                            |
+| Framework | session-rec                    | session-rec (mesmo)                |
+| Métricas  | Recall@K, MRR@K, Coverage      | Recall@K, MRR@K, Coverage (mesmas) |
 
-## 🗂️ Estrutura do Projeto
+## Estrutura do Projeto
 
 ```
 fermi/
