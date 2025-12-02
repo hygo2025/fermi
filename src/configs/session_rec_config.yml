@@ -1,0 +1,91 @@
+---
+# Session-Rec Configuration for Real Estate Recommendation
+# Based on Domingues et al. (2025) methodology
+# Dataset: 14 days sample (March 2024)
+
+type: single # single evaluation
+key: realestate_march_sample
+evaluation: evaluation
+
+data:
+  name: realestate_march
+  folder: /home/hygo2025/Development/projects/fermi/data/session_rec_format/
+  prefix: realestate
+
+results:
+  folder: results/realestate_march/
+  pickle_models: results/models/realestate_march/
+
+metrics:
+  # Métricas do artigo Domingues et al. (2025)
+  - class: accuracy.HitRate  # Recall@K
+    length: [5, 10, 20]
+  - class: accuracy.MRR
+    length: [5, 10, 20]
+  - class: coverage.Coverage
+    length: [20]
+  - class: popularity.Popularity
+    length: [20]
+  - class: saver.Saver
+    length: [50]
+  - class: time_memory_usage.Time_usage_training
+  - class: time_memory_usage.Time_usage_testing
+
+algorithms:
+  # Baselines
+  - class: baselines.pop.PopularityPredictor
+    params: 
+      top_n: 100
+    key: pop
+  
+  # KNN-based models
+  - class: knn.iknn.ItemKNN
+    params:
+      k: 100
+      similarity: cosine
+    key: iknn
+  
+  - class: knn.sknn.ContextKNN
+    params:
+      k: 500
+      sampling: 500
+      similarity: cosine
+    key: sknn
+  
+  - class: knn.vsknn.VMContextKNN
+    params:
+      k: 500
+      sampling: 500
+      weighting: linear
+      similarity: cosine
+    key: vsknn
+  
+  - class: knn.stan.STAN
+    params:
+      k: 500
+      lambda_spw: 0.5
+      lambda_snh: 5
+      lambda_inh: 2.05
+    key: stan
+
+# Deep Learning models (comentados por enquanto)
+# Descomentar quando testar
+#  - class: gru4rec.gru4rec.GRU4Rec
+#    params:
+#      layers: [100]
+#      batch_size: 50
+#      dropout_p_hidden: 0.0
+#      learning_rate: 0.05
+#      momentum: 0.0
+#      n_epochs: 10
+#      loss: bpr-max
+#    key: gru4rec
+#
+#  - class: narm.narm.NARM
+#    params:
+#      hidden_units: 100
+#      embedding_dim: 50
+#      batch_size: 512
+#      learning_rate: 0.001
+#      n_epochs: 10
+#    key: narm

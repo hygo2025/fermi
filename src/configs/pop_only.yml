@@ -1,0 +1,30 @@
+---
+# Simplified config - Only POP baseline for testing
+type: single
+key: realestate_pop_test
+evaluation: evaluation
+
+data:
+  name: realestate_march
+  type: hdf  # Use HDF5 for 10-20x faster loading!
+  folder: /home/hygo2025/Development/projects/fermi/data/session_rec_format/
+  prefix: realestate
+
+results:
+  folder: /home/hygo2025/Development/projects/fermi/src/results/pop_test/
+  
+metrics:
+  - class: accuracy.HitRate
+    length: [5, 10, 20]
+  - class: accuracy.MRR
+    length: [5, 10, 20]
+  - class: coverage.Coverage
+    length: [20]
+  - class: time_memory_usage.Time_usage_training
+  - class: time_memory_usage.Time_usage_testing
+
+algorithms:
+  - class: baselines.pop.Pop
+    params: 
+      top_n: 100
+    key: pop
