@@ -22,6 +22,7 @@ from recbole.trainer import Trainer
 from recbole.utils import init_seed, init_logger, get_model
 
 from metrics import SessionBasedMetrics
+from utils.gpu_cooling import inject_cooling_callback
 
 
 class ExperimentRunner:
@@ -32,7 +33,11 @@ class ExperimentRunner:
                  output_path: str = 'results',
                  config_path: str = 'src/configs',
                  models: List[str] = None,
-                 slices: List[int] = None):
+                 slices: List[int] = None,
+                 enable_gpu_cooling: bool = True,
+                 cool_every_n_epochs: int = 5,
+                 cool_duration_seconds: int = 60,
+                 max_temp_celsius: int = 80):
         """
         Args:
             data_path: Diretório com dados RecBole
@@ -40,11 +45,21 @@ class ExperimentRunner:
             config_path: Diretório com configs YAML dos modelos
             models: Lista de modelos para executar (None = todos)
             slices: Lista de slices para processar (None = todos)
+            enable_gpu_cooling: Ativar pausas para resfriamento
+            cool_every_n_epochs: Pausar a cada N epochs
+            cool_duration_seconds: Duração da pausa em segundos
+            max_temp_celsius: Temperatura máxima antes de forçar pausa
         """
         self.data_path = Path(data_path)
         self.output_path = Path(output_path)
         self.config_path = Path(config_path)
         self.output_path.mkdir(parents=True, exist_ok=True)
+        
+        # GPU Cooling settings
+        self.enable_gpu_cooling = enable_gpu_cooling
+        self.cool_every_n_epochs = cool_every_n_epochs
+        self.cool_duration_seconds = cool_duration_seconds
+        self.max_temp_celsius = max_temp_celsius
         
         # Modelos disponíveis
         self.available_models = {
@@ -150,6 +165,17 @@ class ExperimentRunner:
         
         # Create trainer
         trainer = Trainer(config, model)
+        
+        # Inject GPU cooling callback if enabled
+        if self.enable_gpu_cooling:
+            self.logger.info(f"  GPU Cooling enabled: pause every {self.cool_every_n_epochs} epochs for {self.cool_duration_seconds}s")
+            self.logger.info(f"  Max temperature threshold: {self.max_temp_celsius}°C")
+            inject_cooling_callback(
+                trainer,
+                cool_every_n_epochs=self.cool_every_n_epochs,
+                cool_duration_seconds=self.cool_duration_seconds,
+                max_temp_celsius=self.max_temp_celsius
+            )
         
         # Train
         self.logger.info(f"  Training {model_name}...")
@@ -270,6 +296,18 @@ def main():
     parser.add_argument('--all-slices', action='store_true',
                        help='Run on all slices')
     
+    # GPU Cooling arguments
+    parser.add_argument('--enable-gpu-cooling', action='store_true', default=True,
+                       help='Enable GPU cooling breaks (default: True)')
+    parser.add_argument('--no-gpu-cooling', dest='enable_gpu_cooling', action='store_false',
+                       help='Disable GPU cooling breaks')
+    parser.add_argument('--cool-every', type=int, default=5,
+                       help='Cool down every N epochs (default: 5)')
+    parser.add_argument('--cool-duration', type=int, default=60,
+                       help='Cooling duration in seconds (default: 60)')
+    parser.add_argument('--max-temp', type=int, default=80,
+                       help='Max GPU temperature before forced cooling (default: 80°C)')
+    
     args = parser.parse_args()
     
     runner = ExperimentRunner(
@@ -277,7 +315,11 @@ def main():
         output_path=args.output_path,
         config_path=args.config_path,
         models=args.models,
-        slices=args.slices
+        slices=args.slices,
+        enable_gpu_cooling=args.enable_gpu_cooling,
+        cool_every_n_epochs=args.cool_every,
+        cool_duration_seconds=args.cool_duration,
+        max_temp_celsius=args.max_temp
     )
     
     results = runner.run_all_experiments()
