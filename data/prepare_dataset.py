@@ -58,7 +58,9 @@ def load_date_range_spark(spark, events_path: str, start_date: str, end_date: st
     # Filter by date range
     df = df.filter(
         (F.col('dt') >= start_date) & 
-        (F.col('dt') <= end_date)
+        (F.col('dt') <= end_date) &
+        (F.col('event_type') != 'RankingRendered') &
+        (F.col('business_type') != 'SALE')
     )
     
     print(f"  ✓ Loaded data with Spark")

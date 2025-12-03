@@ -15,6 +15,7 @@ PROJECT_DIR = Path(__file__).parent.parent
 SESSION_REC_DIR = PROJECT_DIR / 'session-rec-lib'
 BENCHMARK_DIR = PROJECT_DIR / 'src'
 sys.path.insert(0, str(SESSION_REC_DIR))
+sys.path.insert(0, str(BENCHMARK_DIR))  # Add src to path for models
 
 # Import session-rec runner at module level
 from run_config import main as run_session_rec_main

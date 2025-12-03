@@ -45,7 +45,10 @@ install-benchmark: install ## Install benchmark (dependencies + session-rec subm
 	@echo "Installing benchmark environment..."
 	@echo "Initializing git submodules..."
 	@git submodule update --init --recursive
+	@echo "Creating symlink for wrappers..."
+	@cd session-rec-lib/algorithms && ln -sf ../../src/models models 2>/dev/null || true
 	@echo "✓ Session-rec submodule ready (imported via PYTHONPATH)"
+	@echo "✓ Wrappers symlink created (algorithms/models → src/models)"
 	@echo "✓ Benchmark environment ready"
 
 update: ## Update Python dependencies
@@ -67,17 +70,51 @@ test-sr: ## Run SR (Sequential Rules)
 
 test-pattern-mining: ## Run all pattern mining models in parallel
 	@echo "Running all pattern mining models in parallel..."
-	@mkdir -p logs
+	@mkdir -p logs/pattern_mining
 	@$(ACTIVATE) && \
-	python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/pattern_mining/ar.yml > logs/ar.log 2>&1 & \
-	python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/pattern_mining/markov.yml > logs/markov.log 2>&1 & \
-	python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/pattern_mining/sr.yml > logs/sr.log 2>&1 & \
+	python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/pattern_mining/ar.yml > logs/pattern_mining/ar.log 2>&1 & \
+	python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/pattern_mining/markov.yml > logs/pattern_mining/markov.log 2>&1 & \
+	python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/pattern_mining/sr.yml > logs/pattern_mining/sr.log 2>&1 & \
 	wait
 	@echo "✓ All pattern mining models complete. Check logs/ directory for outputs."
 
+##@ Benchmark - KNN Models
+
+test-iknn: ## Run IKNN (Item-KNN)
+	@echo "Running IKNN (Item-KNN)..."
+	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/knn/iknn.yml
+
+test-sknn: ## Run SKNN (Session-KNN)
+	@echo "Running SKNN (Session-KNN)..."
+	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/knn/sknn.yml
+
+test-vsknn: ## Run VSKNN (Vector Multiplication Session-KNN)
+	@echo "Running VSKNN (Vector Multiplication Session-KNN)..."
+	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/knn/vsknn.yml
+
+test-stan: ## Run STAN (Sequence and Time-aware Neighborhood)
+	@echo "Running STAN (Sequence and Time-aware Neighborhood)..."
+	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/knn/stan.yml
+
+test-vstan: ## Run VSTAN (VSKNN + STAN)
+	@echo "Running VSTAN (VSKNN + STAN)..."
+	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/knn/vstan.yml
+
+test-knn: ## Run all KNN models in parallel
+	@echo "Running all KNN models in parallel..."
+	@mkdir -p logs/knn
+	@$(ACTIVATE) && \
+	python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/knn/iknn.yml > logs/knn/iknn.log 2>&1 & \
+	python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/knn/sknn.yml > logs/knn/sknn.log 2>&1 & \
+	python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/knn/vsknn.yml > logs/knn/vsknn.log 2>&1 & \
+	python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/knn/stan.yml > logs/knn/stan.log 2>&1 & \
+	python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/knn/vstan.yml > logs/knn/vstan.log 2>&1 & \
+	wait
+	@echo "✓ All KNN models complete. Check logs/ directory for outputs."
+
 ##@ Benchmark - Run All
 
-run-all-baselines: test-pattern-mining ## Run all implemented models
+run-all-baselines: test-pattern-mining test-knn ## Run all implemented models (Pattern Mining + KNN)
 
 ##@ Data Preparation
 
@@ -86,7 +123,7 @@ prepare-data: ## Prepare dataset with Spark (30 days)
 	@if [ ! -f .env ]; then echo "ERROR: .env file not found. Create it with BASE_PATH variable."; exit 1; fi
 	$(ACTIVATE) && python data/prepare_dataset.py \
 		--start-date 2024-04-01 \
-		--end-date 2024-04-30
+		--end-date 2024-04-07
 
 ##@ Cleanup
 
@@ -111,7 +148,12 @@ status: ## Show project status
 	@echo "Python version: $(PYTHON_VERSION)"
 	@if [ -d "$(VENV_DIR)" ]; then echo "✓ Virtual environment: installed"; else echo "✗ Virtual environment: not found (run 'make install')"; fi
 	@if [ -d "session-rec-lib" ]; then echo "✓ Session-rec: installed"; else echo "✗ Session-rec: not found (run 'make install-benchmark')"; fi
+	@if [ -L "session-rec-lib/algorithms/models" ]; then echo "✓ Wrappers symlink: created"; else echo "✗ Wrappers symlink: missing (run 'make install-benchmark')"; fi
 	@if [ -d "data/session_rec_format" ]; then echo "✓ Data: prepared"; else echo "✗ Data: not prepared (run 'make prepare-data')"; fi
+	@echo ""
+	@echo "Wrappers implemented:"
+	@if [ -f "src/models/knn/iknn.py" ]; then echo "  ✓ IKNN wrapper (fix: fit signature)"; fi
+	@if [ -f "src/models/knn/sknn.py" ]; then echo "  ✓ SKNN wrapper (fix: sessions_for_item)"; fi
 	@echo ""
 	@echo "Quick start:"
 	@echo "  1. make install-benchmark  (first time only)"
@@ -119,4 +161,4 @@ status: ## Show project status
 	@echo "  3. make test-sr            (test with Sequential Rules)"
 	@echo ""
 
-.PHONY: help install install-benchmark update test-ar test-markov test-sr test-pattern-mining run-all-baselines prepare-data clean clean-all status
+.PHONY: help install install-benchmark update test-ar test-markov test-sr test-pattern-mining test-iknn test-sknn test-vsknn test-stan test-vstan test-knn run-all-baselines prepare-data clean clean-all status

@@ -1,5 +1,5 @@
 type: single
-key: sr
+key: vsknn
 data:
   name: realestate_30days
   folder: /home/hygo2025/Development/projects/fermi/session_rec_format/
@@ -10,7 +10,7 @@ data:
   num_days_test: 1
 
 results:
-  folder: results/pattern_mining/
+  folder: results/knn/
 
 evaluation: evaluation_last
 
@@ -21,9 +21,16 @@ metrics:
     length: [5, 10, 20]
 
 algorithms:
-  - class: baselines.sr.SequentialRules
+  - class: knn.vsknn.VMContextKNN
     params:
-      steps: 10
-      weighting: 'div'
-      pruning: 20
-    key: sr
+      k: 500
+      sample_size: 1000
+      sampling: recent
+      similarity: cosine
+      weighting: div
+      dwelling_time: false
+      extend: false
+      weighting_score: div
+      weighting_time: false
+      normalize: true
+    key: vsknn

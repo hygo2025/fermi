@@ -168,9 +168,24 @@ make test-pattern-mining
 # Monitor with: tail -f logs/sr.log
 ```
 
+KNN Models (from paper):
+```bash
+# Run individually
+make test-iknn    # Item-KNN
+make test-sknn    # Session-KNN
+make test-vsknn   # Vector Multiplication Session-KNN
+make test-stan    # Sequence and Time-aware Neighborhood
+make test-vstan   # VSKNN + STAN
+
+# Run all KNN models in parallel (with logs)
+make test-knn
+# Logs written to: logs/iknn.log, logs/sknn.log, logs/vsknn.log, logs/stan.log, logs/vstan.log
+# Monitor with: tail -f logs/stan.log
+```
+
 Run all implemented models:
 ```bash
-make run-all-baselines
+make run-all-baselines  # Runs Pattern Mining + KNN
 ```
 
 Expected time (per slice):
@@ -219,30 +234,82 @@ We use **session-rec**, the same framework used in the original paper:
 ### Implemented Models
 
 #### Pattern Mining
-- **ar** - Association Rules (co-occurrence)
-- **markov** - First-order Markov Chain
-- **sr** - Sequential Rules (with decay function)
+- **ar** - Association Rules (co-occurrence, pruning=20)
+- **markov** - First-order Markov Chain (pruning=20)
+- **sr** - Sequential Rules (steps=10, weighting='div', pruning=20)
+
+**Configuration**: All pattern mining models use the standard signature `fit(data, test=None)` and don't require wrappers.
+
+#### Nearest Neighbors (KNN)
+- **iknn** - Item k-NN (cosine similarity on last item) - **⚠️ Requires wrapper**
+- **sknn** - Session-based k-NN (whole session comparison) - **⚠️ Requires wrapper**
+- **vsknn** - Vector Multiplication Session-based k-NN (with linear decay)
+- **stan** - Sequence and Time-aware Neighborhood (position + recency + neighbor position)
+- **vstan** - VSKNN + STAN fusion (all features combined with IDF weighting)
+
+**Note**: IKNN and SKNN require wrappers in `src/models/knn/` due to incompatibilities with the session-rec framework. See [Wrappers Section](#wrappers) for details.
+
+### Model Wrappers {#wrappers}
+
+Two KNN models require wrappers to fix incompatibilities with session-rec:
+
+#### 1. IKNN Wrapper (`src/models/knn/iknn.py`)
+**Problem**: Original `fit(data)` signature incompatible with framework's `fit(train, test)` call.  
+**Solution**: Wrapper accepts `test=None` parameter and ignores it.
+
+```python
+# src/models/knn/iknn.py
+from algorithms.knn.iknn import ItemKNN as BaseItemKNN
+
+class ItemKNN(BaseItemKNN):
+    def fit(self, data, test=None):
+        super().fit(data)  # Ignores test parameter
+```
+
+#### 2. SKNN Wrapper (`src/models/knn/sknn.py`)
+**Problem**: `sessions_for_item()` returns `None` for unseen items, causing `TypeError: set | None`.  
+**Solution**: Wrapper returns empty `set()` instead of `None`.
+
+```python
+# src/models/knn/sknn.py
+from algorithms.knn.sknn import ContextKNN as BaseContextKNN
+
+class ContextKNN(BaseContextKNN):
+    def sessions_for_item(self, item_id):
+        return self.item_session_map.get(item_id) if item_id in self.item_session_map else set()
+```
+
+**Architecture**:
+```
+src/models/knn/          # Wrappers in project
+  ├── iknn.py           # Fix: fit signature
+  └── sknn.py           # Fix: sessions_for_item → None
+
+session-rec-lib/algorithms/
+  └── models -> ../../src/models  # Symlink (created by make install-benchmark)
+```
+
+**How it works**:
+1. Config uses: `models.knn.sknn.ContextKNN`
+2. Framework adds prefix: `algorithms.models.knn.sknn.ContextKNN`
+3. Symlink resolves: `session-rec-lib/algorithms/models` → `src/models`
+4. Wrapper is loaded and fixes the bug
+
+**Setup**: Symlink is created automatically by `make install-benchmark`. For manual setup: `./scripts/setup_wrappers.sh`
 
 ### Future Work
 
-#### Non-Personalized Baselines
+#### Non-Personalized Baselines (Future Work)
 - **pop** - Popularity (global item frequency)
 - **random** - Random list (lower bound)
 - **rpop** - Recent Popularity (last n days)
 - **spop** - Session Popularity (frequency in session)
 
-#### Nearest Neighbors
-- **iknn** - Item k-NN (cosine similarity)
-- **sknn** - Session-based k-NN
-- **vsknn** - Vector Multiplication Session-based k-NN
-- **stan** - Sequence and Time-aware Neighborhood
-- **sfsknn** - Session-based Factorized k-NN
-
-#### Matrix Factorization
+#### Matrix Factorization (Future Work)
 - **fism** - Factored Item Similarity Models
 - **fossil** - Factorized Personalized Markov Chains
 
-#### Neural Networks
+#### Neural Networks (Future Work)
 - **gru4rec** - Gated Recurrent Units for Recommendations
 - **narm** - Neural Attentive Recommendation Machine
 - **stamp** - Short-Term Attention Memory Priority
@@ -296,8 +363,17 @@ make test-ar           # Association Rules
 make test-markov       # Markov Chain
 make test-sr           # Sequential Rules
 
+# KNN models
+make test-iknn         # Item-KNN
+make test-sknn         # Session-KNN
+make test-vsknn        # Vector Multiplication Session-KNN
+make test-stan         # STAN
+make test-vstan        # VSTAN
+
 # Run all in parallel
-make test-pattern-mining
+make test-pattern-mining  # All pattern mining
+make test-knn             # All KNN models
+make run-all-baselines    # Everything
 ```
 
 ### Cleanup
@@ -333,7 +409,35 @@ Parquet Schema:
 
 ## Troubleshooting
 
-### Error: `time.clock()` not found
+### Common Issues
+
+#### Error: `fit() takes 2 positional arguments but 3 were given`
+```
+TypeError: fit() takes 2 positional arguments but 3 were given
+```
+**Cause**: IKNN model has incompatible `fit()` signature.  
+**Solution**: Use wrapper. Config should use `models.knn.iknn.ItemKNN` (not `knn.iknn.ItemKNN`).  
+**Verify**: Check `src/configs/knn/iknn.yml` uses `class: models.knn.iknn.ItemKNN`
+
+#### Error: `TypeError: unsupported operand type(s) for |: 'set' and 'NoneType'`
+```
+TypeError: unsupported operand type(s) for |: 'set' and 'NoneType'
+```
+**Cause**: SKNN's `sessions_for_item()` returns `None` for unseen items.  
+**Solution**: Use wrapper. Config should use `models.knn.sknn.ContextKNN`.  
+**Verify**: Check `src/configs/knn/sknn.yml` uses `class: models.knn.sknn.ContextKNN`
+
+#### Error: `ModuleNotFoundError: No module named 'algorithms.models'`
+```
+ModuleNotFoundError: No module named 'algorithms.models'
+```
+**Cause**: Symlink `session-rec-lib/algorithms/models` not created.  
+**Solution**: Run `make install-benchmark` or `./scripts/setup_wrappers.sh`  
+**Verify**: `ls -la session-rec-lib/algorithms/models` should show symlink
+
+### Other Issues
+
+#### Error: `time.clock()` not found
 ```
 AttributeError: module 'time' has no attribute 'clock'
 ```
