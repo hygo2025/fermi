@@ -77,18 +77,16 @@ test-pattern-mining: ## Run all pattern mining models in parallel
 
 ##@ Benchmark - Run All
 
-run-all-baselines: test-pattern-mining ## Run all baseline models
+run-all-baselines: test-pattern-mining ## Run all implemented models
 
-prepare-data: ## Prepare dataset with Spark (14 days)
+##@ Data Preparation
+
+prepare-data: ## Prepare dataset with Spark (30 days)
 	@echo "Preparing dataset with Spark..."
 	@if [ ! -f .env ]; then echo "ERROR: .env file not found. Create it with BASE_PATH variable."; exit 1; fi
 	$(ACTIVATE) && python data/prepare_dataset.py \
 		--start-date 2024-04-01 \
-		--end-date 2024-04-02
-
-convert-data: ## Convert data to session-rec Parquet format
-	@echo "Converting to session-rec format..."
-	$(ACTIVATE) && python data/convert_to_session_rec.py
+		--end-date 2024-04-30
 
 ##@ Cleanup
 
@@ -117,9 +115,8 @@ status: ## Show project status
 	@echo ""
 	@echo "Quick start:"
 	@echo "  1. make install-benchmark  (first time only)"
-	@echo "  2. make prepare-data       (prepare sample dataset)"
-	@echo "  3. make convert-data       (convert to session-rec format)"
-	@echo "  4. make test-pop           (test with POP baseline)"
+	@echo "  2. make prepare-data       (prepare dataset)"
+	@echo "  3. make test-sr            (test with Sequential Rules)"
 	@echo ""
 
-.PHONY: help install install-benchmark update test-pop run-benchmark prepare-data convert-data clean clean-all status
+.PHONY: help install install-benchmark update test-ar test-markov test-sr test-pattern-mining run-all-baselines prepare-data clean clean-all status

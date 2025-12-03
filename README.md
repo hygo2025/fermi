@@ -95,43 +95,65 @@ Setup steps:
 # For quick testing (2 days: 2024-04-01 to 2024-04-02)
 make prepare-data START_DATE=2024-04-01 END_DATE=2024-04-02
 
-# For full benchmark (14 days: 2024-04-01 to 2024-04-14)
-make prepare-data START_DATE=2024-04-01 END_DATE=2024-04-14
+# For full benchmark (30 days with 5 slices: 2024-04-01 to 2024-04-30)
+# Following paper methodology: 5 slices of 6 days (5 train + 1 test)
+make prepare-data START_DATE=2024-04-01 END_DATE=2024-04-30
 
 # Or manually
 python data/prepare_dataset.py \
     --start-date 2024-04-01 \
-    --end-date 2024-04-14 \
+    --end-date 2024-04-30 \
     --output ./session_rec_format/realestate
 ```
 
 What is done:
-- Loads ~30M events from BASE_PATH using PySpark
+- Loads events from BASE_PATH using PySpark
 - Creates sessions (30min timeout)
-- Removes short sessions (<2 events)
-- Temporal split: last 2 days = test, rest = train
+- Removes short sessions (<2 events) and rare items (<5 occurrences)
+- Temporal split: configured in YAML
 - Saves in Parquet (fast!) in session-rec format
 
 Expected output:
 ```
 session_rec_format/realestate/
-  ├── realestate_train_full.parquet  (~27M events)
-  └── realestate_test.parquet        (~3.6M events)
+  ├── realestate_train_full.parquet
+  └── realestate_test.parquet
+```
+
+### Evaluation Methodology (Following Paper)
+
+Following Domingues et al. (2025), we use a **slicing protocol** for robust evaluation:
+
+**30-day dataset split into 5 slices:**
+- Each slice: 6 consecutive days
+  - Train: 5 days
+  - Test: 1 day
+- Results averaged across all 5 slices
+
+This approach:
+- Tests model robustness across different time periods
+- Maintains chronological order of interactions
+- Provides statistical variance in results
+
+**Example for 2024-04-01 to 2024-04-30:**
+```
+Slice 1: Train 2024-04-01 to 2024-04-05 → Test 2024-04-06
+Slice 2: Train 2024-04-07 to 2024-04-11 → Test 2024-04-12
+Slice 3: Train 2024-04-13 to 2024-04-17 → Test 2024-04-18
+Slice 4: Train 2024-04-19 to 2024-04-23 → Test 2024-04-24
+Slice 5: Train 2024-04-25 to 2024-04-29 → Test 2024-04-30
+```
+
+Configured in YAML as:
+```yaml
+type: slices
+data:
+  slices: 5
+  num_days_train: 5
+  num_days_test: 1
 ```
 
 ### 3. Run Benchmark
-
-Non-Personalized Models (from paper):
-```bash
-# Run individually
-make test-pop     # Popularity (POP)
-make test-random  # Random (lower bound)
-make test-rpop    # Recent Popularity
-make test-spop    # Session Popularity
-
-# Run all non-personalized
-make test-non-personalized
-```
 
 Pattern Mining Models (from paper):
 ```bash
@@ -140,19 +162,22 @@ make test-ar      # Association Rules (AR)
 make test-markov  # Markov Chain
 make test-sr      # Sequential Rules (SR)
 
-# Run all pattern mining
+# Run all pattern mining in parallel (with logs)
 make test-pattern-mining
+# Logs written to: logs/ar.log, logs/markov.log, logs/sr.log
+# Monitor with: tail -f logs/sr.log
 ```
 
-Run all baselines:
+Run all implemented models:
 ```bash
 make run-all-baselines
 ```
 
-Expected time:
+Expected time (per slice):
 - Data loading: ~2s (optimized Parquet)
-- Fit POP: ~0.3s
-- Evaluation: ~3h (3.6M events, event-by-event)
+- Fit SR: ~10s
+- Evaluation: varies by model
+- Total: 5 slices × (fit + eval) time
 
 ## Data
 
@@ -191,29 +216,33 @@ We use **session-rec**, the same framework used in the original paper:
 
 ## Models (following Domingues et al. 2025)
 
-### Non-Personalized Baselines
+### Implemented Models
+
+#### Pattern Mining
+- **ar** - Association Rules (co-occurrence)
+- **markov** - First-order Markov Chain
+- **sr** - Sequential Rules (with decay function)
+
+### Future Work
+
+#### Non-Personalized Baselines
 - **pop** - Popularity (global item frequency)
 - **random** - Random list (lower bound)
 - **rpop** - Recent Popularity (last n days)
 - **spop** - Session Popularity (frequency in session)
 
-### Pattern Mining
-- **ar** - Association Rules (co-occurrence)
-- **markov** - First-order Markov Chain
-- **sr** - Sequential Rules (with decay function)
-
-### Nearest Neighbors (Future Work)
+#### Nearest Neighbors
 - **iknn** - Item k-NN (cosine similarity)
 - **sknn** - Session-based k-NN
 - **vsknn** - Vector Multiplication Session-based k-NN
 - **stan** - Sequence and Time-aware Neighborhood
 - **sfsknn** - Session-based Factorized k-NN
 
-### Matrix Factorization (Future Work)
+#### Matrix Factorization
 - **fism** - Factored Item Similarity Models
 - **fossil** - Factorized Personalized Markov Chains
 
-### Neural Networks (Future Work)
+#### Neural Networks
 - **gru4rec** - Gated Recurrent Units for Recommendations
 - **narm** - Neural Attentive Recommendation Machine
 - **stamp** - Short-Term Attention Memory Priority
@@ -262,15 +291,13 @@ make convert-data      # Convert to session-rec format
 
 ### Run Benchmarks
 ```bash
-# Individual non-personalized models
-make test-pop          # Popularity
-make test-recent       # Most recent items
-make test-random       # Random baseline
-make test-rpop         # Recent popularity
-make test-spop         # Session popularity
+# Pattern mining models
+make test-ar           # Association Rules
+make test-markov       # Markov Chain
+make test-sr           # Sequential Rules
 
-# Run all non-personalized at once
-make test-non-personalized
+# Run all in parallel
+make test-pattern-mining
 ```
 
 ### Cleanup
