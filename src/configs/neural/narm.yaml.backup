@@ -1,9 +1,9 @@
-# SASRec Configuration
-# Self-Attentive Sequential Recommendation (adapted for sessions)
-# Paper: Kang & McAuley (2018) - Self-Attentive Sequential Recommendation
+# NARM Configuration
+# Neural Attentive Recommendation Machine
+# Paper: Li et al. (2017) - Neural Attentive Session-based Recommendation
 
 # Model
-model: SASRec
+model: NARM
 
 # Dataset (will be overridden by runner for each slice)
 dataset: realestate_slice1
@@ -11,20 +11,16 @@ data_path: recbole_data/
 
 # Training
 epochs: 10
-train_batch_size: 4096
-eval_batch_size: 4096
+train_batch_size: 512
+eval_batch_size: 512
 learning_rate: 0.001
 train_neg_sample_args: ~
 
 # Model Parameters
-n_layers: 2
-n_heads: 2
-hidden_size: 256
-inner_size: 512
-hidden_dropout_prob: 0.5
-attn_dropout_prob: 0.5
-hidden_act: 'gelu'
-layer_norm_eps: 1e-12
+embedding_size: 100
+hidden_size: 100
+n_layers: 1
+dropout_probs: [0.25, 0.5]
 loss_type: 'CE'
 
 # Evaluation

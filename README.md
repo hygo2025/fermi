@@ -49,6 +49,8 @@ make prepare-data
 # 3. Converter para formato RecBole
 #    Entrada: data/sliding_window/
 #    Saída: recbole_data/realestate_slice{1..5}/*.inter
+#    IMPORTANTE: Os arquivos são criados com naming correto automaticamente
+#    Não é necessário criar links simbólicos manualmente
 make convert-recbole
 
 # 4. Executar todos os modelos em todos os slices
@@ -66,6 +68,8 @@ make aggregate-results
 - Python 3.9+
 - 16GB+ RAM (para PySpark)
 - GPU recomendada (para modelos neurais)
+
+**Nota sobre RecBole Naming:** O conversor (`src/preprocessing/recbole_converter.py`) cria automaticamente os arquivos com os nomes corretos (`realestate_slice{N}.*.inter`). O processo é totalmente reproduzível sem necessidade de etapas manuais.
 
 ## Estrutura
 

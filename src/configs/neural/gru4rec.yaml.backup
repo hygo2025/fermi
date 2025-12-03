@@ -1,9 +1,9 @@
-# SASRec Configuration
-# Self-Attentive Sequential Recommendation (adapted for sessions)
-# Paper: Kang & McAuley (2018) - Self-Attentive Sequential Recommendation
+# GRU4Rec Configuration
+# Session-based recommendation with Gated Recurrent Units
+# Paper: Hidasi et al. (2016) - Session-based Recommendations with Recurrent Neural Networks
 
 # Model
-model: SASRec
+model: GRU4Rec
 
 # Dataset (will be overridden by runner for each slice)
 dataset: realestate_slice1
@@ -11,20 +11,16 @@ data_path: recbole_data/
 
 # Training
 epochs: 10
-train_batch_size: 4096
-eval_batch_size: 4096
+train_batch_size: 512
+eval_batch_size: 512
 learning_rate: 0.001
 train_neg_sample_args: ~
 
 # Model Parameters
-n_layers: 2
-n_heads: 2
-hidden_size: 256
-inner_size: 512
-hidden_dropout_prob: 0.5
-attn_dropout_prob: 0.5
-hidden_act: 'gelu'
-layer_norm_eps: 1e-12
+embedding_size: 100
+hidden_size: 100
+num_layers: 1
+dropout_prob: 0.3
 loss_type: 'CE'
 
 # Evaluation
@@ -43,8 +39,8 @@ load_col:
 
 # Evaluation Protocol
 eval_args:
-  split: {'LS': 'test_only'}
-  order: 'TO'
+  split: {'LS': 'test_only'}  # Use pre-split train/test files
+  order: 'TO'  # Temporal order
   mode: 'full'
 
 # Device
