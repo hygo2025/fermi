@@ -1,9 +1,3 @@
-#!/usr/bin/env python3
-"""
-Prepare dataset from raw Parquet files for session-rec benchmark using PySpark.
-Reads partitioned Parquet data and generates train/test splits in optimized format.
-"""
-
 import argparse
 import os
 import sys
@@ -12,6 +6,7 @@ from pathlib import Path
 
 from pyspark.sql import functions as F
 from pyspark.sql.types import LongType
+
 
 # Add project root to path
 project_root = Path(__file__).parent.parent

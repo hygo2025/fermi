@@ -320,3 +320,7 @@ artigo/*
 # Benchmark logs
 logs/
 logs/*
+
+recbole_data
+recbole_data/
+recbole_data/*

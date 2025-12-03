@@ -1,0 +1,29 @@
+# Pop Configuration for RecBole
+# Popularity-based baseline
+
+# Model
+model: Pop
+
+# Dataset
+dataset: realestate
+data_path: recbole_data/
+
+# Evaluation
+metrics: ['Recall', 'MRR', 'NDCG', 'Hit']
+topk: [5, 10, 20]
+valid_metric: Recall@10
+
+# Session Settings
+MAX_ITEM_LIST_LENGTH: 50
+SESSION_ID_FIELD: session_id
+ITEM_ID_FIELD: item_id
+TIME_FIELD: timestamp
+
+# Device
+device: cpu
+
+# Reproducibility
+seed: 2024
+
+# Logging
+log_wandb: false

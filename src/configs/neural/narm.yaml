@@ -1,0 +1,42 @@
+# NARM Configuration for RecBole
+# Neural Attentive Recommendation Machine
+
+# Model
+model: NARM
+
+# Dataset
+dataset: realestate
+data_path: recbole_data/
+
+# Training
+epochs: 20
+train_batch_size: 512
+eval_batch_size: 512
+learning_rate: 0.001
+
+# Model Parameters
+embedding_size: 100
+hidden_size: 100
+n_layers: 1
+dropout_probs: [0.25, 0.5]
+
+# Evaluation
+metrics: ['Recall', 'MRR', 'NDCG', 'Hit']
+topk: [5, 10, 20]
+valid_metric: Recall@10
+
+# Session Settings
+MAX_ITEM_LIST_LENGTH: 50
+SESSION_ID_FIELD: session_id
+ITEM_ID_FIELD: item_id
+TIME_FIELD: timestamp
+
+# Device
+device: cuda
+gpu_id: 0
+
+# Reproducibility
+seed: 2024
+
+# Logging
+log_wandb: false
