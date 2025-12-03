@@ -316,3 +316,7 @@ session_rec_format/*
 artigo
 artigo/
 artigo/*
+
+# Benchmark logs
+logs/
+logs/*

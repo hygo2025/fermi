@@ -26,7 +26,6 @@ fermi/
 ├── src/
 │   ├── run_session_rec.py           # Main benchmark runner
 │   └── configs/
-│       ├── non_personalized/        # Random, POP, RPOP, SPOP
 │       └── pattern_mining/          # AR, Markov, SR
 │
 ├── data/

@@ -51,26 +51,6 @@ install-benchmark: install ## Install benchmark (dependencies + session-rec subm
 update: ## Update Python dependencies
 	$(ACTIVATE) && pip install --upgrade -r $(REQUIREMENTS_FILE)
 
-##@ Benchmark - Non-Personalized Models
-
-test-pop: ## Run POP (Popularity) baseline
-	@echo "Running POP baseline..."
-	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/non_personalized/pop.yml
-
-test-random: ## Run RANDOM baseline  
-	@echo "Running RANDOM baseline..."
-	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/non_personalized/random.yml
-
-test-rpop: ## Run RPOP (Recent Popularity) baseline
-	@echo "Running RPOP baseline..."
-	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/non_personalized/rpop.yml
-
-test-spop: ## Run SPOP (Session Popularity) baseline
-	@echo "Running SPOP baseline..."
-	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/non_personalized/spop.yml
-
-test-non-personalized: test-pop test-random test-rpop test-spop ## Run all non-personalized models
-
 ##@ Benchmark - Pattern Mining Models
 
 test-ar: ## Run AR (Association Rules)
@@ -85,11 +65,19 @@ test-sr: ## Run SR (Sequential Rules)
 	@echo "Running SR (Sequential Rules)..."
 	$(ACTIVATE) && python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/pattern_mining/sr.yml
 
-test-pattern-mining: test-ar test-markov test-sr ## Run all pattern mining models
+test-pattern-mining: ## Run all pattern mining models in parallel
+	@echo "Running all pattern mining models in parallel..."
+	@mkdir -p logs
+	@$(ACTIVATE) && \
+	python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/pattern_mining/ar.yml > logs/ar.log 2>&1 & \
+	python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/pattern_mining/markov.yml > logs/markov.log 2>&1 & \
+	python $(SRC_DIR)/run_session_rec.py --config $(SRC_DIR)/configs/pattern_mining/sr.yml > logs/sr.log 2>&1 & \
+	wait
+	@echo "✓ All pattern mining models complete. Check logs/ directory for outputs."
 
 ##@ Benchmark - Run All
 
-run-all-baselines: test-non-personalized test-pattern-mining ## Run all baseline models
+run-all-baselines: test-pattern-mining ## Run all baseline models
 
 prepare-data: ## Prepare dataset with Spark (14 days)
 	@echo "Preparing dataset with Spark..."
