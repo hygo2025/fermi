@@ -1,39 +1,52 @@
 # Fermi - Session-Based Recommendation Benchmark
 
-Replicação da metodologia de session-based recommendation do paper Domingues et al. (2024) aplicada ao domínio imobiliário.
+Benchmark de recomendação baseada em sessões para dados de real estate, replicando a metodologia de Domingues et al. (2024).
 
-**Referência:**  
-Domingues, M. A., de Moura, E. S., Marinho, L. B., & da Silva, A. (2024).  
-A large scale benchmark for session-based recommendations in the legal domain.  
-Artificial Intelligence and Law, 33, 43-78. DOI: 10.1007/s10506-023-09378-3
+## Documentação
 
-## Metodologia - Sliding Window Protocol
+- [Configuração de Experimentos](docs/experiments.md) - Modelos, dados e métricas
+- [Guia de Execução](docs/execution.md) - Como reproduzir os experimentos
+- [Otimização GPU](docs/gpu-optimization.md) - Configurações para RTX 4090
+- [Sistema de Cooling GPU](docs/gpu-cooling.md) - Proteção térmica automática
 
-Protocolo de sliding window temporal seguindo Domingues et al. (2024):
+## Visão Geral
 
-**Configuração:**
-- Período: 30 dias (2024-03-01 a 2024-03-30)
-- Slices: 5 splits temporais
-- Cada slice: 5 dias treino + 1 dia teste
+Pipeline completo para benchmarking de modelos de recomendação baseados em sessão:
 
-**Filtragem:**
-- Sessões: 2-50 interações
-- Itens: mínimo 5 ocorrências
-- Eventos: apenas interações reais (ListingRendered, GalleryClicked, etc)
+1. Preparação de dados com sliding window temporal (5 slices de 30 dias)
+2. Conversão para formato RecBole
+3. Treinamento de 4 modelos neurais em cada slice
+4. Avaliação com métricas padrão (Recall, MRR, NDCG, Hit)
+5. Agregação de resultados (média ± desvio padrão)
 
-**Estatísticas:**
+Total: 20 experimentos (4 modelos × 5 slices)
 
-| Slice | Train Period | Test Period | Train Events | Test Events | Train Sessions | Test Sessions |
-|-------|-------------|-------------|--------------|-------------|----------------|---------------|
-| 1     | Mar 01-05   | Mar 06      | 763,159      | 153,674     | 43,232         | 8,763         |
-| 2     | Mar 07-11   | Mar 12      | 691,302      | 164,295     | 39,251         | 9,379         |
-| 3     | Mar 13-17   | Mar 18      | 748,690      | 199,885     | 42,241         | 11,358        |
-| 4     | Mar 19-23   | Mar 24      | 806,480      | 136,408     | 45,721         | 7,585         |
-| 5     | Mar 25-29   | Mar 30      | 737,564      | 106,016     | 41,747         | 5,948         |
+## Modelos Implementados
 
-**Totais:** 4.5M eventos, 256K sessões, 45K itens, 180K usuários
+- **GRU4Rec:** RNN para recomendação sessional (Hidasi et al., 2016)
+- **NARM:** RNN com mecanismo de atenção (Li et al., 2017)
+- **STAMP:** Short-Term Attention/Memory Priority (Liu et al., 2018)
+- **SASRec:** Self-Attentive Sequential Recommendation (Kang & McAuley, 2018)
 
-## Replicando o Experimento
+## Quick Start
+
+```bash
+# 1. Preparar dados (sliding window)
+make prepare-data
+
+# 2. Converter para RecBole
+make convert-recbole
+
+# 3. Executar todos os experimentos
+make run-all
+
+# 4. Agregar resultados
+make aggregate-results
+```
+
+Tempo estimado: 1-2 horas (GPU RTX 4090 com batch_size=4096)
+
+## Replicação do Experimento
 
 Execute os comandos na ordem abaixo para replicar o experimento completo:
 
@@ -49,12 +62,10 @@ make prepare-data
 # 3. Converter para formato RecBole
 #    Entrada: data/sliding_window/
 #    Saída: recbole_data/realestate_slice{1..5}/*.inter
-#    IMPORTANTE: Os arquivos são criados com naming correto automaticamente
-#    Não é necessário criar links simbólicos manualmente
 make convert-recbole
 
 # 4. Executar todos os modelos em todos os slices
-#    Saída: results/slice_{1..5}/*.csv
+#    Saída: results/raw_results.csv
 make run-all
 
 # 5. Gerar tabelas de resultados agregados
@@ -62,67 +73,10 @@ make run-all
 make aggregate-results
 ```
 
-**Tempo estimado:** ~6-8 horas (dependendo do hardware)
-
-**Requisitos:**
+Requisitos:
 - Python 3.9+
 - 16GB+ RAM (para PySpark)
 - GPU recomendada (para modelos neurais)
-
-**Nota sobre RecBole Naming:** O conversor (`src/preprocessing/recbole_converter.py`) cria automaticamente os arquivos com os nomes corretos (`realestate_slice{N}.*.inter`). O processo é totalmente reproduzível sem necessidade de etapas manuais.
-
-## Estrutura
-
-```
-fermi/
-├── src/
-│   ├── preprocessing/
-│   │   ├── sliding_window_pipeline.py    # PySpark pipeline
-│   │   └── recbole_converter.py          # Converter para RecBole
-│   ├── configs/                          # Configs de modelos
-│   └── run_experiments.py                # Runner
-├── data/
-│   └── sliding_window/                   # Dados processados (parquet)
-├── recbole_data/                         # Formato RecBole
-├── results/                              # Resultados
-└── artigo/                               # Paper e metodologia
-```
-
-## Modelos
-
-**Redes Neurais (RecBole):**
-- GRU4Rec (Hidasi et al. 2016)
-- NARM (Li et al. 2017)
-- STAMP (Liu et al. 2018)
-- SRGNN (Wu et al. 2019)
-
-**KNN e Baselines:**
-- ItemKNN
-- SKNN  
-- Pop
-
-## Métricas
-
-**Next Item Prediction:**
-- HitRate@K, MRR@K, Coverage@K, Popularity@K
-
-**Rest of Session:**
-- Precision@K, Recall@K, NDCG@K, MAP@K
-
-K ∈ {5, 10, 20}
-
-## Status do Pipeline
-
-```
-[✓] Sliding Window Data Preparation (PySpark)
-    └─> data/sliding_window/slice_{1..5}/
-    
-[✓] RecBole Format Conversion (Pandas)  
-    └─> recbole_data/realestate_slice{1..5}/*.inter
-    
-[⏳] Experimentos (em desenvolvimento)
-    └─> results/
-```
 
 ## Comandos do Makefile
 
@@ -147,3 +101,73 @@ make aggregate-results  # Agregar resultados (média ± std)
 make clean              # Limpar cache
 make help               # Ver todos comandos
 ```
+
+## Estrutura
+
+```
+fermi/
+├── data/
+│   ├── sliding_window/          # Dados preparados (Parquet)
+│   └── recbole_data/            # README sobre formato
+├── recbole_data/                # Dados convertidos (.inter)
+├── src/
+│   ├── preprocessing/           # Pipeline de dados
+│   │   ├── sliding_window_pipeline.py
+│   │   └── recbole_converter.py
+│   ├── configs/                 # Configurações dos modelos
+│   │   └── neural/*.yaml
+│   ├── utils/                   # Utilidades
+│   │   ├── spark_config.py
+│   │   └── gpu_cooling.py
+│   ├── run_experiments.py       # Runner principal
+│   ├── aggregate_results.py     # Agregação de resultados
+│   └── metrics.py               # Métricas customizadas
+├── scripts/                     # Scripts auxiliares
+│   ├── run_parallel.sh          # Execução paralela
+│   └── monitor_gpu.sh           # Monitor de GPU
+├── docs/                        # Documentação
+│   ├── experiments.md
+│   ├── execution.md
+│   ├── gpu-optimization.md
+│   └── gpu-cooling.md
+└── results/                     # Resultados dos experimentos
+    ├── raw_results.csv
+    ├── aggregated_results.csv
+    └── logs/
+```
+
+## Metodologia
+
+Seguindo Domingues et al. (2024):
+
+- Sliding window temporal: 5 slices de 30 dias
+- Protocolo de avaliação: next-item prediction
+- Split temporal: últimos 7 dias de cada janela para teste
+- Métricas: Recall@K, MRR@K, NDCG@K, Hit@K (K=5,10,20)
+- Agregação: média ± desvio padrão entre slices
+
+## Configurações GPU
+
+Os modelos estão configurados para maximizar o uso da GPU RTX 4090:
+
+- Batch size: 4096 (8x maior que padrão)
+- Hidden size: 256 (2.5x maior que padrão)
+- Embedding size: 256 (2.5x maior que padrão)
+
+Sistema de cooling automático ativo por padrão:
+- Pausas a cada 5 epochs
+- Duração: 60 segundos
+- Temperatura máxima: 80°C
+
+Ver [docs/gpu-optimization.md](docs/gpu-optimization.md) e [docs/gpu-cooling.md](docs/gpu-cooling.md) para detalhes.
+
+## Referência
+
+Domingues, M. A., de Moura, E. S., Marinho, L. B., & da Silva, A. (2024).  
+A large scale benchmark for session-based recommendations in the legal domain.  
+Artificial Intelligence and Law, 33, 43-78.  
+DOI: 10.1007/s10506-023-09378-3
+
+## Licença
+
+MIT License
