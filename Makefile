@@ -1,56 +1,71 @@
+.PHONY: help install clean prepare-data convert-recbole run-all aggregate-results run-gru4rec run-narm run-stamp run-sasrec
+
 help:
-	@echo "════════════════════════════════════════════════════════════"
-	@echo "Fermi - RecBole Benchmark"
-	@echo "════════════════════════════════════════════════════════════"
-	@echo "Data Setup:"
-	@echo "  make prepare-data       # Convert session_rec_format to RecBole"
+	@echo "Fermi - Session-Based Recommendation Benchmark"
 	@echo ""
-	@echo "Neural Models:"
-	@echo "  make test-gru4rec    make test-narm"
-	@echo "  make test-stamp      make test-srgnn"
+	@echo "Pipeline de Dados:"
+	@echo "  make prepare-data      - Criar sliding window splits (PySpark)"
+	@echo "  make convert-recbole   - Converter para formato RecBole"
 	@echo ""
-	@echo "KNN Models:"
-	@echo "  make test-itemknn    make test-sknn"
+	@echo "Experimentos:"
+	@echo "  make run-all           - Executar todos modelos em todos slices"
+	@echo "  make run-gru4rec       - Executar apenas GRU4Rec em todos slices"
+	@echo "  make run-narm          - Executar apenas NARM em todos slices"
+	@echo "  make run-stamp         - Executar apenas STAMP em todos slices"
+	@echo "  make run-sasrec        - Executar apenas SASRec em todos slices"
+	@echo "  make aggregate-results - Agregar resultados (média ± std)"
 	@echo ""
-	@echo "Baselines:"
-	@echo "  make test-pop"
-	@echo ""
-	@echo "Run All:"
-	@echo "  make run-all"
+	@echo "Utilidades:"
+	@echo "  make install           - Instalar dependências"
+	@echo "  make clean             - Limpar cache e temp files"
 
-# Convert existing session_rec_format data to RecBole format
+install:
+	pip install -r requirements.txt
+
+# Pipeline de dados
 prepare-data:
-	@echo "Converting session_rec_format to RecBole format..."
-	. .venv/bin/activate && python src/data/convert_to_recbole.py
-	@echo "✅ Data preparation complete!"
+	@echo "Criando sliding window splits..."
+	python src/preprocessing/sliding_window_pipeline.py \
+		--input /home/hygo2025/Documents/data/processed_data/enriched_events \
+		--output data/sliding_window \
+		--start-date 2024-03-01 \
+		--n-days 30
 
-test-gru4rec:
-	@mkdir -p logs/neural
-	. .venv/bin/activate && python src/run_recbole.py -c src/configs/neural/gru4rec.yaml
+convert-recbole:
+	@echo "Convertendo para formato RecBole..."
+	python src/preprocessing/recbole_converter.py \
+		--input data/sliding_window \
+		--output recbole_data
 
-test-narm:
-	@mkdir -p logs/neural
-	. .venv/bin/activate && python src/run_recbole.py -c src/configs/neural/narm.yaml
+# Experimentos
+run-all:
+	@echo "Executando todos experimentos..."
+	python src/run_experiments.py --all-slices
 
-test-stamp:
-	@mkdir -p logs/neural
-	. .venv/bin/activate && python src/run_recbole.py -c src/configs/neural/stamp.yaml
+run-gru4rec:
+	@echo "Executando GRU4Rec em todos os slices..."
+	python src/run_experiments.py --models GRU4Rec --all-slices
 
-test-srgnn:
-	@mkdir -p logs/neural
-	. .venv/bin/activate && python src/run_recbole.py -c src/configs/neural/srgnn.yaml
+run-narm:
+	@echo "Executando NARM em todos os slices..."
+	python src/run_experiments.py --models NARM --all-slices
 
-test-itemknn:
-	@mkdir -p logs/knn
-	. .venv/bin/activate && python src/run_recbole.py -c src/configs/knn/itemknn.yaml
+run-stamp:
+	@echo "Executando STAMP em todos os slices..."
+	python src/run_experiments.py --models STAMP --all-slices
 
-test-sknn:
-	@mkdir -p logs/knn
-	. .venv/bin/activate && python src/run_recbole.py -c src/configs/knn/sknn.yaml
+run-sasrec:
+	@echo "Executando SASRec em todos os slices..."
+	python src/run_experiments.py --models SASRec --all-slices
 
-test-pop:
-	@mkdir -p logs/baselines
-	. .venv/bin/activate && python src/run_recbole.py -c src/configs/baselines/pop.yaml
+aggregate-results:
+	@echo "Agregando resultados..."
+	python src/aggregate_results.py \
+		--input results \
+		--output results/aggregated_results.csv
 
-run-all: test-gru4rec test-narm test-stamp test-srgnn test-itemknn test-sknn test-pop
-	@echo "All 7 models complete!"
+clean:
+	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	find . -type f -name "*.pyc" -delete 2>/dev/null || true
+	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
+	rm -rf logs/*.log 2>/dev/null || true

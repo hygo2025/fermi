@@ -324,3 +324,11 @@ logs/*
 recbole_data
 recbole_data/
 recbole_data/*
+
+data/sliding_window
+data/sliding_window/
+data/sliding_window/*
+
+log_tensorboard
+log_tensorboard/
+log_tensorboard*
