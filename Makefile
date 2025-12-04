@@ -1,23 +1,32 @@
-.PHONY: help install clean prepare-data convert-recbole run-all aggregate-results run-gru4rec run-narm run-stamp run-sasrec
+.PHONY: help install clean prepare-data convert-recbole run-all run-all-parallel aggregate-results run-gru4rec run-narm run-stamp run-sasrec run-gru4rec-parallel run-narm-parallel run-stamp-parallel run-sasrec-parallel
 
 help:
 	@echo "Fermi - Session-Based Recommendation Benchmark"
 	@echo ""
 	@echo "Pipeline de Dados:"
-	@echo "  make prepare-data      - Criar sliding window splits (PySpark)"
-	@echo "  make convert-recbole   - Converter para formato RecBole"
+	@echo "  make prepare-data         - Criar sliding window splits (PySpark)"
+	@echo "  make convert-recbole      - Converter para formato RecBole"
 	@echo ""
-	@echo "Experimentos:"
-	@echo "  make run-all           - Executar todos modelos em todos slices"
-	@echo "  make run-gru4rec       - Executar apenas GRU4Rec em todos slices"
-	@echo "  make run-narm          - Executar apenas NARM em todos slices"
-	@echo "  make run-stamp         - Executar apenas STAMP em todos slices"
-	@echo "  make run-sasrec        - Executar apenas SASRec em todos slices"
-	@echo "  make aggregate-results - Agregar resultados (média ± std)"
+	@echo "Experimentos (Sequencial):"
+	@echo "  make run-all              - Executar todos modelos em todos slices (1 por vez)"
+	@echo "  make run-gru4rec          - Executar apenas GRU4Rec em todos slices"
+	@echo "  make run-narm             - Executar apenas NARM em todos slices"
+	@echo "  make run-stamp            - Executar apenas STAMP em todos slices"
+	@echo "  make run-sasrec           - Executar apenas SASRec em todos slices"
+	@echo ""
+	@echo "Experimentos (Paralelo - 3 slices simultâneos):"
+	@echo "  make run-all-parallel     - Executar todos modelos com 3 slices paralelos"
+	@echo "  make run-gru4rec-parallel - Executar GRU4Rec com slices 1,2,3 em paralelo"
+	@echo "  make run-narm-parallel    - Executar NARM com slices 1,2,3 em paralelo"
+	@echo "  make run-stamp-parallel   - Executar STAMP com slices 1,2,3 em paralelo"
+	@echo "  make run-sasrec-parallel  - Executar SASRec com slices 1,2,3 em paralelo"
+	@echo ""
+	@echo "Resultados:"
+	@echo "  make aggregate-results    - Agregar resultados (média ± std)"
 	@echo ""
 	@echo "Utilidades:"
-	@echo "  make install           - Instalar dependências"
-	@echo "  make clean             - Limpar cache e temp files"
+	@echo "  make install              - Instalar dependências"
+	@echo "  make clean                - Limpar cache e temp files"
 
 install:
 	pip install -r requirements.txt
@@ -37,26 +46,56 @@ convert-recbole:
 		--input data/sliding_window \
 		--output recbole_data
 
-# Experimentos
+# Experimentos - Sequencial
 run-all:
-	@echo "Executando todos experimentos..."
+	@echo "Executando todos experimentos (sequencial)..."
 	python src/run_experiments.py --all-slices
 
 run-gru4rec:
-	@echo "Executando GRU4Rec em todos os slices..."
+	@echo "Executando GRU4Rec em todos os slices (sequencial)..."
 	python src/run_experiments.py --models GRU4Rec --all-slices
 
 run-narm:
-	@echo "Executando NARM em todos os slices..."
+	@echo "Executando NARM em todos os slices (sequencial)..."
 	python src/run_experiments.py --models NARM --all-slices
 
 run-stamp:
-	@echo "Executando STAMP em todos os slices..."
+	@echo "Executando STAMP em todos os slices (sequencial)..."
 	python src/run_experiments.py --models STAMP --all-slices
 
 run-sasrec:
-	@echo "Executando SASRec em todos os slices..."
+	@echo "Executando SASRec em todos os slices (sequencial)..."
 	python src/run_experiments.py --models SASRec --all-slices
+
+# Experimentos - Paralelo (3 slices simultâneos)
+run-all-parallel:
+	@echo "Executando todos modelos com paralelização (3 slices por vez)..."
+	@chmod +x scripts/run_all_parallel.sh
+	@./scripts/run_all_parallel.sh
+
+run-gru4rec-parallel:
+	@echo "Executando GRU4Rec com 3 slices em paralelo..."
+	@chmod +x scripts/run_parallel.sh
+	@./scripts/run_parallel.sh GRU4Rec "1 2 3"
+	@echo "Slices 1,2,3 iniciados. Aguarde a conclusão com 'wait' ou monitore com 'nvidia-smi'"
+
+run-narm-parallel:
+	@echo "Executando NARM com 3 slices em paralelo..."
+	@chmod +x scripts/run_parallel.sh
+	@./scripts/run_parallel.sh NARM "1 2 3"
+	@echo "Slices 1,2,3 iniciados. Aguarde a conclusão com 'wait' ou monitore com 'nvidia-smi'"
+
+run-stamp-parallel:
+	@echo "Executando STAMP com 3 slices em paralelo..."
+	@chmod +x scripts/run_parallel.sh
+	@./scripts/run_parallel.sh STAMP "1 2 3"
+	@echo "Slices 1,2,3 iniciados. Aguarde a conclusão com 'wait' ou monitore com 'nvidia-smi'"
+
+run-sasrec-parallel:
+	@echo "Executando SASRec com 3 slices em paralelo..."
+	@chmod +x scripts/run_parallel.sh
+	@./scripts/run_parallel.sh SASRec "1 2 3"
+	@echo "Slices 1,2,3 iniciados. Aguarde a conclusão com 'wait' ou monitore com 'nvidia-smi'"
 
 aggregate-results:
 	@echo "Agregando resultados..."

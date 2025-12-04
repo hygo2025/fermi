@@ -10,7 +10,7 @@ dataset: realestate_slice1
 data_path: recbole_data/
 
 # Training
-epochs: 10
+epochs: 5
 train_batch_size: 4096
 eval_batch_size: 4096
 learning_rate: 0.001
@@ -53,6 +53,11 @@ gpu_id: 0
 
 # Reproducibility
 seed: 42
+
+# Checkpointing (save only best model)
+save_dataset: false
+save_dataloaders: false
+checkpoint_dir: saved
 
 # Logging
 log_wandb: false

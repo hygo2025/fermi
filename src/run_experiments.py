@@ -14,6 +14,14 @@ import pandas as pd
 import numpy as np
 import yaml
 from typing import Dict, List
+import torch
+
+# Monkey-patch torch.load para PyTorch 2.6+ compatibilidade
+_original_torch_load = torch.load
+def _patched_torch_load(*args, **kwargs):
+    kwargs.setdefault('weights_only', False)
+    return _original_torch_load(*args, **kwargs)
+torch.load = _patched_torch_load
 
 from recbole.config import Config
 from recbole.data import create_dataset, data_preparation
@@ -301,10 +309,10 @@ def main():
                        help='Enable GPU cooling breaks (default: True)')
     parser.add_argument('--no-gpu-cooling', dest='enable_gpu_cooling', action='store_false',
                        help='Disable GPU cooling breaks')
-    parser.add_argument('--cool-every', type=int, default=5,
-                       help='Cool down every N epochs (default: 5)')
-    parser.add_argument('--cool-duration', type=int, default=60,
-                       help='Cooling duration in seconds (default: 60)')
+    parser.add_argument('--cool-every', type=int, default=10,
+                       help='Cool down every N epochs (default: 10)')
+    parser.add_argument('--cool-duration', type=int, default=30,
+                       help='Cooling duration in seconds (default: 30)')
     parser.add_argument('--max-temp', type=int, default=80,
                        help='Max GPU temperature before forced cooling (default: 80°C)')
     
