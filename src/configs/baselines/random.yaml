@@ -1,6 +1,3 @@
-# Random Baseline Configuration
-# Recommends items uniformly at random
-
 model: Random
 dataset: realestate_slice1
 data_path: recbole_data/

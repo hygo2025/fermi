@@ -1,0 +1,23 @@
+[build-system]
+requires = ["setuptools>=45", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "fermi"
+version = "0.1.0"
+description = "Session-based Recommendation System"
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "pyspark>=3.0.0",
+    "recbole>=1.0.0",
+    "pandas>=1.0.0",
+    "numpy>=1.19.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["src*"]
+
+[tool.setuptools.package-dir]
+"" = "."

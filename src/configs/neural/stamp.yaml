@@ -1,8 +1,3 @@
-# STAMP Configuration
-# Short-Term Attention/Memory Priority Model
-# Paper: Liu et al. (2018) - STAMP: Short-Term Attention/Memory Priority Model for Session-based Recommendation
-
-# Model
 model: STAMP
 
 # Dataset (will be overridden by runner for each slice)

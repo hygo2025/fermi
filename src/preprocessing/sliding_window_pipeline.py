@@ -1,27 +1,11 @@
-#!/usr/bin/env python3
-"""
-Sliding Window Data Preparation Pipeline (PySpark Implementation)
-Follows methodology from Domingues et al. (2024) - JusBrasilRec paper
-
-Creates 5 temporal slices from 30 days of data:
-- Each slice: 5 days training + 1 day testing
-- Preserves chronological order
-- Filters sessions: 2-50 interactions
-- Removes items with <5 occurrences
-"""
-
-import sys
 from pathlib import Path
 from datetime import datetime, timedelta
 import argparse
 
-# Add parent directory to path
-sys.path.append(str(Path(__file__).parent.parent))
-
 from pyspark.sql import DataFrame, Window
 from pyspark.sql import functions as F
 from pyspark.sql.types import StringType, IntegerType, TimestampType
-from utils.spark_session import make_spark
+from src.utils.spark_session import make_spark
 
 
 class SlidingWindowPreparer:

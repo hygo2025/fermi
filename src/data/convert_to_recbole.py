@@ -1,13 +1,3 @@
-"""
-Convert session_rec_format to RecBole format.
-
-Input:  session_rec_format/realestate/realestate_train_full.parquet
-        session_rec_format/realestate/realestate_test.parquet
-        
-Output: recbole_data/realestate/realestate.inter
-        recbole_data/realestate/realestate.item (optional metadata)
-"""
-
 import pandas as pd
 from pathlib import Path
 
@@ -52,7 +42,7 @@ def convert_to_recbole():
     df.to_csv(output_file, sep='\t', index=False)
     
     print("\n" + "="*60)
-    print("✅ Conversion complete!")
+    print("Conversion complete!")
     print("="*60)
     print(f"Sessions: {df['session_id:token'].nunique():,}")
     print(f"Items: {df['item_id:token'].nunique():,}")

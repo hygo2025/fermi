@@ -29,22 +29,22 @@ help:
 	@echo "  make clean                - Limpar cache e temp files"
 
 install:
-	pip install -r requirements.txt
+	pip install -e .
 
 # Pipeline de dados
 prepare-data:
 	@echo "Criando sliding window splits..."
 	python src/preprocessing/sliding_window_pipeline.py \
 		--input /home/hygo2025/Documents/data/processed_data/enriched_events \
-		--output data/sliding_window \
+		--output outputs/data/sliding_window \
 		--start-date 2024-03-01 \
 		--n-days 30
 
 convert-recbole:
 	@echo "Convertendo para formato RecBole..."
 	python src/preprocessing/recbole_converter.py \
-		--input data/sliding_window \
-		--output recbole_data
+		--input outputs/data/sliding_window \
+		--output outputs/data/recbole
 
 # Experimentos - Sequencial
 run-all:
@@ -100,8 +100,8 @@ run-sasrec-parallel:
 aggregate-results:
 	@echo "Agregando resultados..."
 	python src/aggregate_results.py \
-		--input results \
-		--output results/aggregated_results.csv
+		--input outputs/results \
+		--output outputs/results/aggregated_results.csv
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true

@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-"""
-RecBole Data Converter
-
-Converte dados do sliding window (parquet) para formato RecBole (.inter)
-Processa cada slice separadamente para avaliação sliding window
-"""
-
 import pandas as pd
 from pathlib import Path
 import argparse

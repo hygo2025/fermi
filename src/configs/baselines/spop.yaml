@@ -1,6 +1,3 @@
-# SPOP (Session Popularity) Baseline Configuration
-# Recommends most popular items within current session
-
 model: SPOP
 dataset: realestate_slice1
 data_path: recbole_data/

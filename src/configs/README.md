@@ -4,12 +4,12 @@ Arquivos YAML com configuracoes dos modelos de recomendacao baseada em sessao.
 
 ## Modelos Disponiveis
 
-| Modelo | Arquivo | Tipo | Paper |
-|--------|---------|------|-------|
-| GRU4Rec | neural/gru4rec.yaml | RNN | Hidasi et al. (2016) |
-| NARM | neural/narm.yaml | RNN + Attention | Li et al. (2017) |
-| STAMP | neural/stamp.yaml | Attention | Liu et al. (2018) |
-| SASRec | neural/sasrec.yaml | Transformer | Kang & McAuley (2018) |
+| Modelo  | Arquivo              | Tipo            | Paper                 |
+|---------|----------------------|-----------------|-----------------------|
+| GRU4Rec | neural/gru4rec.yaml  | RNN             | Hidasi et al. (2016 ) |
+| NARM    | neural/narm.yaml     | RNN + Attention | Li et al. (2017)      |
+| STAMP   | neural/stamp.yaml    | Attention       | Liu et al. (2018)     |
+| SASRec  | neural/sasrec.yaml   | Transformer     | Kang & McAuley (2018) |
 
 ## Estrutura dos Arquivos YAML
 

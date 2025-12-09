@@ -52,24 +52,24 @@ Execute os comandos na ordem abaixo para replicar o experimento completo:
 
 ```bash
 # 1. Instalar dependências
-pip install -r requirements.txt
+pip install -e .
 
 # 2. Criar sliding window splits (30 dias → 5 slices)
 #    Entrada: /home/hygo2025/Documents/data/processed_data/enriched_events
-#    Saída: data/sliding_window/slice_{1..5}/
+#    Saída: outputs/data/sliding_window/slice_{1..5}/
 make prepare-data
 
 # 3. Converter para formato RecBole
-#    Entrada: data/sliding_window/
-#    Saída: recbole_data/realestate_slice{1..5}/*.inter
+#    Entrada: outputs/data/sliding_window/
+#    Saída: outputs/data/recbole/realestate_slice{1..5}/*.inter
 make convert-recbole
 
 # 4. Executar todos os modelos em todos os slices
-#    Saída: results/raw_results.csv
+#    Saída: outputs/results/raw_results.csv
 make run-all
 
 # 5. Gerar tabelas de resultados agregados
-#    Saída: results/aggregated_results.csv
+#    Saída: outputs/results/aggregated_results.csv
 make aggregate-results
 ```
 
@@ -106,34 +106,41 @@ make help               # Ver todos comandos
 
 ```
 fermi/
-├── data/
-│   ├── sliding_window/          # Dados preparados (Parquet)
-│   └── recbole_data/            # README sobre formato
-├── recbole_data/                # Dados convertidos (.inter)
-├── src/
-│   ├── preprocessing/           # Pipeline de dados
+├── src/                          # Código fonte
+│   ├── models/                   # Modelos baseline
+│   ├── preprocessing/            # Pipeline de dados
 │   │   ├── sliding_window_pipeline.py
 │   │   └── recbole_converter.py
-│   ├── configs/                 # Configurações dos modelos
+│   ├── configs/                  # Configurações dos modelos
 │   │   └── neural/*.yaml
-│   ├── utils/                   # Utilidades
-│   │   ├── spark_config.py
+│   ├── utils/                    # Utilidades
+│   │   ├── spark_session.py
 │   │   └── gpu_cooling.py
-│   ├── run_experiments.py       # Runner principal
-│   ├── aggregate_results.py     # Agregação de resultados
-│   └── metrics.py               # Métricas customizadas
-├── scripts/                     # Scripts auxiliares
-│   ├── run_parallel.sh          # Execução paralela
-│   └── monitor_gpu.sh           # Monitor de GPU
-├── docs/                        # Documentação
+│   ├── run_experiments.py        # Runner principal
+│   ├── aggregate_results.py      # Agregação de resultados
+│   └── metrics.py                # Métricas customizadas
+├── scripts/                      # Scripts auxiliares
+│   ├── run_parallel.sh
+│   └── monitor_gpu.sh
+├── docs/                         # Documentação
 │   ├── experiments.md
 │   ├── execution.md
 │   ├── gpu-optimization.md
-│   └── gpu-cooling.md
-└── results/                     # Resultados dos experimentos
-    ├── raw_results.csv
-    ├── aggregated_results.csv
-    └── logs/
+│   ├── gpu-cooling.md
+│   └── papers/                   # Artigos de referência
+├── outputs/                      # Dados e resultados gerados
+│   ├── data/                     # Dados processados
+│   │   ├── sliding_window/       # Dados preparados (Parquet)
+│   │   └── recbole/              # Dados convertidos (.inter)
+│   ├── results/                  # Resultados dos experimentos
+│   │   ├── raw_results.csv
+│   │   └── aggregated_results.csv
+│   ├── models/                   # Modelos treinados
+│   └── logs/                     # Logs de treinamento
+│       └── tensorboard/
+├── pyproject.toml                # Configuração do pacote
+├── requirements.txt              # Dependências
+└── README.md
 ```
 
 ## Metodologia

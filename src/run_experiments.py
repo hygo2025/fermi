@@ -1,12 +1,13 @@
 import argparse
 import logging
-from pathlib import Path
 from datetime import datetime
-import pandas as pd
-import numpy as np
-import yaml
+from pathlib import Path
 from typing import Dict, List
+
+import numpy as np
+import pandas as pd
 import torch
+import yaml
 
 # Monkey-patch torch.load para PyTorch 2.6+ compatibilidade
 _original_torch_load = torch.load
@@ -19,12 +20,11 @@ from recbole.config import Config
 from recbole.data import create_dataset, data_preparation
 from recbole.model.sequential_recommender import GRU4Rec, NARM, STAMP, SASRec
 from recbole.trainer import Trainer
-from recbole.utils import init_seed, init_logger, get_model
+from recbole.utils import init_seed
 
-from metrics import SessionBasedMetrics
-from utils.gpu_cooling import inject_cooling_callback
-from models.baselines import RandomRecommender, POPRecommender, RPOPRecommender, SPOPRecommender
-
+from src.metrics import SessionBasedMetrics
+from src.utils.gpu_cooling import inject_cooling_callback
+from src.models import RandomRecommender, POPRecommender, RPOPRecommender, SPOPRecommender
 
 class ExperimentRunner:
     """Executa experimentos de recomendação em múltiplos slices"""
