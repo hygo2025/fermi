@@ -1,11 +1,3 @@
-#!/usr/bin/env python3
-"""
-Experiment Runner - Session-Based Recommendation Benchmark
-
-Executa modelos RecBole em todos os slices do sliding window e agrega resultados
-Seguindo metodologia de Domingues et al. (2024)
-"""
-
 import argparse
 import logging
 from pathlib import Path
@@ -31,6 +23,7 @@ from recbole.utils import init_seed, init_logger, get_model
 
 from metrics import SessionBasedMetrics
 from utils.gpu_cooling import inject_cooling_callback
+from models.baselines import RandomRecommender, POPRecommender, RPOPRecommender, SPOPRecommender
 
 
 class ExperimentRunner:
@@ -75,6 +68,10 @@ class ExperimentRunner:
             'NARM': NARM,
             'STAMP': STAMP,
             'SASRec': SASRec,
+            'Random': RandomRecommender,
+            'POP': POPRecommender,
+            'RPOP': RPOPRecommender,
+            'SPOP': SPOPRecommender,
         }
         
         self.models = models if models else list(self.available_models.keys())
@@ -121,11 +118,14 @@ class ExperimentRunner:
         Returns:
             Dict com configurações
         """
-        # Load base config from YAML file
+        # Try neural models first, then baselines
         config_file = self.config_path / 'neural' / f'{model_name.lower()}.yaml'
         
         if not config_file.exists():
-            raise FileNotFoundError(f"Config file not found: {config_file}")
+            config_file = self.config_path / 'baselines' / f'{model_name.lower()}.yaml'
+        
+        if not config_file.exists():
+            raise FileNotFoundError(f"Config file not found for model: {model_name}")
         
         with open(config_file, 'r') as f:
             config = yaml.safe_load(f)
@@ -152,7 +152,13 @@ class ExperimentRunner:
         
         # Get config
         config_dict = self.get_model_config(model_name, dataset_name)
-        config = Config(model=model_name, config_dict=config_dict)
+        
+        # For custom models, don't let RecBole try to import them
+        if model_name in ['Random', 'POP', 'RPOP', 'SPOP']:
+            config = Config(model='GRU4Rec', config_dict=config_dict)  # Use GRU4Rec as template
+            config['model'] = model_name  # Override model name
+        else:
+            config = Config(model=model_name, config_dict=config_dict)
         
         # Init seed
         init_seed(config['seed'], config['reproducibility'])

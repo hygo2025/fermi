@@ -1,0 +1,48 @@
+# POP (Popularity) Baseline Configuration
+# Recommends items with highest global frequency
+
+model: POP
+dataset: realestate_slice1
+data_path: recbole_data/
+
+# Training (1 epoch to count frequencies)
+epochs: 1
+train_batch_size: 4096
+eval_batch_size: 4096
+learning_rate: 0.001
+train_neg_sample_args: ~
+
+# Evaluation
+metrics: ['Recall', 'MRR', 'NDCG', 'Hit']
+topk: [5, 10, 20]
+valid_metric: Recall@10
+
+# Session Settings
+MAX_ITEM_LIST_LENGTH: 50
+SESSION_ID_FIELD: session_id
+ITEM_ID_FIELD: item_id
+TIME_FIELD: timestamp
+USER_ID_FIELD: session_id
+load_col:
+  inter: [session_id, item_id, timestamp]
+
+# Evaluation Protocol
+eval_args:
+  split: {'LS': 'test_only'}
+  order: 'TO'
+  mode: 'full'
+
+# Device
+device: cuda
+gpu_id: 0
+
+# Reproducibility
+seed: 42
+
+# Checkpointing
+save_dataset: false
+save_dataloaders: false
+checkpoint_dir: saved
+
+# Logging
+log_wandb: false

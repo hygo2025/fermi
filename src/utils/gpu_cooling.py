@@ -1,13 +1,3 @@
-#!/usr/bin/env python3
-"""
-GPU Cooling Callback - Adiciona pausas periódicas para resfriar a GPU
-
-Implementa callback customizado para RecBole que:
-- Monitora temperatura da GPU
-- Adiciona pause após N epochs
-- Previne overheating
-"""
-
 import time
 import subprocess
 from typing import Optional
