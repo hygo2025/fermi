@@ -37,12 +37,23 @@ make prepare-data
 # 2. Converter para RecBole
 make convert-recbole
 
-# 3. Executar todos os experimentos
+# 3. Executar experimentos (agregação automática ao final)
 make run-all
-
-# 4. Agregar resultados
-make aggregate-results
 ```
+
+**Outputs gerados automaticamente em `outputs/results/YYYYMMDD_HHMMSS/`:**
+- `README.md` - Informações da execução e top 3 modelos
+- `raw_results.csv` - Resultados brutos (todos modelos × slices)
+- `aggregated_results.csv` - Resultados agregados (mean ± std)
+- `results_table.md` - Tabela Markdown para README
+- `metrics_comparison.png` - Gráfico de barras comparativo
+- `performance_heatmap.png` - Heatmap de performance
+- `slice_consistency.png` - Consistência temporal
+- `loss_curves_[model].png` - Curvas de loss por modelo (análise de overfitting)
+- `loss_curves_average.png` - Curvas de loss médias (comparação entre modelos)
+- `losses/` - Diretório com histórico de loss em JSON
+
+Cada execução cria uma nova pasta timestamped com tudo junto.
 
 Tempo estimado: 1-2 horas (GPU RTX 4090 com batch_size=4096)
 
@@ -95,7 +106,7 @@ make run-stamp          # Apenas STAMP em todos slices
 make run-sasrec         # Apenas SASRec em todos slices
 
 # Resultados
-make aggregate-results  # Agregar resultados (média ± std)
+# (Agregação automática no final de run-all)
 
 # Utilidades
 make clean              # Limpar cache

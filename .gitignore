@@ -31,6 +31,7 @@ outputs/results/*.csv
 outputs/results/logs/
 outputs/models/*
 !outputs/models/.gitkeep
+outputs/logs
 outputs/logs/*
 !outputs/logs/.gitkeep
 
@@ -41,3 +42,5 @@ Thumbs.db
 # Environment
 .env
 .python-version
+log_tensorboard
+saved

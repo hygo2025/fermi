@@ -51,13 +51,13 @@ Loading configuration: {config_file}
         )
         
         print("\n" + "="*80)
-        print("✅ BENCHMARK COMPLETED SUCCESSFULLY")
+        print("BENCHMARK COMPLETED SUCCESSFULLY")
         print("="*80)
         print(f"\nResults: {result}")
         
     except Exception as e:
         print("\n" + "="*80)
-        print("❌ ERROR RUNNING BENCHMARK")
+        print("ERROR RUNNING BENCHMARK")
         print("="*80)
         print(f"\nError: {e}")
         raise

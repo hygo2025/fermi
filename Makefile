@@ -9,6 +9,7 @@ help:
 	@echo ""
 	@echo "Experimentos (Sequencial):"
 	@echo "  make run-all              - Executar todos modelos em todos slices (1 por vez)"
+	@echo "  make test-quick           - TESTE RÁPIDO: GRU4Rec em 2 slices (~5-10min)"
 	@echo "  make run-gru4rec          - Executar apenas GRU4Rec em todos slices"
 	@echo "  make run-narm             - Executar apenas NARM em todos slices"
 	@echo "  make run-stamp            - Executar apenas STAMP em todos slices"
@@ -98,10 +99,31 @@ run-sasrec-parallel:
 	@echo "Slices 1,2,3 iniciados. Aguarde a conclusão com 'wait' ou monitore com 'nvidia-smi'"
 
 aggregate-results:
-	@echo "Agregando resultados..."
+	@echo "Este comando não é mais necessário!"
+	@echo "A agregação é feita automaticamente ao final de 'make run-all'"
+	@echo "Os resultados estão em: outputs/results/YYYYMMDD_HHMMSS/"
+
+test-quick:
+	@echo "Executando teste rápido (GRU4Rec em slices 1-2)..."
+	@echo "Configuração: 10 épocas, batch_size=512"
+	python src/run_experiments.py \
+		--models GRU4Rec \
+		--slices 1 2 \
+		--epochs 2 \
+		--batch-size 512
+
+# Agregação manual do último resultado
+aggregate-last:
+	@echo "Agregando último resultado..."
+	@LAST_DIR=$$(ls -td outputs/results/*/ 2>/dev/null | head -1); \
+	if [ -z "$$LAST_DIR" ]; then \
+		echo "ERROR: Nenhum resultado encontrado em outputs/results/"; \
+		exit 1; \
+	fi; \
+	echo "Processando: $$LAST_DIR"; \
 	python src/aggregate_results.py \
-		--input outputs/results \
-		--output outputs/results/aggregated_results.csv
+		--input "$${LAST_DIR%/}" \
+		--output "$${LAST_DIR%/}/aggregated_results.csv"
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true

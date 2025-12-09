@@ -38,7 +38,8 @@ class ExperimentRunner:
                  enable_gpu_cooling: bool = True,
                  cool_every_n_epochs: int = 5,
                  cool_duration_seconds: int = 60,
-                 max_temp_celsius: int = 80):
+                 max_temp_celsius: int = 80,
+                 shared_timestamp: str = None):
         """
         Args:
             data_path: Diretório com dados RecBole
@@ -50,11 +51,21 @@ class ExperimentRunner:
             cool_every_n_epochs: Pausar a cada N epochs
             cool_duration_seconds: Duração da pausa em segundos
             max_temp_celsius: Temperatura máxima antes de forçar pausa
+            shared_timestamp: Timestamp compartilhado (para run_all)
         """
         self.data_path = Path(data_path)
-        self.output_path = Path(output_path)
         self.config_path = Path(config_path)
+        
+        # Create timestamped output directory
+        # Use shared timestamp if provided, otherwise create new
+        if shared_timestamp:
+            timestamp = shared_timestamp
+        else:
+            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        
+        self.output_path = Path(output_path) / timestamp
         self.output_path.mkdir(parents=True, exist_ok=True)
+        self.timestamp = datetime.now()
         
         # GPU Cooling settings
         self.enable_gpu_cooling = enable_gpu_cooling
@@ -88,6 +99,10 @@ class ExperimentRunner:
         
         # Métricas
         self.metrics = SessionBasedMetrics(k_values=[5, 10, 20])
+        
+        # Override settings for quick tests
+        self.epoch_override = None
+        self.batch_size_override = None
         
         # Setup logging
         self.setup_logging()
@@ -180,6 +195,29 @@ class ExperimentRunner:
         # Create trainer
         trainer = Trainer(config, model)
         
+        # Create loss history tracker
+        train_loss_history = []
+        valid_score_history = []
+        
+        # Hook into trainer's _train_epoch to capture losses
+        original_train_epoch = trainer._train_epoch
+        def _train_epoch_with_tracking(train_data, epoch_idx, loss_func=None, show_progress=False):
+            total_loss = original_train_epoch(train_data, epoch_idx, loss_func, show_progress)
+            train_loss_history.append(float(total_loss))
+            return total_loss
+        trainer._train_epoch = _train_epoch_with_tracking
+        
+        # Hook into trainer's _valid_epoch to capture validation scores
+        original_valid_epoch = trainer._valid_epoch
+        def _valid_epoch_with_tracking(valid_data, show_progress=False):
+            valid_result = original_valid_epoch(valid_data, show_progress)
+            # Extract the validation metric (e.g., Recall@10)
+            valid_metric = config.get('valid_metric', 'Recall@10')
+            if valid_metric in valid_result:
+                valid_score_history.append(float(valid_result[valid_metric]))
+            return valid_result
+        trainer._valid_epoch = _valid_epoch_with_tracking
+        
         # Inject GPU cooling callback if enabled
         if self.enable_gpu_cooling:
             self.logger.info(f"  GPU Cooling enabled: pause every {self.cool_every_n_epochs} epochs for {self.cool_duration_seconds}s")
@@ -191,7 +229,7 @@ class ExperimentRunner:
                 max_temp_celsius=self.max_temp_celsius
             )
         
-        # Train
+        # Train and track losses
         self.logger.info(f"  Training {model_name}...")
         best_valid_score, best_valid_result = trainer.fit(
             train_data, valid_data, show_progress=True
@@ -201,12 +239,36 @@ class ExperimentRunner:
         self.logger.info(f"  Testing {model_name}...")
         test_result = trainer.evaluate(test_data, show_progress=True)
         
+        # Find best epoch (where valid score was highest)
+        best_valid_epoch = -1
+        if valid_score_history:
+            best_valid_epoch = int(np.argmax(valid_score_history))
+        
+        # Save loss curves
+        loss_info = {
+            'train_losses': train_loss_history,
+            'valid_scores': valid_score_history,
+            'best_valid_epoch': best_valid_epoch
+        }
+        
+        # Save loss data to file
+        loss_file = self.output_path / 'losses' / f'{model_name}_slice{slice_id}_loss.json'
+        loss_file.parent.mkdir(exist_ok=True)
+        
+        import json
+        with open(loss_file, 'w') as f:
+            json.dump(loss_info, f, indent=2)
+        
+        self.logger.info(f"  Loss history saved: {len(train_loss_history)} epochs")
+        
         # Format results
         results = {
             'model': model_name,
             'slice': slice_id,
             'dataset': dataset_name,
             'best_valid_score': best_valid_score,
+            'best_valid_epoch': best_valid_epoch,
+            'total_epochs': len(train_loss_history),
             **test_result
         }
         
@@ -215,10 +277,11 @@ class ExperimentRunner:
         return results
     
     def run_all_experiments(self):
-        """Executa todos os experimentos (todos modelos em todos slices)"""
+        """Executa todos os experimentos e gera resultados agregados"""
         self.logger.info("="*80)
         self.logger.info("Starting Session-Based Recommendation Experiments")
         self.logger.info("="*80)
+        self.logger.info(f"Output directory: {self.output_path}")
         self.logger.info(f"Models: {self.models}")
         self.logger.info(f"Slices: {self.slices}")
         self.logger.info("")
@@ -231,8 +294,21 @@ class ExperimentRunner:
                     result = self.run_single_experiment(model_name, slice_id)
                     all_results.append(result)
                     
-                    # Save intermediate results
-                    self.save_results(all_results)
+                    # Save result immediately (incremental save with duplicate prevention)
+                    df_new = pd.DataFrame([result])
+                    output_file = self.output_path / 'raw_results.csv'
+                    
+                    if output_file.exists():
+                        df_existing = pd.read_csv(output_file)
+                        # Remove any existing entry for this model+slice combo
+                        df_existing = df_existing[~((df_existing['model'] == model_name) & 
+                                                    (df_existing['slice'] == slice_id))]
+                        df_combined = pd.concat([df_existing, df_new], ignore_index=True)
+                        df_combined.to_csv(output_file, index=False)
+                    else:
+                        df_new.to_csv(output_file, index=False)
+                    
+                    self.logger.info(f"Progress: {len(all_results)}/{len(self.models) * len(self.slices)} completed")
                     
                 except Exception as e:
                     self.logger.error(f"Error running {model_name} on slice {slice_id}: {e}")
@@ -240,66 +316,52 @@ class ExperimentRunner:
                     traceback.print_exc()
                     continue
         
-        self.logger.info("="*80)
-        self.logger.info("All experiments completed!")
-        self.logger.info("="*80)
+        # Aggregate and generate visualizations
+        if hasattr(self, 'skip_aggregation') and self.skip_aggregation:
+            self.logger.info("\n" + "="*80)
+            self.logger.info("WARNING: Aggregation skipped (--no-aggregate flag)")
+            self.logger.info(f"Raw results saved to: {self.output_path}")
+            self.logger.info("="*80)
+        else:
+            self.logger.info("\n" + "="*80)
+            self.logger.info("Aggregating results and generating visualizations...")
+            self.logger.info("="*80)
+            
+            from src.aggregate_results import ResultsAggregator
+            
+            aggregator = ResultsAggregator(
+                input_path=str(self.output_path),
+                output_dir=str(self.output_path / 'aggregated.csv'),
+                create_timestamped=False  # We already have a timestamped dir
+            )
+            aggregator.run()
+            
+            self.logger.info("\n" + "="*80)
+            self.logger.info("All experiments completed!")
+            self.logger.info(f"Results saved to: {self.output_path}")
+            self.logger.info("="*80)
         
         return all_results
     
     def save_results(self, results: List[Dict]):
-        """Salva resultados em CSV"""
+        """Salva resultados em CSV (append mode para runs paralelos)"""
         df = pd.DataFrame(results)
         output_file = self.output_path / 'raw_results.csv'
+        
+        # Append if file exists, otherwise create new
+        if output_file.exists():
+            existing_df = pd.read_csv(output_file)
+            df = pd.concat([existing_df, df], ignore_index=True)
+        
         df.to_csv(output_file, index=False)
-        self.logger.info(f"Results saved to {output_file}")
-    
-    def aggregate_results(self, results: List[Dict]) -> pd.DataFrame:
-        """
-        Agrega resultados por modelo (média ± std entre slices)
-        
-        Args:
-            results: Lista de dicts com resultados
-            
-        Returns:
-            DataFrame agregado
-        """
-        if not results:
-            self.logger.warning("No results to aggregate!")
-            return pd.DataFrame()
-        
-        df = pd.DataFrame(results)
-        
-        # Group by model
-        grouped = df.groupby('model')
-        
-        # Calculate mean and std for each metric
-        metric_cols = [col for col in df.columns if '@' in col]
-        
-        aggregated = []
-        for model, group in grouped:
-            row = {'model': model}
-            for metric in metric_cols:
-                if metric in group.columns:
-                    values = group[metric].values
-                    row[f'{metric}_mean'] = np.mean(values)
-                    row[f'{metric}_std'] = np.std(values)
-            aggregated.append(row)
-        
-        agg_df = pd.DataFrame(aggregated)
-        
-        # Save
-        output_file = self.output_path / 'aggregated_results.csv'
-        agg_df.to_csv(output_file, index=False)
-        self.logger.info(f"Aggregated results saved to {output_file}")
-        
-        return agg_df
+        self.logger.info(f"Results saved to {output_file} ({len(df)} total)")
 
 
 def main():
     parser = argparse.ArgumentParser(description='Run session-based recommendation experiments')
-    parser.add_argument('--data-path', type=str, default='recbole_data',
+    parser.add_argument('--data-path', type=str, default='outputs/data/recbole',
                        help='Path to RecBole data')
-    parser.add_argument('--output-path', type=str, default='results',
+    parser.add_argument('--output-path', type=str, default='outputs/results',
                        help='Path to save results')
     parser.add_argument('--config-path', type=str, default='src/configs',
                        help='Path to model config files')
@@ -321,6 +383,8 @@ def main():
                        help='Cooling duration in seconds (default: 30)')
     parser.add_argument('--max-temp', type=int, default=80,
                        help='Max GPU temperature before forced cooling (default: 80°C)')
+    parser.add_argument('--no-aggregate', action='store_true',
+                       help='Skip automatic aggregation (for parallel runs)')
     
     args = parser.parse_args()
     
@@ -335,9 +399,13 @@ def main():
         cool_duration_seconds=args.cool_duration,
         max_temp_celsius=args.max_temp
     )
-    
-    results = runner.run_all_experiments()
-    runner.aggregate_results(results)
+
+
+    # Skip aggregation if requested (for parallel runs)
+    if args.no_aggregate:
+        runner.skip_aggregation = True
+
+    runner.run_all_experiments()
 
 
 if __name__ == '__main__':

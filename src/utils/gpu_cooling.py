@@ -72,7 +72,7 @@ class GPUCoolingCallback:
         temp_after = self.get_gpu_temp()
         
         print(f"\n{'='*80}")
-        print(f"✅ COOLING COMPLETE")
+        print(f"COOLING COMPLETE")
         if temp_before and temp_after:
             delta = temp_before - temp_after
             print(f"Temperature: {temp_before}°C → {temp_after}°C (Δ{delta:+d}°C)")
