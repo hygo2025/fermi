@@ -107,39 +107,41 @@ make help               # Ver todos comandos
 ```
 fermi/
 ├── src/                          # Código fonte
-│   ├── models/                   # Modelos baseline
+│   ├── models/                   # Modelos baseline (POP, RPOP, SPOP, Random)
 │   ├── preprocessing/            # Pipeline de dados
-│   │   ├── sliding_window_pipeline.py
-│   │   └── recbole_converter.py
+│   │   ├── sliding_window_pipeline.py  # Criação de splits temporais
+│   │   ├── recbole_converter.py        # Conversão para RecBole
+│   │   └── prepare_dataset.py          # Preparação de datasets
 │   ├── configs/                  # Configurações dos modelos
-│   │   └── neural/*.yaml
-│   ├── utils/                    # Utilidades
-│   │   ├── spark_session.py
-│   │   └── gpu_cooling.py
+│   │   ├── baselines/            # Configs de baselines
+│   │   └── neural/               # Configs de modelos neurais
+│   ├── utils/                    # Utilitários
+│   │   ├── spark_session.py      # Configuração do Spark
+│   │   └── gpu_cooling.py        # Sistema de cooling GPU
 │   ├── run_experiments.py        # Runner principal
 │   ├── aggregate_results.py      # Agregação de resultados
 │   └── metrics.py                # Métricas customizadas
-├── scripts/                      # Scripts auxiliares
-│   ├── run_parallel.sh
-│   └── monitor_gpu.sh
+├── scripts/                      # Scripts shell
+│   ├── run_parallel.sh           # Execução paralela
+│   ├── run_all_parallel.sh       # Todos modelos em paralelo
+│   └── monitor_gpu.sh            # Monitor de GPU
 ├── docs/                         # Documentação
 │   ├── experiments.md
 │   ├── execution.md
 │   ├── gpu-optimization.md
 │   ├── gpu-cooling.md
+│   ├── REORGANIZATION.md         # Log de reorganização
 │   └── papers/                   # Artigos de referência
-├── outputs/                      # Dados e resultados gerados
-│   ├── data/                     # Dados processados
-│   │   ├── sliding_window/       # Dados preparados (Parquet)
-│   │   └── recbole/              # Dados convertidos (.inter)
-│   ├── results/                  # Resultados dos experimentos
-│   │   ├── raw_results.csv
-│   │   └── aggregated_results.csv
-│   ├── models/                   # Modelos treinados
-│   └── logs/                     # Logs de treinamento
-│       └── tensorboard/
+├── outputs/                      # Tudo que é gerado
+│   ├── data/
+│   │   ├── sliding_window/       # Splits temporais (Parquet)
+│   │   └── recbole/              # Formato RecBole (.inter)
+│   ├── results/                  # Resultados CSV
+│   ├── models/                   # Checkpoints de modelos
+│   └── logs/tensorboard/         # Logs TensorBoard
 ├── pyproject.toml                # Configuração do pacote
 ├── requirements.txt              # Dependências
+├── Makefile                      # Comandos do pipeline
 └── README.md
 ```
 
