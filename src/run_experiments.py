@@ -73,6 +73,10 @@ class ExperimentRunner:
         self.cool_duration_seconds = cool_duration_seconds
         self.max_temp_celsius = max_temp_celsius
         
+        # Initialize override parameters
+        self.override_epochs = None
+        self.override_batch_size = None
+        
         # Modelos disponíveis
         self.available_models = {
             'GRU4Rec': GRU4Rec,
@@ -99,10 +103,6 @@ class ExperimentRunner:
         
         # Métricas
         self.metrics = SessionBasedMetrics(k_values=[5, 10, 20])
-        
-        # Override settings for quick tests
-        self.epoch_override = None
-        self.batch_size_override = None
         
         # Setup logging
         self.setup_logging()
@@ -385,6 +385,12 @@ def main():
                        help='Max GPU temperature before forced cooling (default: 80°C)')
     parser.add_argument('--no-aggregate', action='store_true',
                        help='Skip automatic aggregation (for parallel runs)')
+    parser.add_argument('--shared-timestamp', type=str, default=None,
+                       help='Shared timestamp for parallel execution')
+    parser.add_argument('--epochs', type=int, default=None,
+                       help='Override number of epochs (for testing)')
+    parser.add_argument('--batch-size', type=int, default=None,
+                       help='Override batch size (for testing)')
     
     args = parser.parse_args()
     
@@ -397,8 +403,15 @@ def main():
         enable_gpu_cooling=args.enable_gpu_cooling,
         cool_every_n_epochs=args.cool_every,
         cool_duration_seconds=args.cool_duration,
-        max_temp_celsius=args.max_temp
+        max_temp_celsius=args.max_temp,
+        shared_timestamp=args.shared_timestamp
     )
+    
+    # Set override parameters if provided
+    if args.epochs:
+        runner.override_epochs = args.epochs
+    if args.batch_size:
+        runner.override_batch_size = args.batch_size
 
 
     # Skip aggregation if requested (for parallel runs)

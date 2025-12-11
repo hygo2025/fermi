@@ -1,115 +1,113 @@
 #!/bin/bash
-# Executar todos os experimentos com paralelização controlada
-# 3 slices por vez, aguarda conclusão antes de iniciar próximo batch
+# Executar experimentos em paralelo com timestamp compartilhado e agregação única no final
 
 set -e
 
-MODELS=("GRU4Rec" "NARM" "STAMP" "SASRec")
-BATCH1="1 2 3"
-BATCH2="4 5"
+# Recebe lista de modelos como argumentos, ou usa padrão
+if [ $# -eq 0 ]; then
+    MODELS=("GRU4Rec" "NARM" "STAMP" "SASRec" "Random" "POP" "RPOP" "SPOP")
+else
+    MODELS=("$@")
+fi
+
+# Gera timestamp único compartilhado por todos os experimentos
+TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
+export SHARED_TIMESTAMP="$TIMESTAMP"
+
+ALL_SLICES="1 2 3 4 5"
 
 echo "================================================================================"
 echo "                  EXPERIMENTOS PARALELOS - EXECUÇÃO CONTROLADA"
 echo "================================================================================"
 echo ""
-echo "Estratégia: 3 slices simultâneos por modelo"
+echo "Timestamp compartilhado: $TIMESTAMP"
 echo "Modelos: ${MODELS[@]}"
-echo "Batch 1: Slices $BATCH1"
-echo "Batch 2: Slices $BATCH2"
+echo "Slices: $ALL_SLICES (executados em paralelo por modelo)"
+echo "Diretório de saída: outputs/results/$TIMESTAMP/"
 echo ""
 echo "================================================================================"
 echo ""
+
+# Criar diretório de saída
+mkdir -p "outputs/results/$TIMESTAMP/losses"
+
+# Executar todos os modelos em paralelo (cada modelo executa seus próprios slices em paralelo)
+pids=()
 
 for model in "${MODELS[@]}"; do
     echo "--------------------------------------------------------------------------------"
-    echo "Modelo: $model"
+    echo "Iniciando $model (todos os slices em paralelo)..."
     echo "--------------------------------------------------------------------------------"
+    
+    # Roda todos os slices deste modelo em paralelo com timestamp compartilhado
+    python src/run_experiments.py \
+        --models $model \
+        --slices $ALL_SLICES \
+        --shared-timestamp "$TIMESTAMP" \
+        > "outputs/results/$TIMESTAMP/${model}_execution.log" 2>&1 &
+    
+    pid=$!
+    pids+=($pid)
+    echo "  PID $pid: $model"
     echo ""
     
-    # Batch 1: Slices 1, 2, 3
-    echo "[Batch 1] Iniciando slices $BATCH1 em paralelo..."
-    pids=()
+    # Delay para evitar race condition no início
+    sleep 3
+done
+
+echo ""
+echo "================================================================================"
+echo "Todos os modelos iniciados. Aguardando conclusão..."
+echo "PIDs: ${pids[@]}"
+echo "================================================================================"
+echo ""
+
+# Aguardar todos os processos
+failed=0
+for i in "${!pids[@]}"; do
+    pid=${pids[$i]}
+    model=${MODELS[$i]}
     
-    for slice in $BATCH1; do
-        echo "  - Iniciando $model slice $slice..."
-        python src/run_experiments.py \
-            --models $model \
-            --slices $slice \
-            > "results/logs/${model}_slice${slice}_parallel.log" 2>&1 &
-        
-        pid=$!
-        pids+=($pid)
-        echo "    PID: $pid"
-        
-        # Delay para evitar race condition
-        sleep 5
-    done
-    
-    echo ""
-    echo "[Batch 1] Aguardando conclusão dos slices $BATCH1..."
-    for pid in "${pids[@]}"; do
-        wait $pid
-        echo "  - Processo $pid concluído"
-    done
-    
-    echo ""
-    echo "[Batch 1] Concluído! Slices $BATCH1 finalizados."
-    echo ""
-    
-    # Batch 2: Slices 4, 5
-    echo "[Batch 2] Iniciando slices $BATCH2 em paralelo..."
-    pids=()
-    
-    for slice in $BATCH2; do
-        echo "  - Iniciando $model slice $slice..."
-        python src/run_experiments.py \
-            --models $model \
-            --slices $slice \
-            > "results/logs/${model}_slice${slice}_parallel.log" 2>&1 &
-        
-        pid=$!
-        pids+=($pid)
-        echo "    PID: $pid"
-        
-        # Delay para evitar race condition
-        sleep 5
-    done
-    
-    echo ""
-    echo "[Batch 2] Aguardando conclusão dos slices $BATCH2..."
-    for pid in "${pids[@]}"; do
-        wait $pid
-        echo "  - Processo $pid concluído"
-    done
-    
-    echo ""
-    echo "[Batch 2] Concluído! Slices $BATCH2 finalizados."
-    echo ""
-    echo "--------------------------------------------------------------------------------"
-    echo "Modelo $model: CONCLUÍDO (todos os 5 slices)"
-    echo "--------------------------------------------------------------------------------"
-    echo ""
-    
-    # Pausa entre modelos para GPU esfriar
-    if [ "$model" != "SASRec" ]; then
-        echo "Pausa de 60s para resfriamento da GPU antes do próximo modelo..."
-        sleep 60
-        echo ""
+    if wait $pid; then
+        echo "[OK] $model (PID $pid) concluído com sucesso"
+    else
+        echo "[ERRO] $model (PID $pid) falhou"
+        failed=$((failed + 1))
     fi
 done
 
-echo "================================================================================"
-echo "                        TODOS OS EXPERIMENTOS CONCLUÍDOS!"
-echo "================================================================================"
 echo ""
+echo "================================================================================"
+
+if [ $failed -eq 0 ]; then
+    echo "                    TODOS OS EXPERIMENTOS CONCLUÍDOS!"
+    echo "================================================================================"
+    echo ""
+    echo "Executando agregação final..."
+    python src/aggregate_results.py \
+        --input "outputs/results/$TIMESTAMP" \
+        --output "outputs/results/$TIMESTAMP/aggregated_results.csv"
+    
+    echo ""
+    echo "================================================================================"
+    echo "RESULTADOS SALVOS EM: outputs/results/$TIMESTAMP/"
+    echo "================================================================================"
+    echo ""
+    echo "Arquivos gerados:"
+    ls -lh "outputs/results/$TIMESTAMP/" | grep -v "^d" | awk '{print "  - " $9 " (" $5 ")"}'
+    echo ""
+else
+    echo "                    ALGUNS EXPERIMENTOS FALHARAM!"
+    echo "================================================================================"
+    echo ""
+    echo "Experimentos com falha: $failed de ${#MODELS[@]}"
+    echo "Verifique os logs em: outputs/results/$TIMESTAMP/"
+    echo ""
+fi
+
 echo "Total executado:"
 echo "  - Modelos: ${#MODELS[@]}"
 echo "  - Slices: 5 por modelo"
 echo "  - Total: $((${#MODELS[@]} * 5)) experimentos"
-echo ""
-echo "Próximos passos:"
-echo "  1. Verificar logs: ls -lh results/logs/"
-echo "  2. Agregar resultados: make aggregate-results"
-echo "  3. Ver resultados: cat results/aggregated_results.csv"
 echo ""
 echo "================================================================================"

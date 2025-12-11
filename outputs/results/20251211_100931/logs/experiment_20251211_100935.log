@@ -1,0 +1,86 @@
+2025-12-11 10:09:35,610 - INFO - ================================================================================
+2025-12-11 10:09:35,610 - INFO - Starting Session-Based Recommendation Experiments
+2025-12-11 10:09:35,611 - INFO - ================================================================================
+2025-12-11 10:09:35,611 - INFO - Output directory: outputs/results/20251211_100931
+2025-12-11 10:09:35,611 - INFO - Models: ['Random']
+2025-12-11 10:09:35,611 - INFO - Slices: [1, 2, 3, 4, 5]
+2025-12-11 10:09:35,611 - INFO - 
+2025-12-11 10:09:35,611 - INFO - Running Random on realestate_slice1...
+2025-12-11 10:09:35,616 - WARNING - command line args [--models Random --slices 1 2 3 4 5 --shared-timestamp 20251211_100931] will not be used in RecBole
+2025-12-11 10:09:56,585 - INFO - [1;35m[Training]: [0m[1;36mtrain_batch_size[0m = [1;33m[4096][0m[1;36m train_neg_sample_args[0m: [1;33m[{'distribution': 'none', 'sample_num': 'none', 'alpha': 'none', 'dynamic': False, 'candidate_num': 0}][0m
+2025-12-11 10:09:56,585 - INFO - [1;35m[Evaluation]: [0m[1;36meval_batch_size[0m = [1;33m[4096][0m[1;36m eval_args[0m: [1;33m[{'split': {'LS': 'test_only'}, 'order': 'TO', 'group_by': 'user', 'mode': {'valid': 'full', 'test': 'full'}}][0m
+2025-12-11 10:09:59,707 - INFO -   GPU Cooling enabled: pause every 10 epochs for 30s
+2025-12-11 10:09:59,707 - INFO -   Max temperature threshold: 80°C
+2025-12-11 10:09:59,707 - INFO -   Training Random...
+2025-12-11 10:10:07,324 - INFO - [1;32mepoch 0 training[0m [[1;34mtime[0m: 7.62s, [1;34mtrain loss[0m: 0.0000]
+2025-12-11 10:10:07,328 - INFO - [1;34mSaving current[0m: saved/Random-Dec-11-2025_10-09-58.pth
+2025-12-11 10:10:07,331 - INFO -   Testing Random...
+2025-12-11 10:10:07,333 - INFO - Loading model structure and parameters from saved/Random-Dec-11-2025_10-09-58.pth
+2025-12-11 10:10:20,199 - INFO -   Loss history saved: 1 epochs
+2025-12-11 10:10:20,199 - INFO -   Results: OrderedDict([('recall@5', 0.0002), ('recall@10', 0.0004), ('recall@20', 0.0009), ('mrr@5', 0.0001), ('mrr@10', 0.0001), ('mrr@20', 0.0001), ('ndcg@5', 0.0001), ('ndcg@10', 0.0002), ('ndcg@20', 0.0003), ('hit@5', 0.0002), ('hit@10', 0.0004), ('hit@20', 0.0009)])
+2025-12-11 10:10:20,218 - INFO - Progress: 1/5 completed
+2025-12-11 10:10:20,218 - INFO - Running Random on realestate_slice2...
+2025-12-11 10:10:20,224 - WARNING - command line args [--models Random --slices 1 2 3 4 5 --shared-timestamp 20251211_100931] will not be used in RecBole
+2025-12-11 10:10:40,114 - INFO - [1;35m[Training]: [0m[1;36mtrain_batch_size[0m = [1;33m[4096][0m[1;36m train_neg_sample_args[0m: [1;33m[{'distribution': 'none', 'sample_num': 'none', 'alpha': 'none', 'dynamic': False, 'candidate_num': 0}][0m
+2025-12-11 10:10:40,114 - INFO - [1;35m[Evaluation]: [0m[1;36meval_batch_size[0m = [1;33m[4096][0m[1;36m eval_args[0m: [1;33m[{'split': {'LS': 'test_only'}, 'order': 'TO', 'group_by': 'user', 'mode': {'valid': 'full', 'test': 'full'}}][0m
+2025-12-11 10:10:44,350 - INFO -   GPU Cooling enabled: pause every 10 epochs for 30s
+2025-12-11 10:10:44,350 - INFO -   Max temperature threshold: 80°C
+2025-12-11 10:10:44,350 - INFO -   Training Random...
+2025-12-11 10:10:49,660 - INFO - [1;32mepoch 0 training[0m [[1;34mtime[0m: 5.31s, [1;34mtrain loss[0m: 0.0000]
+2025-12-11 10:10:49,662 - INFO - [1;34mSaving current[0m: saved/Random-Dec-11-2025_10-10-44.pth
+2025-12-11 10:10:49,664 - INFO -   Testing Random...
+2025-12-11 10:10:49,666 - INFO - Loading model structure and parameters from saved/Random-Dec-11-2025_10-10-44.pth
+2025-12-11 10:10:56,326 - INFO -   Loss history saved: 1 epochs
+2025-12-11 10:10:56,326 - INFO -   Results: OrderedDict([('recall@5', 0.0003), ('recall@10', 0.0005), ('recall@20', 0.001), ('mrr@5', 0.0002), ('mrr@10', 0.0002), ('mrr@20', 0.0002), ('ndcg@5', 0.0002), ('ndcg@10', 0.0002), ('ndcg@20', 0.0004), ('hit@5', 0.0003), ('hit@10', 0.0005), ('hit@20', 0.001)])
+2025-12-11 10:10:56,340 - INFO - Progress: 2/5 completed
+2025-12-11 10:10:56,340 - INFO - Running Random on realestate_slice3...
+2025-12-11 10:10:56,344 - WARNING - command line args [--models Random --slices 1 2 3 4 5 --shared-timestamp 20251211_100931] will not be used in RecBole
+2025-12-11 10:11:17,965 - INFO - [1;35m[Training]: [0m[1;36mtrain_batch_size[0m = [1;33m[4096][0m[1;36m train_neg_sample_args[0m: [1;33m[{'distribution': 'none', 'sample_num': 'none', 'alpha': 'none', 'dynamic': False, 'candidate_num': 0}][0m
+2025-12-11 10:11:17,966 - INFO - [1;35m[Evaluation]: [0m[1;36meval_batch_size[0m = [1;33m[4096][0m[1;36m eval_args[0m: [1;33m[{'split': {'LS': 'test_only'}, 'order': 'TO', 'group_by': 'user', 'mode': {'valid': 'full', 'test': 'full'}}][0m
+2025-12-11 10:11:19,770 - INFO -   GPU Cooling enabled: pause every 10 epochs for 30s
+2025-12-11 10:11:19,770 - INFO -   Max temperature threshold: 80°C
+2025-12-11 10:11:19,770 - INFO -   Training Random...
+2025-12-11 10:11:22,067 - INFO - [1;32mepoch 0 training[0m [[1;34mtime[0m: 2.30s, [1;34mtrain loss[0m: 0.0000]
+2025-12-11 10:11:22,070 - INFO - [1;34mSaving current[0m: saved/Random-Dec-11-2025_10-11-19.pth
+2025-12-11 10:11:22,072 - INFO -   Testing Random...
+2025-12-11 10:11:22,074 - INFO - Loading model structure and parameters from saved/Random-Dec-11-2025_10-11-19.pth
+2025-12-11 10:11:29,335 - INFO -   Loss history saved: 1 epochs
+2025-12-11 10:11:29,335 - INFO -   Results: OrderedDict([('recall@5', 0.0002), ('recall@10', 0.0004), ('recall@20', 0.0008), ('mrr@5', 0.0001), ('mrr@10', 0.0001), ('mrr@20', 0.0001), ('ndcg@5', 0.0001), ('ndcg@10', 0.0002), ('ndcg@20', 0.0003), ('hit@5', 0.0002), ('hit@10', 0.0004), ('hit@20', 0.0008)])
+2025-12-11 10:11:29,350 - INFO - Progress: 3/5 completed
+2025-12-11 10:11:29,350 - INFO - Running Random on realestate_slice4...
+2025-12-11 10:11:29,354 - WARNING - command line args [--models Random --slices 1 2 3 4 5 --shared-timestamp 20251211_100931] will not be used in RecBole
+2025-12-11 10:11:50,899 - INFO - [1;35m[Training]: [0m[1;36mtrain_batch_size[0m = [1;33m[4096][0m[1;36m train_neg_sample_args[0m: [1;33m[{'distribution': 'none', 'sample_num': 'none', 'alpha': 'none', 'dynamic': False, 'candidate_num': 0}][0m
+2025-12-11 10:11:50,899 - INFO - [1;35m[Evaluation]: [0m[1;36meval_batch_size[0m = [1;33m[4096][0m[1;36m eval_args[0m: [1;33m[{'split': {'LS': 'test_only'}, 'order': 'TO', 'group_by': 'user', 'mode': {'valid': 'full', 'test': 'full'}}][0m
+2025-12-11 10:11:52,688 - INFO -   GPU Cooling enabled: pause every 10 epochs for 30s
+2025-12-11 10:11:52,688 - INFO -   Max temperature threshold: 80°C
+2025-12-11 10:11:52,688 - INFO -   Training Random...
+2025-12-11 10:11:55,529 - INFO - [1;32mepoch 0 training[0m [[1;34mtime[0m: 2.84s, [1;34mtrain loss[0m: 0.0000]
+2025-12-11 10:11:55,531 - INFO - [1;34mSaving current[0m: saved/Random-Dec-11-2025_10-11-52.pth
+2025-12-11 10:11:55,534 - INFO -   Testing Random...
+2025-12-11 10:11:55,536 - INFO - Loading model structure and parameters from saved/Random-Dec-11-2025_10-11-52.pth
+2025-12-11 10:12:02,915 - INFO -   Loss history saved: 1 epochs
+2025-12-11 10:12:02,915 - INFO -   Results: OrderedDict([('recall@5', 0.0001), ('recall@10', 0.0002), ('recall@20', 0.0005), ('mrr@5', 0.0), ('mrr@10', 0.0001), ('mrr@20', 0.0001), ('ndcg@5', 0.0001), ('ndcg@10', 0.0001), ('ndcg@20', 0.0002), ('hit@5', 0.0001), ('hit@10', 0.0002), ('hit@20', 0.0005)])
+2025-12-11 10:12:02,930 - INFO - Progress: 4/5 completed
+2025-12-11 10:12:02,930 - INFO - Running Random on realestate_slice5...
+2025-12-11 10:12:02,934 - WARNING - command line args [--models Random --slices 1 2 3 4 5 --shared-timestamp 20251211_100931] will not be used in RecBole
+2025-12-11 10:12:22,680 - INFO - [1;35m[Training]: [0m[1;36mtrain_batch_size[0m = [1;33m[4096][0m[1;36m train_neg_sample_args[0m: [1;33m[{'distribution': 'none', 'sample_num': 'none', 'alpha': 'none', 'dynamic': False, 'candidate_num': 0}][0m
+2025-12-11 10:12:22,680 - INFO - [1;35m[Evaluation]: [0m[1;36meval_batch_size[0m = [1;33m[4096][0m[1;36m eval_args[0m: [1;33m[{'split': {'LS': 'test_only'}, 'order': 'TO', 'group_by': 'user', 'mode': {'valid': 'full', 'test': 'full'}}][0m
+2025-12-11 10:12:24,020 - INFO -   GPU Cooling enabled: pause every 10 epochs for 30s
+2025-12-11 10:12:24,020 - INFO -   Max temperature threshold: 80°C
+2025-12-11 10:12:24,020 - INFO -   Training Random...
+2025-12-11 10:12:26,072 - INFO - [1;32mepoch 0 training[0m [[1;34mtime[0m: 2.05s, [1;34mtrain loss[0m: 0.0000]
+2025-12-11 10:12:26,075 - INFO - [1;34mSaving current[0m: saved/Random-Dec-11-2025_10-12-24.pth
+2025-12-11 10:12:26,077 - INFO -   Testing Random...
+2025-12-11 10:12:26,079 - INFO - Loading model structure and parameters from saved/Random-Dec-11-2025_10-12-24.pth
+2025-12-11 10:12:32,257 - INFO -   Loss history saved: 1 epochs
+2025-12-11 10:12:32,257 - INFO -   Results: OrderedDict([('recall@5', 0.0003), ('recall@10', 0.0003), ('recall@20', 0.0009), ('mrr@5', 0.0001), ('mrr@10', 0.0001), ('mrr@20', 0.0002), ('ndcg@5', 0.0001), ('ndcg@10', 0.0001), ('ndcg@20', 0.0003), ('hit@5', 0.0003), ('hit@10', 0.0003), ('hit@20', 0.0009)])
+2025-12-11 10:12:32,273 - INFO - Progress: 5/5 completed
+2025-12-11 10:12:32,273 - INFO - 
+================================================================================
+2025-12-11 10:12:32,273 - INFO - Aggregating results and generating visualizations...
+2025-12-11 10:12:32,273 - INFO - ================================================================================
+2025-12-11 10:12:38,536 - INFO - 
+================================================================================
+2025-12-11 10:12:38,536 - INFO - All experiments completed!
+2025-12-11 10:12:38,537 - INFO - Results saved to: outputs/results/20251211_100931
+2025-12-11 10:12:38,537 - INFO - ================================================================================

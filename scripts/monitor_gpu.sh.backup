@@ -1,6 +1,12 @@
 #!/bin/bash
 # Monitor de GPU e Progresso dos Experimentos
 
+clear
+echo "================================================================================"
+echo "                    MONITOR DE EXPERIMENTOS - GPU RTX 4090"
+echo "================================================================================"
+echo ""
+
 # Função para encontrar diretório de execução mais recente
 get_latest_run_dir() {
     ls -td outputs/results/20*/ 2>/dev/null | head -1
@@ -21,8 +27,7 @@ show_progress() {
     echo ""
     
     # Mostra progresso de cada modelo (últimas linhas dos logs)
-    shopt -s nullglob
-    for log in "${latest_dir}"*_execution.log; do
+    for log in "$latest_dir"*_execution.log 2>/dev/null; do
         if [ -f "$log" ]; then
             model=$(basename "$log" _execution.log)
             echo "Modelo: $model"
@@ -30,11 +35,10 @@ show_progress() {
             echo ""
         fi
     done
-    shopt -u nullglob
     
     # Conta quantos experimentos já foram concluídos
-    if [ -f "${latest_dir}raw_results.csv" ]; then
-        total_runs=$(tail -n +2 "${latest_dir}raw_results.csv" 2>/dev/null | wc -l)
+    if [ -f "$latest_dir/raw_results.csv" ]; then
+        total_runs=$(tail -n +2 "$latest_dir/raw_results.csv" 2>/dev/null | wc -l)
         echo "Experimentos concluídos: $total_runs"
         echo ""
     fi

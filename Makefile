@@ -1,4 +1,4 @@
-.PHONY: help install clean prepare-data convert-recbole run-all run-all-parallel aggregate-results run-gru4rec run-narm run-stamp run-sasrec run-gru4rec-parallel run-narm-parallel run-stamp-parallel run-sasrec-parallel
+.PHONY: help install clean prepare-data convert-recbole run-all run-all-parallel run-all-neurals-parallel run-all-baselines-parallel aggregate-results run-gru4rec run-narm run-stamp run-sasrec run-gru4rec-parallel run-narm-parallel run-stamp-parallel run-sasrec-parallel run-baselines run-random run-pop run-rpop run-spop run-baselines-parallel
 
 help:
 	@echo "Fermi - Session-Based Recommendation Benchmark"
@@ -15,12 +15,21 @@ help:
 	@echo "  make run-stamp            - Executar apenas STAMP em todos slices"
 	@echo "  make run-sasrec           - Executar apenas SASRec em todos slices"
 	@echo ""
+	@echo "Baselines (Sequencial):"
+	@echo "  make run-baselines        - Executar todos baselines em todos slices"
+	@echo "  make run-random           - Executar Random em todos slices"
+	@echo "  make run-pop              - Executar POP em todos slices"
+	@echo "  make run-rpop             - Executar RPOP em todos slices"
+	@echo "  make run-spop             - Executar SPOP em todos slices"
+	@echo ""
 	@echo "Experimentos (Paralelo - 3 slices simultâneos):"
-	@echo "  make run-all-parallel     - Executar todos modelos com 3 slices paralelos"
-	@echo "  make run-gru4rec-parallel - Executar GRU4Rec com slices 1,2,3 em paralelo"
-	@echo "  make run-narm-parallel    - Executar NARM com slices 1,2,3 em paralelo"
-	@echo "  make run-stamp-parallel   - Executar STAMP com slices 1,2,3 em paralelo"
-	@echo "  make run-sasrec-parallel  - Executar SASRec com slices 1,2,3 em paralelo"
+	@echo "  make run-all-parallel          - Executar TODOS modelos (neurais + baselines) em paralelo"
+	@echo "  make run-all-neurals-parallel  - Executar apenas modelos neurais em paralelo"
+	@echo "  make run-all-baselines-parallel- Executar apenas baselines em paralelo"
+	@echo "  make run-gru4rec-parallel      - Executar GRU4Rec com slices 1,2,3 em paralelo"
+	@echo "  make run-narm-parallel         - Executar NARM com slices 1,2,3 em paralelo"
+	@echo "  make run-stamp-parallel        - Executar STAMP com slices 1,2,3 em paralelo"
+	@echo "  make run-sasrec-parallel       - Executar SASRec com slices 1,2,3 em paralelo"
 	@echo ""
 	@echo "Resultados:"
 	@echo "  make aggregate-results    - Agregar resultados (média ± std)"
@@ -68,11 +77,42 @@ run-sasrec:
 	@echo "Executando SASRec em todos os slices (sequencial)..."
 	python src/run_experiments.py --models SASRec --all-slices
 
+# Baselines - Sequencial
+run-baselines:
+	@echo "Executando todos baselines em todos os slices (sequencial)..."
+	python src/run_experiments.py --models Random POP RPOP SPOP --all-slices
+
+run-random:
+	@echo "Executando Random em todos os slices (sequencial)..."
+	python src/run_experiments.py --models Random --all-slices
+
+run-pop:
+	@echo "Executando POP em todos os slices (sequencial)..."
+	python src/run_experiments.py --models POP --all-slices
+
+run-rpop:
+	@echo "Executando RPOP em todos os slices (sequencial)..."
+	python src/run_experiments.py --models RPOP --all-slices
+
+run-spop:
+	@echo "Executando SPOP em todos os slices (sequencial)..."
+	python src/run_experiments.py --models SPOP --all-slices
+
 # Experimentos - Paralelo (3 slices simultâneos)
 run-all-parallel:
-	@echo "Executando todos modelos com paralelização (3 slices por vez)..."
+	@echo "Executando TODOS os modelos (neurais + baselines) em paralelo..."
 	@chmod +x scripts/run_all_parallel.sh
-	@./scripts/run_all_parallel.sh
+	@./scripts/run_all_parallel.sh GRU4Rec NARM STAMP SASRec Random POP RPOP SPOP
+
+run-all-neurals-parallel:
+	@echo "Executando apenas modelos neurais em paralelo..."
+	@chmod +x scripts/run_all_parallel.sh
+	@./scripts/run_all_parallel.sh GRU4Rec NARM STAMP SASRec
+
+run-all-baselines-parallel:
+	@echo "Executando apenas baselines em paralelo..."
+	@chmod +x scripts/run_all_parallel.sh
+	@./scripts/run_all_parallel.sh Random POP RPOP SPOP
 
 run-gru4rec-parallel:
 	@echo "Executando GRU4Rec com 3 slices em paralelo..."
