@@ -221,6 +221,48 @@ class ResultsAggregator:
         print(f"Saved slice consistency plot: {output_file}")
         plt.close()
     
+    def organize_model_files(self):
+        """Organiza arquivos específicos de cada modelo em suas pastas"""
+        import shutil
+        import json
+        
+        print("\nOrganizing model-specific files...")
+        
+        # Get all models from results
+        raw_results = self.input_path / 'raw_results.csv'
+        if not raw_results.exists():
+            return
+        
+        df = pd.read_csv(raw_results)
+        models = df['model'].unique()
+        
+        # Create model folders
+        for model in models:
+            model_dir = self.output_dir / model
+            model_dir.mkdir(exist_ok=True)
+            
+            # Move loss files
+            losses_dir = self.input_path / 'losses'
+            if losses_dir.exists():
+                for loss_file in losses_dir.glob(f'{model}_slice*_loss.json'):
+                    dest = model_dir / loss_file.name
+                    shutil.copy2(loss_file, dest)
+            
+            # Move execution logs
+            for log_file in self.input_path.glob(f'{model}_*.log'):
+                dest = model_dir / log_file.name
+                shutil.copy2(log_file, dest)
+            
+            # Move model-specific checkpoints if any
+            saved_dir = self.input_path / 'saved'
+            if saved_dir.exists():
+                for model_file in saved_dir.glob(f'{model}*'):
+                    if model_file.is_file():
+                        dest = model_dir / model_file.name
+                        shutil.copy2(model_file, dest)
+        
+        print(f"Organized files for {len(models)} models into separate folders")
+    
     def plot_loss_curves(self):
         """Gráficos de loss curves para análise de overfitting"""
         
@@ -262,8 +304,12 @@ class ResultsAggregator:
                 'best_epoch': data.get('best_valid_epoch', -1)
             })
         
-        # Create plots for each model
+        # Create plots for each model and save in model folder
         for model, slices_data in model_losses.items():
+            # Create model directory
+            model_dir = self.output_dir / model
+            model_dir.mkdir(exist_ok=True)
+            
             n_slices = len(slices_data)
             fig, axes = plt.subplots(2, 3, figsize=(15, 8))
             axes = axes.flatten()
@@ -321,7 +367,7 @@ class ResultsAggregator:
                 axes[idx].axis('off')
             
             plt.tight_layout()
-            output_file = self.output_dir / f'loss_curves_{model}.png'
+            output_file = model_dir / 'loss_curves.png'
             plt.savefig(output_file, dpi=300, bbox_inches='tight')
             print(f"Saved loss curves: {output_file}")
             plt.close()
@@ -645,6 +691,9 @@ Higher values are better for all metrics.
         print(agg_df[display_cols].to_string(index=False))
         print()
         
+        # Organize model-specific files into folders
+        self.organize_model_files()
+        
         # Create tables
         print("\nGenerating tables...")
         self.create_summary_tables(agg_df)
@@ -662,7 +711,15 @@ Higher values are better for all metrics.
         print("="*80)
         print("\nGenerated files:")
         for f in sorted(self.output_dir.glob('*')):
-            print(f"  - {f.name}")
+            if f.is_file():
+                print(f"  - {f.name}")
+            else:
+                print(f"  - {f.name}/ (model-specific files)")
+        print("\nModel-specific folders contain:")
+        print("  - Loss curves (loss_curves.png)")
+        print("  - Loss data (*.json)")
+        print("  - Execution logs (*.log)")
+        print("  - Model checkpoints (if saved)")
 
 
 def aggregate_results(input_path: str, output_path: str):
