@@ -351,58 +351,55 @@ tail -f outputs/logs/GRU4Rec_slice*.log
 **Logs não aparecem**
 - Processos ainda rodando, aguarde ou verifique com `ps aux | grep python`
 
-## Análise Exploratória de Recomendações
+## Análise de Recomendações
 
-Após treinar modelos, você pode explorar e validar as recomendações geradas.
+Após treinar modelos, analise qualitativamente as recomendações geradas comparando com sessões reais do dataset de teste.
 
-### Via Notebook Jupyter (Recomendado)
-
-```bash
-jupyter notebook notebooks/explore_recommendations.ipynb
-```
-
-O notebook guia você passo a passo para:
-- Carregar modelo treinado
-- Gerar recomendações para sessões de teste
-- Comparar características (preço, localização, tamanho)
-- Visualizar distribuições espaciais e estatísticas
-- Validar se as recomendações fazem sentido
-
-### Via Script Python
+### Uso
 
 ```bash
-python src/exploration/explore_model.py \
-  --model outputs/saved/GRU4Rec-Dec-16-2024.pth \
-  --features /path/to/listings.parquet \
-  --session-ids 123,456,789 \
-  --top-k 10
+# Análise básica (5 sessões, Top-10)
+make analyze-model MODEL_PATH=outputs/saved/GRU4Rec-Dec-16-2025_18-06-21.pth
+
+# Análise customizada
+make analyze-model MODEL_PATH=outputs/saved/GRU4Rec.pth NUM_SESSIONS=10 TOP_K=20
 ```
 
-### Via Código
+### O que é Analisado
 
-```python
-from src.exploration.model_explorer import ModelExplorer
+- Compatibilidade de preços entre sessão e recomendações
+- Compatibilidade geográfica (cidades)
+- Compatibilidade de características (quartos, área)
+- Adaptação do modelo a diferentes perfis (luxo, econômico, padrão)
 
-# Carregar modelo
-explorer = ModelExplorer('outputs/saved/GRU4Rec.pth')
-explorer.load_item_features('/path/to/listings.parquet')
+### Output
 
-# Analisar sessão
-session_items = [123, 456, 789]
-explorer.print_recommendation_report(session_items, top_k=10)
+- Console: análise detalhada de cada sessão
+- CSV: `outputs/analysis/<modelo>/analysis_results.csv`
+- PNG: `outputs/analysis/<modelo>/comparative_analysis.png`
+
+### Interpretação
+
+Thresholds:
+- BOM: ≥60% compatibilidade
+- MODERADO: 30-60% compatibilidade
+- RUIM: <30% compatibilidade
+
+Se abaixo de 60%:
+- Revisar hiperparâmetros
+- Testar outras arquiteturas
+- Verificar qualidade dos dados
+
+## Resultados
+
+Os resultados são salvos em `outputs/results/<timestamp>/`.
+
+Para agregar resultados:
+```bash
+make aggregate-last
 ```
-
-### O que é analisado?
-
-- **Comparação estatística**: Preço, área, quartos (sessão vs recomendações)
-- **Distribuição geográfica**: Visualização em mapa
-- **Categorias**: Cidades, bairros, tipos de imóvel
-- **Consistência**: Comportamento em múltiplas sessões
-
-Boas recomendações devem ter características similares aos anúncios da sessão (localização, preço, tamanho).
 
 ## Referência
-
 Domingues, M. A., de Moura, E. S., Marinho, L. B., & da Silva, A. (2024).  
 A large scale benchmark for session-based recommendations in the legal domain.  
 Artificial Intelligence and Law, 33, 43-78.  

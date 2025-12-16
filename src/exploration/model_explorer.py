@@ -26,17 +26,27 @@ class ModelExplorer:
     def _load_model(self):
         checkpoint = torch.load(self.model_path, map_location='cpu', weights_only=False)
         
-        # Extrair configuração do checkpoint
         self.config = checkpoint['config']
         
-        # Tentar criar dataset (pode falhar se dados não existirem)
         try:
-            # Se dataset_path foi fornecido, usar ele
             if self.dataset_path:
                 self.config['data_path'] = self.dataset_path
             
+            from recbole.data import create_dataset
             self.dataset = create_dataset(self.config)
             print(f"Dataset carregado: {self.config['dataset']}")
+            
+            # Criar mapeamento token -> ID interno
+            self.token2id = {}
+            if hasattr(self.dataset, 'field2id_token'):
+                # Tentar ambos os formatos de nome de campo
+                item_field = 'item_id:token' if 'item_id:token' in self.dataset.field2id_token else 'item_id'
+                
+                if item_field in self.dataset.field2id_token:
+                    tokens = self.dataset.field2id_token[item_field]
+                    self.token2id = {str(token): idx for idx, token in enumerate(tokens)}
+                    print(f"  Token mapping criado: {len(self.token2id)} items")
+                    print(f"  Amostra: {list(self.token2id.items())[:5]}")
         except (FileNotFoundError, ValueError) as e:
             print(f"AVISO: Dataset original não encontrado: {e}")
             print("   Modo simplificado: use apenas IDs numéricos para predição")
@@ -77,10 +87,10 @@ class ModelExplorer:
         
     def load_item_features(self, features_path: str):
         """
-        Carrega características dos anúncios para análise.
+        Load item features for analysis.
         
         Args:
-            features_path: Caminho para CSV/Parquet com features dos anúncios
+            features_path: Path to CSV/Parquet with item features
         """
         if features_path.endswith('.parquet'):
             self.item_features = pd.read_parquet(features_path)
@@ -107,21 +117,84 @@ class ModelExplorer:
         print(f"Coluna de ID: {self.item_id_col}")
         print(f"Colunas disponíveis: {list(self.item_features.columns)}")
         
-    def recommend_for_session(self, session_items: List[int], top_k: int = 10) -> List[int]:
+    def load_real_sessions(self, inter_file: str, n_sessions: int = 10) -> List[Tuple[int, List[int]]]:
         """
-        Gera recomendações para uma sessão.
+        Load real user sessions from interaction file.
         
         Args:
-            session_items: Lista de IDs de anúncios na sessão atual
-            top_k: Número de recomendações a retornar
+            inter_file: Path to .inter file with interactions
+            n_sessions: Number of random sessions to load
             
         Returns:
-            Lista com top-K anúncios recomendados
+            List of tuples (session_id, item_list)
+        """
+        df = pd.read_csv(inter_file, sep='\t')
+        
+        # Group by session
+        session_col = self.config.get('SESSION_ID_FIELD', 'session_id')
+        item_col = self.config.get('ITEM_ID_FIELD', 'item_id')
+        time_col = self.config.get('TIME_FIELD', 'timestamp')
+        
+        # Sort by time within each session
+        df = df.sort_values([session_col, time_col])
+        
+        # Get sessions with at least 3 items
+        session_groups = df.groupby(session_col)[item_col].apply(list)
+        valid_sessions = session_groups[session_groups.apply(len) >= 3]
+        
+        # Sample random sessions
+        sampled = valid_sessions.sample(min(n_sessions, len(valid_sessions)))
+        
+        return [(sid, items) for sid, items in sampled.items()]
+    
+    def recommend_for_session(self, session_items: List[int], top_k: int = 10) -> List[int]:
+        """
+        Generate recommendations for a session.
+        
+        Args:
+            session_items: List of item IDs (tokens originais ou IDs remapeados)
+            top_k: Number of recommendations to return
+            
+        Returns:
+            List with top-K recommended items (IDs remapeados)
         """
         with torch.no_grad():
+            # Se temos mapeamento, converter tokens para IDs internos
+            if hasattr(self, 'token2id') and self.token2id:
+                mapped_items = []
+                for item in session_items:
+                    str_item = str(item)
+                    if str_item in self.token2id:
+                        mapped_items.append(self.token2id[str_item])
+                    elif 0 <= item <= self.dataset.item_num - 1:
+                        # Já é um ID interno válido
+                        mapped_items.append(item)
+                
+                if len(mapped_items) == 0:
+                    print(f"AVISO: Nenhum item valido apos mapeamento")
+                    return []
+                
+                if len(mapped_items) < len(session_items):
+                    unmapped = set(session_items) - set([int(k) for k in self.token2id.keys() if self.token2id[k] in mapped_items])
+                    print(f"AVISO: {len(unmapped)} items nao encontrados no vocabulario")
+                
+                valid_items = mapped_items
+            else:
+                # Sem mapeamento, validar IDs diretamente
+                max_item_id = self.dataset.item_num - 1
+                valid_items = [item_id for item_id in session_items if 0 <= item_id <= max_item_id]
+                
+                if len(valid_items) == 0:
+                    print(f"AVISO: Nenhum item valido na sessao (max_id={max_item_id})")
+                    return []
+                
+                if len(valid_items) < len(session_items):
+                    invalid = set(session_items) - set(valid_items)
+                    print(f"AVISO: {len(invalid)} itens invalidos removidos")
+            
             # Preparar dados da sessão
             max_len = self.config['MAX_ITEM_LIST_LENGTH']
-            session_padded = session_items[-max_len:] if len(session_items) > max_len else session_items
+            session_padded = valid_items[-max_len:] if len(valid_items) > max_len else valid_items
             
             # Pad se necessário
             if len(session_padded) < max_len:
@@ -130,8 +203,8 @@ class ModelExplorer:
             
             interaction_dict = {
                 'item_id_list': torch.LongTensor([session_padded]),
-                'item_length': torch.LongTensor([len(session_items)]),
-                self.config['ITEM_ID_FIELD']: torch.LongTensor([session_items[-1]]),
+                'item_length': torch.LongTensor([len(valid_items)]),
+                self.config['ITEM_ID_FIELD']: torch.LongTensor([valid_items[-1]]),
                 self.config['SESSION_ID_FIELD']: torch.LongTensor([0]),
             }
             
@@ -145,7 +218,7 @@ class ModelExplorer:
             scores = scores.view(-1).cpu()
             
             # Excluir itens já vistos
-            for item_id in session_items:
+            for item_id in valid_items:
                 if item_id < len(scores):
                     scores[item_id] = -np.inf
             

@@ -38,8 +38,12 @@ else
 fi
 echo ""
 
+# Gerar timestamp compartilhado para todos os slices
+SHARED_TIMESTAMP=$(date '+%b-%d-%Y_%H-%M-%S')
+echo "Timestamp compartilhado: $SHARED_TIMESTAMP"
+
 # Construir comando base
-CMD="python src/run_experiments.py --models $MODEL"
+CMD="python src/run_experiments.py --models $MODEL --shared-timestamp $SHARED_TIMESTAMP"
 if [ "$SAVE_CHECKPOINTS" = "yes" ]; then
     CMD="$CMD --save-checkpoints"
 fi

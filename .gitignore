@@ -49,3 +49,5 @@ outputs/results/**/*.log
 outputs/results/**/*.json
 outputs/results/**/*.png
 outputs/results/**/*.md
+
+premissas.txt

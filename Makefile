@@ -1,4 +1,4 @@
-.PHONY: help install clean clean-results prepare-raw-data prepare-data convert-recbole run-all aggregate-last run-neurais run-factorization run-baselines run-gru4rec run-narm run-stamp run-sasrec run-fpmc run-fossil run-random run-pop run-rpop run-spop run-gru4rec-parallel run-parallel
+.PHONY: help install clean clean-results prepare-raw-data prepare-data convert-recbole run-all aggregate-last run-neurais run-factorization run-baselines run-gru4rec run-narm run-stamp run-sasrec run-fpmc run-fossil run-random run-pop run-rpop run-spop run-gru4rec-parallel run-parallel analyze-model
 
 help:
 	@echo "Fermi - Session-Based Recommendation Benchmark"
@@ -35,6 +35,9 @@ help:
 	@echo "  make run-pop              - Executar POP em todos slices"
 	@echo "  make run-rpop             - Executar RPOP em todos slices"
 	@echo "  make run-spop             - Executar SPOP em todos slices"
+	@echo ""
+	@echo "Analise:"
+	@echo "  make analyze-model        - Analisar recomendacoes (requer MODEL_PATH e opcionalmente SLICE)"
 	@echo ""
 	@echo "Resultados:"
 	@echo "  make aggregate-last       - Agregar último resultado"
@@ -146,6 +149,31 @@ aggregate-last:
 	python src/aggregate_results.py \
 		--input "$${LAST_DIR%/}" \
 		--output "$${LAST_DIR%/}/aggregated_results.csv"
+
+# Analise de recomendacoes
+# Uso: make analyze-model MODEL_PATH=outputs/saved/GRU4Rec.pth [NUM_SESSIONS=5] [TOP_K=10] [SLICE=slice2]
+analyze-model:
+	@if [ -z "$(MODEL_PATH)" ]; then \
+		echo "ERROR: MODEL_PATH nao especificado"; \
+		echo "Uso: make analyze-model MODEL_PATH=outputs/saved/GRU4Rec.pth"; \
+		exit 1; \
+	fi
+	@if [ ! -f "$(MODEL_PATH)" ]; then \
+		echo "ERROR: Modelo nao encontrado: $(MODEL_PATH)"; \
+		exit 1; \
+	fi
+	@SLICE=$(or $(SLICE),slice1); \
+	OUTPUT_DIR="outputs/analysis/$$(basename $(MODEL_PATH) .pth)"; \
+	echo "Analisando modelo: $(MODEL_PATH)"; \
+	echo "Slice: $$SLICE"; \
+	echo "Output: $$OUTPUT_DIR"; \
+	python src/exploration/analyze_recommendations.py \
+		--model_path $(MODEL_PATH) \
+		--features_path /home/hygo2025/Documents/data/processed_data/listings/part-00000-bf98a429-f6d4-47a3-a1c0-94dc622ae21a-c000.snappy.parquet \
+		--test_data_path outputs/data/recbole/realestate_$$SLICE/realestate_$$SLICE.test.inter \
+		--num_sessions $(or $(NUM_SESSIONS),5) \
+		--top_k $(or $(TOP_K),10) \
+		--output_dir $$OUTPUT_DIR
 
 clean-results:
 	rm -rf outputs/results/* 2>/dev/null || true
