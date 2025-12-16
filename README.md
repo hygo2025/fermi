@@ -310,15 +310,3 @@ DOI: 10.1007/s10506-023-09378-3
 ## Licença
 
 MIT License
-
-## Referências dos Modelos
-
-Modelos Neurais:
-- Hidasi, B., et al. (2016). Session-based recommendations with recurrent neural networks. ICLR.
-- Li, J., et al. (2017). Neural attentive session-based recommendation. CIKM.
-- Liu, Q., et al. (2018). STAMP: Short-term attention/memory priority model. KDD.
-- Kang, W., & McAuley, J. (2018). Self-attentive sequential recommendation. ICDM.
-
-Modelos de Fatoração:
-- Rendle, S., et al. (2010). Factorizing personalized markov chains for next-basket recommendation. WWW.
-- He, R., & McAuley, J. (2016). FISM: Factored item similarity models for top-n recommender systems. KDD.
