@@ -210,12 +210,11 @@ class ExperimentRunner:
         # Hook into trainer's _valid_epoch to capture validation scores
         original_valid_epoch = trainer._valid_epoch
         def _valid_epoch_with_tracking(valid_data, show_progress=False):
-            valid_result = original_valid_epoch(valid_data, show_progress)
-            # Extract the validation metric (e.g., Recall@10)
-            valid_metric = config.get('valid_metric', 'Recall@10')
-            if valid_metric in valid_result:
-                valid_score_history.append(float(valid_result[valid_metric]))
-            return valid_result
+            valid_score, valid_result = original_valid_epoch(valid_data, show_progress)
+            # valid_score is already the metric value (e.g., Recall@10)
+            if valid_score is not None:
+                valid_score_history.append(float(valid_score))
+            return valid_score, valid_result
         trainer._valid_epoch = _valid_epoch_with_tracking
         
         # Inject GPU cooling callback if enabled
