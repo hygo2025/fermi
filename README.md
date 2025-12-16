@@ -288,6 +288,85 @@ Seguindo o paper de Domingues et al. (2024):
 - Métricas: Recall@K, MRR@K, NDCG@K, Hit@K (K=5,10,20)
 - Agregação: média ± desvio padrão entre slices
 
+## Gerenciamento de Checkpoints
+
+Por padrão, checkpoints **NÃO são salvos** para economizar espaço (~25 GB para 50 experimentos).
+
+### Habilitar salvamento
+
+```bash
+# Para análise exploratória posterior
+python src/run_experiments.py --all-slices --save-checkpoints
+```
+
+### Gerenciar checkpoints existentes
+
+```bash
+# Ver estatísticas
+python scripts/manage_checkpoints.py --strategy stats
+
+# Manter apenas o melhor de cada modelo
+python scripts/manage_checkpoints.py --strategy keep-best
+
+# Manter apenas os N mais recentes
+python scripts/manage_checkpoints.py --strategy keep-recent --keep-n 5
+
+# Limpar tudo
+python scripts/manage_checkpoints.py --strategy clean-all
+```
+
+**Recomendação**: Use checkpoints apenas se precisar fazer análise exploratória. Para benchmark, as métricas nos CSVs são suficientes.
+
+## Análise Exploratória de Recomendações
+
+Após treinar modelos, você pode explorar e validar as recomendações geradas.
+
+### Via Notebook Jupyter (Recomendado)
+
+```bash
+jupyter notebook notebooks/explore_recommendations.ipynb
+```
+
+O notebook guia você passo a passo para:
+- Carregar modelo treinado
+- Gerar recomendações para sessões de teste
+- Comparar características (preço, localização, tamanho)
+- Visualizar distribuições espaciais e estatísticas
+- Validar se as recomendações fazem sentido
+
+### Via Script Python
+
+```bash
+python src/exploration/explore_model.py \
+  --model outputs/saved/GRU4Rec-Dec-16-2024.pth \
+  --features /path/to/listings.parquet \
+  --session-ids 123,456,789 \
+  --top-k 10
+```
+
+### Via Código
+
+```python
+from src.exploration.model_explorer import ModelExplorer
+
+# Carregar modelo
+explorer = ModelExplorer('outputs/saved/GRU4Rec.pth')
+explorer.load_item_features('/path/to/listings.parquet')
+
+# Analisar sessão
+session_items = [123, 456, 789]
+explorer.print_recommendation_report(session_items, top_k=10)
+```
+
+### O que é analisado?
+
+- **Comparação estatística**: Preço, área, quartos (sessão vs recomendações)
+- **Distribuição geográfica**: Visualização em mapa
+- **Categorias**: Cidades, bairros, tipos de imóvel
+- **Consistência**: Comportamento em múltiplas sessões
+
+Boas recomendações devem ter características similares aos anúncios da sessão (localização, preço, tamanho).
+
 ## Configurações GPU
 
 Otimizações para RTX 4090:

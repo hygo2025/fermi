@@ -39,7 +39,8 @@ class ExperimentRunner:
                  cool_every_n_epochs: int = 5,
                  cool_duration_seconds: int = 60,
                  max_temp_celsius: int = 80,
-                 shared_timestamp: str = None):
+                 shared_timestamp: str = None,
+                 save_checkpoints: bool = False):
         """
         Args:
             data_path: Diretório com dados RecBole
@@ -52,9 +53,11 @@ class ExperimentRunner:
             cool_duration_seconds: Duração da pausa em segundos
             max_temp_celsius: Temperatura máxima antes de forçar pausa
             shared_timestamp: Timestamp compartilhado (para run_all)
+            save_checkpoints: Se True, salva checkpoints (padrão: False para economizar espaço)
         """
         self.data_path = Path(data_path)
         self.config_path = Path(config_path)
+        self.save_checkpoints = save_checkpoints
         
         # Create timestamped output directory
         # Use shared timestamp if provided, otherwise create new
@@ -153,6 +156,11 @@ class ExperimentRunner:
         # Override dataset and data_path for current slice
         config['dataset'] = dataset_name
         config['data_path'] = str(self.data_path)
+        
+        # Controle de salvamento de checkpoints
+        if not self.save_checkpoints:
+            # Desabilitar salvamento para economizar espaço
+            config['checkpoint_dir'] = None
         
         return config
     
@@ -380,6 +388,8 @@ def main():
                        help='Override number of epochs (for testing)')
     parser.add_argument('--batch-size', type=int, default=None,
                        help='Override batch size (for testing)')
+    parser.add_argument('--save-checkpoints', action='store_true',
+                       help='Save model checkpoints (default: False para economizar espaço)')
     
     args = parser.parse_args()
     
@@ -393,7 +403,8 @@ def main():
         cool_every_n_epochs=args.cool_every,
         cool_duration_seconds=args.cool_duration,
         max_temp_celsius=args.max_temp,
-        shared_timestamp=args.shared_timestamp
+        shared_timestamp=args.shared_timestamp,
+        save_checkpoints=args.save_checkpoints
     )
     
     # Set override parameters if provided
