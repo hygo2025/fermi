@@ -332,28 +332,6 @@ python scripts/manage_checkpoints.py --strategy clean-all
 
 **Recomendação**: Use checkpoints apenas se precisar fazer análise exploratória. Para benchmark, as métricas nos CSVs são suficientes.
 
-## Execução Paralela
-
-Para acelerar experimentos, você pode rodar 2 slices simultaneamente.
-
-### Benefícios
-- **40% mais rápido**: ~6h vs ~10h para 5 slices
-- Usa 2 GPUs automaticamente (se disponível), ou
-- Usa 1 GPU com 2 processos (requer 24GB VRAM)
-
-### Como usar
-
-```bash
-# Rodar modelo em paralelo
-make run-gru4rec-parallel
-make run-parallel MODEL=NARM
-```
-
-### Requisitos
-- **1 GPU**: RTX 4090 24GB (roda 2 slices na mesma GPU)
-- **2 GPUs**: Qualquer GPU (roda 1 slice por GPU automaticamente)
-- VRAM por modelo: GRU4Rec ~8-10GB, NARM/STAMP ~6-8GB, SASRec ~8-10GB
-
 ### Monitoramento
 
 ```bash
@@ -422,18 +400,6 @@ explorer.print_recommendation_report(session_items, top_k=10)
 - **Consistência**: Comportamento em múltiplas sessões
 
 Boas recomendações devem ter características similares aos anúncios da sessão (localização, preço, tamanho).
-
-## Configurações GPU
-
-Otimizações para RTX 4090:
-- Batch size: 4096 (padrão: 512)
-- Hidden/Embedding size: 256 (padrão: 100)
-- VRAM usada: 6-8 GB por experimento
-
-Sistema de Cooling Automático:
-- Pausas de 60s a cada 5 epochs
-- Limite de temperatura: 80°C
-- Desativar com: `--no-gpu-cooling`
 
 ## Referência
 
