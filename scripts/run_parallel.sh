@@ -9,7 +9,7 @@ SLICE_ARRAY=($SLICES)
 TOTAL_SLICES=${#SLICE_ARRAY[@]}
 
 echo "================================================================================"
-echo "                  EXECUÇÃO PARALELA - GPU RTX 4090"
+echo "                  EXECUÇÃO PARALELA               "
 echo "================================================================================"
 echo ""
 echo "Modelo: $MODEL"

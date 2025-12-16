@@ -168,6 +168,10 @@ class ExperimentRunner:
         # Get config
         config_dict = self.get_model_config(model_name, dataset_name)
         
+        # Ensure eval_step is set
+        if 'eval_step' not in config_dict:
+            config_dict['eval_step'] = 1
+        
         # For custom models, don't let RecBole try to import them
         if model_name in ['Random', 'POP', 'RPOP', 'SPOP']:
             config = Config(model='GRU4Rec', config_dict=config_dict)  # Use GRU4Rec as template
@@ -197,7 +201,6 @@ class ExperimentRunner:
         
         # Create loss history tracker
         train_loss_history = []
-        valid_score_history = []
         
         # Hook into trainer's _train_epoch to capture losses
         original_train_epoch = trainer._train_epoch
@@ -206,16 +209,6 @@ class ExperimentRunner:
             train_loss_history.append(float(total_loss))
             return total_loss
         trainer._train_epoch = _train_epoch_with_tracking
-        
-        # Hook into trainer's _valid_epoch to capture validation scores
-        original_valid_epoch = trainer._valid_epoch
-        def _valid_epoch_with_tracking(valid_data, show_progress=False):
-            valid_score, valid_result = original_valid_epoch(valid_data, show_progress)
-            # valid_score is already the metric value (e.g., Recall@10)
-            if valid_score is not None:
-                valid_score_history.append(float(valid_score))
-            return valid_score, valid_result
-        trainer._valid_epoch = _valid_epoch_with_tracking
         
         # Inject GPU cooling callback if enabled
         if self.enable_gpu_cooling:
@@ -238,16 +231,9 @@ class ExperimentRunner:
         self.logger.info(f"  Testing {model_name}...")
         test_result = trainer.evaluate(test_data, show_progress=True)
         
-        # Find best epoch (where valid score was highest)
-        best_valid_epoch = -1
-        if valid_score_history:
-            best_valid_epoch = int(np.argmax(valid_score_history))
-        
         # Save loss curves
         loss_info = {
-            'train_losses': train_loss_history,
-            'valid_scores': valid_score_history,
-            'best_valid_epoch': best_valid_epoch
+            'train_losses': train_loss_history
         }
         
         # Save loss data to file
@@ -266,7 +252,6 @@ class ExperimentRunner:
             'slice': slice_id,
             'dataset': dataset_name,
             'best_valid_score': best_valid_score,
-            'best_valid_epoch': best_valid_epoch,
             'total_epochs': len(train_loss_history),
             **test_result
         }

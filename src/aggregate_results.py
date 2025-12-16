@@ -264,7 +264,7 @@ class ResultsAggregator:
         print(f"Organized files for {len(models)} models into separate folders")
     
     def plot_loss_curves(self):
-        """Gráficos de loss curves para análise de overfitting"""
+        """Gráficos de training loss curves"""
         
         losses_dir = self.input_path / 'losses'
         
@@ -299,9 +299,7 @@ class ResultsAggregator:
             
             model_losses[model].append({
                 'slice': int(slice_id),
-                'train_losses': data.get('train_losses', []),
-                'valid_scores': data.get('valid_scores', []),
-                'best_epoch': data.get('best_valid_epoch', -1)
+                'train_losses': data.get('train_losses', [])
             })
         
         # Create plots for each model and save in model folder
@@ -324,8 +322,6 @@ class ResultsAggregator:
                 ax = axes[idx]
                 slice_id = slice_data['slice']
                 train_losses = slice_data['train_losses']
-                valid_scores = slice_data['valid_scores']
-                best_epoch = slice_data['best_epoch']
                 
                 epochs = list(range(1, len(train_losses) + 1))
                 
@@ -334,33 +330,11 @@ class ResultsAggregator:
                     ax.plot(epochs, train_losses, 'b-', label='Train Loss', 
                            linewidth=2, alpha=0.7)
                 
-                # Plot validation score (higher is better, so we invert for comparison)
-                if valid_scores:
-                    ax2 = ax.twinx()
-                    valid_epochs = list(range(1, len(valid_scores) + 1))
-                    ax2.plot(valid_epochs, valid_scores, 'r-', label='Valid Score', 
-                            linewidth=2, alpha=0.7)
-                    ax2.set_ylabel('Validation Score', color='r', fontsize=10)
-                    ax2.tick_params(axis='y', labelcolor='r')
-                    
-                    # Mark best epoch
-                    if best_epoch >= 0 and best_epoch < len(valid_scores):
-                        ax2.axvline(x=best_epoch+1, color='g', linestyle='--', 
-                                   linewidth=2, alpha=0.5, label=f'Best (epoch {best_epoch+1})')
-                
                 ax.set_xlabel('Epoch', fontsize=10)
-                ax.set_ylabel('Training Loss', color='b', fontsize=10)
+                ax.set_ylabel('Training Loss', fontsize=10)
                 ax.set_title(f'Slice {slice_id}', fontsize=11, fontweight='bold')
-                ax.tick_params(axis='y', labelcolor='b')
                 ax.grid(True, alpha=0.3, linestyle='--')
-                
-                # Combine legends
-                lines1, labels1 = ax.get_legend_handles_labels()
-                if valid_scores:
-                    lines2, labels2 = ax2.get_legend_handles_labels()
-                    ax.legend(lines1 + lines2, labels1 + labels2, loc='best', fontsize=8)
-                else:
-                    ax.legend(loc='best', fontsize=8)
+                ax.legend(loc='best', fontsize=8)
             
             # Hide unused subplots
             for idx in range(n_slices, 6):
@@ -377,9 +351,9 @@ class ResultsAggregator:
     
     
     def plot_average_loss_curves(self, model_losses):
-        """Plot average loss curves across all slices for comparison"""
+        """Plot average training loss curves across all slices for comparison"""
         
-        fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 5))
+        fig, ax = plt.subplots(1, 1, figsize=(10, 6))
         
         for model, slices_data in model_losses.items():
             # Calculate average train loss across slices
@@ -389,7 +363,6 @@ class ResultsAggregator:
                 continue
             
             avg_train_loss = []
-            avg_valid_score = []
             
             for epoch in range(max_epochs):
                 train_vals = [s['train_losses'][epoch] for s in slices_data 
@@ -397,37 +370,17 @@ class ResultsAggregator:
                 if train_vals:
                     avg_train_loss.append(np.mean(train_vals))
             
-            max_valid_epochs = max((len(s['valid_scores']) for s in slices_data if s['valid_scores']), default=0)
-            if max_valid_epochs > 0:
-                for epoch in range(max_valid_epochs):
-                    valid_vals = [s['valid_scores'][epoch] for s in slices_data
-                                 if len(s['valid_scores']) > epoch]
-                    if valid_vals:
-                        avg_valid_score.append(np.mean(valid_vals))
-            
             # Plot average training loss
             if avg_train_loss:
                 epochs = list(range(1, len(avg_train_loss) + 1))
-                ax1.plot(epochs, avg_train_loss, marker='o', linewidth=2, 
-                        label=model, alpha=0.8, markersize=4)
-            
-            # Plot average validation score
-            if avg_valid_score:
-                epochs = list(range(1, len(avg_valid_score) + 1))
-                ax2.plot(epochs, avg_valid_score, marker='o', linewidth=2, 
+                ax.plot(epochs, avg_train_loss, marker='o', linewidth=2, 
                         label=model, alpha=0.8, markersize=4)
         
-        ax1.set_xlabel('Epoch', fontsize=12, fontweight='bold')
-        ax1.set_ylabel('Average Training Loss', fontsize=12, fontweight='bold')
-        ax1.set_title('Training Loss (Average across slices)', fontsize=13, fontweight='bold')
-        ax1.legend(loc='best', fontsize=10)
-        ax1.grid(True, alpha=0.3, linestyle='--')
-        
-        ax2.set_xlabel('Epoch', fontsize=12, fontweight='bold')
-        ax2.set_ylabel('Average Validation Score', fontsize=12, fontweight='bold')
-        ax2.set_title('Validation Score (Average across slices)', fontsize=13, fontweight='bold')
-        ax2.legend(loc='best', fontsize=10)
-        ax2.grid(True, alpha=0.3, linestyle='--')
+        ax.set_xlabel('Epoch', fontsize=12, fontweight='bold')
+        ax.set_ylabel('Average Training Loss', fontsize=12, fontweight='bold')
+        ax.set_title('Training Loss (Average across slices)', fontsize=13, fontweight='bold')
+        ax.legend(loc='best', fontsize=10)
+        ax.grid(True, alpha=0.3, linestyle='--')
         
         plt.tight_layout()
         output_file = self.output_dir / 'loss_curves_average.png'
@@ -704,7 +657,7 @@ Higher values are better for all metrics.
         self.plot_metrics_comparison(agg_df)
         self.plot_metrics_heatmap(agg_df)
         self.plot_slice_consistency(raw_df)
-        self.plot_loss_curves()  # Loss curves for overfitting analysis
+        self.plot_loss_curves()  # Training loss curves
         
         print("\n" + "="*80)
         print(f"All outputs saved to: {self.output_dir}")

@@ -3,7 +3,7 @@
 
 set -e
 
-MODELS=("GRU4Rec" "NARM" "STAMP" "SASRec" "Random" "POP" "RPOP" "SPOP")
+MODELS=("Random" "POP" "RPOP" "SPOP" "GRU4Rec" "NARM" "STAMP" "SASRec")
 ALL_SLICES="1 2 3 4 5"
 
 # Gera timestamp único compartilhado

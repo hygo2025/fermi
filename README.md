@@ -49,8 +49,8 @@ make run-all
 - `metrics_comparison.png` - Gráfico de barras comparativo
 - `performance_heatmap.png` - Heatmap de performance
 - `slice_consistency.png` - Consistência temporal
-- `loss_curves_[model].png` - Curvas de loss por modelo (análise de overfitting)
-- `loss_curves_average.png` - Curvas de loss médias (comparação entre modelos)
+- `loss_curves_[model].png` - Curvas de training loss por modelo
+- `loss_curves_average.png` - Curvas de training loss médias (comparação entre modelos)
 - `losses/` - Diretório com histórico de loss em JSON
 
 Cada execução cria uma nova pasta timestamped com tudo junto.
@@ -162,7 +162,7 @@ Seguindo Domingues et al. (2024):
 
 - Sliding window temporal: 5 slices de 30 dias
 - Protocolo de avaliação: next-item prediction
-- Split temporal: últimos 7 dias de cada janela para teste
+- Split temporal: últimos 7 dias de cada janela para teste (sem validação)
 - Métricas: Recall@K, MRR@K, NDCG@K, Hit@K (K=5,10,20)
 - Agregação: média ± desvio padrão entre slices
 

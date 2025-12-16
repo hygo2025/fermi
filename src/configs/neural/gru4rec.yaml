@@ -34,7 +34,7 @@ load_col:
 
 # Evaluation Protocol
 eval_args:
-  split: {'LS': 'test_only'}  # Use pre-split train/test files
+  split: {'LS': 'test_only'}  # Use pre-split train/test files (temporal split)
   order: 'TO'  # Temporal order
   mode: 'full'
 
