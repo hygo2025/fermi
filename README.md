@@ -149,6 +149,7 @@ Tempo estimado: ~3-4 horas (GPU RTX 4090)
 
 ### Execução por Modelo
 
+**Modo Serial** (1 slice por vez):
 ```bash
 make run-gru4rec    # GRU4Rec (5 slices)
 make run-narm       # NARM (5 slices)
@@ -157,6 +158,16 @@ make run-sasrec     # SASRec (5 slices)
 make run-fpmc       # FPMC (5 slices)
 make run-fossil     # FOSSIL (5 slices)
 ```
+
+**Modo Paralelo** (2 slices simultâneos - 40% mais rápido):
+```bash
+make run-gru4rec-parallel    # GRU4Rec com 2 slices paralelos
+make run-parallel MODEL=NARM # Qualquer modelo em paralelo
+```
+
+Modo paralelo requer:
+- GPU com 24GB VRAM (RTX 4090) para rodar 2 slices simultaneamente, ou
+- 2 GPUs (roda 1 slice por GPU automaticamente)
 
 ### Execução Granular
 
@@ -213,13 +224,17 @@ make convert-recbole    # Converter para RecBole (.inter)
 # Experimentos - Todos os modelos
 make run-all            # Executar todos modelos em todos slices
 
-# Experimentos - Modelos individuais
+# Experimentos - Modelos individuais (serial)
 make run-gru4rec        # Apenas GRU4Rec em todos slices
 make run-narm           # Apenas NARM em todos slices
 make run-stamp          # Apenas STAMP em todos slices
 make run-sasrec         # Apenas SASRec em todos slices
 make run-fpmc           # Apenas FPMC em todos slices
 make run-fossil         # Apenas FOSSIL em todos slices
+
+# Experimentos - Execução paralela (2 slices simultâneos)
+make run-gru4rec-parallel    # GRU4Rec em paralelo (40% mais rápido)
+make run-parallel MODEL=NARM # Qualquer modelo em paralelo
 
 # Resultados
 # (Agregação automática no final de run-all)
@@ -316,6 +331,47 @@ python scripts/manage_checkpoints.py --strategy clean-all
 ```
 
 **Recomendação**: Use checkpoints apenas se precisar fazer análise exploratória. Para benchmark, as métricas nos CSVs são suficientes.
+
+## Execução Paralela
+
+Para acelerar experimentos, você pode rodar 2 slices simultaneamente.
+
+### Benefícios
+- **40% mais rápido**: ~6h vs ~10h para 5 slices
+- Usa 2 GPUs automaticamente (se disponível), ou
+- Usa 1 GPU com 2 processos (requer 24GB VRAM)
+
+### Como usar
+
+```bash
+# Rodar modelo em paralelo
+make run-gru4rec-parallel
+make run-parallel MODEL=NARM
+```
+
+### Requisitos
+- **1 GPU**: RTX 4090 24GB (roda 2 slices na mesma GPU)
+- **2 GPUs**: Qualquer GPU (roda 1 slice por GPU automaticamente)
+- VRAM por modelo: GRU4Rec ~8-10GB, NARM/STAMP ~6-8GB, SASRec ~8-10GB
+
+### Monitoramento
+
+```bash
+# Ver uso de GPU em tempo real
+watch -n 1 nvidia-smi
+
+# Acompanhar logs
+tail -f outputs/logs/GRU4Rec_slice*.log
+```
+
+### Troubleshooting
+
+**Erro: CUDA Out of Memory**
+- Solução: Reduzir `train_batch_size` no YAML de configuração
+- Alternativa: Rodar modo serial (`make run-gru4rec`)
+
+**Logs não aparecem**
+- Processos ainda rodando, aguarde ou verifique com `ps aux | grep python`
 
 ## Análise Exploratória de Recomendações
 

@@ -4,26 +4,22 @@ model: GRU4Rec
 dataset: realestate_slice1
 data_path: recbole_data/
 
-# Training - EXPERIMENTAL
-epochs: 100
+# Training - IMPROVED
+epochs: 15
 train_batch_size: 4096
 eval_batch_size: 4096
 learning_rate: 0.001
 train_neg_sample_args: ~
 
-# Early Stopping - More patience
-stopping_step: 15
+# Early Stopping - NEW
+stopping_step: 10
 
-# Model Parameters - EXPERIMENTAL (High Capacity)
+# Model Parameters - IMPROVED
 embedding_size: 256
 hidden_size: 256
-num_layers: 3  # Máximo para não overfittar
-dropout_prob: 0.4  # Mais regularização
+num_layers: 2  # Aumentado de 1 para 2
+dropout_prob: 0.3
 loss_type: 'CE'
-
-# Gradient Clipping
-clip_grad_norm: 
-  max_norm: 5.0
 
 # Evaluation
 metrics: ['Recall', 'MRR', 'NDCG', 'Hit']

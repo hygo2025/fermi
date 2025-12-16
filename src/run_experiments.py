@@ -374,10 +374,10 @@ def main():
                        help='Enable GPU cooling breaks (default: True)')
     parser.add_argument('--no-gpu-cooling', dest='enable_gpu_cooling', action='store_false',
                        help='Disable GPU cooling breaks')
-    parser.add_argument('--cool-every', type=int, default=10,
-                       help='Cool down every N epochs (default: 10)')
-    parser.add_argument('--cool-duration', type=int, default=30,
-                       help='Cooling duration in seconds (default: 30)')
+    parser.add_argument('--cool-every', type=int, default=15,
+                       help='Cool down every N epochs (default: 15)')
+    parser.add_argument('--cool-duration', type=int, default=20,
+                       help='Cooling duration in seconds (default: 20)')
     parser.add_argument('--max-temp', type=int, default=80,
                        help='Max GPU temperature before forced cooling (default: 80°C)')
     parser.add_argument('--no-aggregate', action='store_true',

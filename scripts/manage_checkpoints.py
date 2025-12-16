@@ -89,7 +89,7 @@ def keep_best_per_model(checkpoint_dir):
             if ckpt != best_ckpt:
                 ckpt.unlink()
                 removed += 1
-                print(f"    ✗ Removido: {ckpt.name}")
+                print(f"    - Removido: {ckpt.name}")
             else:
                 kept += 1
     
@@ -119,12 +119,12 @@ def keep_recent(checkpoint_dir, n=5):
     print(f"\nEncontrados {len(checkpoints)} checkpoints")
     print(f"Mantendo os {n} mais recentes:")
     for ckpt in to_keep:
-        print(f"  ✓ {ckpt.name}")
+        print(f"  + {ckpt.name}")
     
     if to_remove:
         print(f"\nRemovendo {len(to_remove)} checkpoints antigos:")
         for ckpt in to_remove:
-            print(f"  ✗ {ckpt.name}")
+            print(f"  - {ckpt.name}")
             ckpt.unlink()
     
     print(f"\nEspaço liberado: ~{len(to_remove) * 200} MB (estimativa)")
@@ -139,13 +139,13 @@ def clean_all(checkpoint_dir):
         print("Nenhum checkpoint encontrado")
         return
     
-    print(f"\n⚠️  ATENÇÃO: Removendo TODOS os {len(checkpoints)} checkpoints!")
+    print(f"\nATENÇÃO: Removendo TODOS os {len(checkpoints)} checkpoints!")
     response = input("Tem certeza? (sim/não): ")
     
     if response.lower() == 'sim':
         for ckpt in checkpoints:
             ckpt.unlink()
-            print(f"  ✗ Removido: {ckpt.name}")
+            print(f"  - Removido: {ckpt.name}")
         print(f"\n{len(checkpoints)} checkpoints removidos")
         print(f"Espaço liberado: ~{len(checkpoints) * 200} MB (estimativa)")
     else:

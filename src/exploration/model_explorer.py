@@ -55,7 +55,7 @@ class ModelExplorer:
             self.dataset = create_dataset(self.config)
             print(f"Dataset carregado: {self.config['dataset']}")
         except (FileNotFoundError, ValueError) as e:
-            print(f"⚠️  Dataset original não encontrado: {e}")
+            print(f"AVISO: Dataset original não encontrado: {e}")
             print("   Modo simplificado: use apenas IDs numéricos para predição")
             
             # Criar dataset fake mínimo para inicializar o modelo
@@ -88,7 +88,7 @@ class ModelExplorer:
         self.model.load_state_dict(checkpoint['state_dict'])
         self.model.eval()
         
-        print(f"✓ Modelo {model_name} carregado com sucesso!")
+        print(f"OK - Modelo {model_name} carregado com sucesso!")
         print(f"  Items: {self.dataset.item_num}")
         print(f"  Device: {self.config['device']}")
         

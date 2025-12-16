@@ -1,4 +1,4 @@
-.PHONY: help install clean clean-results prepare-raw-data prepare-data convert-recbole run-all aggregate-last run-neurais run-factorization run-baselines run-gru4rec run-narm run-stamp run-sasrec run-fpmc run-fossil run-random run-pop run-rpop run-spop
+.PHONY: help install clean clean-results prepare-raw-data prepare-data convert-recbole run-all aggregate-last run-neurais run-factorization run-baselines run-gru4rec run-narm run-stamp run-sasrec run-fpmc run-fossil run-random run-pop run-rpop run-spop run-gru4rec-parallel run-parallel
 
 help:
 	@echo "Fermi - Session-Based Recommendation Benchmark"
@@ -10,6 +10,10 @@ help:
 	@echo ""
 	@echo "Experimentos (Sequencial):"
 	@echo "  make run-all              - Executar todos modelos em todos slices (1 por vez)"
+	@echo ""
+	@echo "Experimentos (Paralelo):"
+	@echo "  make run-parallel         - Executar modelo em 2 slices paralelos (com checkpoints)"
+	@echo "  make run-gru4rec-parallel - Executar GRU4Rec em 2 slices paralelos"
 	@echo ""
 	@echo "Modelos por Categoria:"
 	@echo "  make run-neurais          - Executar todos modelos neurais (GRU4Rec, NARM, STAMP, SASRec)"
@@ -69,10 +73,27 @@ run-all:
 	@chmod +x scripts/run_all_experiments.sh
 	@./scripts/run_all_experiments.sh
 
+# Experimentos - Paralelo (2 slices por vez)
+run-parallel:
+	@echo "Uso: make run-parallel MODEL=<modelo>"
+	@echo "Exemplo: make run-parallel MODEL=GRU4Rec"
+	@if [ -z "$(MODEL)" ]; then \
+		echo "ERRO: Especifique o modelo com MODEL=<nome>"; \
+		echo "Modelos disponíveis: GRU4Rec, NARM, STAMP, SASRec, FPMC, FOSSIL"; \
+		exit 1; \
+	fi
+	@chmod +x scripts/run_parallel_gpu.sh
+	@./scripts/run_parallel_gpu.sh $(MODEL) yes
+
+run-gru4rec-parallel:
+	@echo "Executando GRU4Rec em 2 slices paralelos (com checkpoints)..."
+	@chmod +x scripts/run_parallel_gpu.sh
+	@./scripts/run_parallel_gpu.sh GRU4Rec yes
+
 # Neurais
 run-gru4rec:
 	@echo "Executando GRU4Rec em todos os slices (sequencial)..."
-	python src/run_experiments.py --models GRU4Rec --all-slices
+	python src/run_experiments.py --models GRU4Rec --all-slices --save-checkpoints
 
 run-narm:
 	@echo "Executando NARM em todos os slices (sequencial)..."

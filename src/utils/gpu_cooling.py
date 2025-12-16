@@ -55,7 +55,7 @@ class GPUCoolingCallback:
         temp_before = self.get_gpu_temp()
         
         print(f"\n{'='*80}")
-        print(f"🧊 GPU COOLING BREAK (Epoch {epoch + 1})")
+        print(f"GPU COOLING BREAK (Epoch {epoch + 1})")
         print(f"Reason: {reason}")
         if temp_before:
             print(f"Temperature before: {temp_before}°C")
@@ -66,7 +66,7 @@ class GPUCoolingCallback:
         for remaining in range(self.cool_duration, 0, -10):
             temp = self.get_gpu_temp()
             temp_str = f" (GPU: {temp}°C)" if temp else ""
-            print(f"⏳ {remaining}s remaining{temp_str}", flush=True)
+            print(f"[WAIT] {remaining}s remaining{temp_str}", flush=True)
             time.sleep(min(10, remaining))
         
         temp_after = self.get_gpu_temp()
