@@ -4,10 +4,7 @@ Benchmark de recomendação baseada em sessões para dados de real estate, repli
 
 ## Documentação
 
-- [Configuração de Experimentos](docs/experiments.md) - Modelos, dados e métricas
-- [Guia de Execução](docs/execution.md) - Como reproduzir os experimentos
-- [Otimização GPU](docs/gpu-optimization.md) - Configurações para RTX 4090
-- [Sistema de Cooling GPU](docs/gpu-cooling.md) - Proteção térmica automática
+- [Metodologia](docs/metodologia.md) - Detalhes da metodologia do artigo base
 
 ## Visão Geral
 
@@ -15,18 +12,29 @@ Pipeline completo para benchmarking de modelos de recomendação baseados em ses
 
 1. Preparação de dados com sliding window temporal (5 slices de 30 dias)
 2. Conversão para formato RecBole
-3. Treinamento de 4 modelos neurais em cada slice
+3. Treinamento de 10 modelos (4 neurais + 2 fatoração + 4 baselines) em cada slice
 4. Avaliação com métricas padrão (Recall, MRR, NDCG, Hit)
 5. Agregação de resultados (média ± desvio padrão)
 
-Total: 20 experimentos (4 modelos × 5 slices)
+Total: 50 experimentos (10 modelos × 5 slices)
 
 ## Modelos Implementados
 
+**Modelos Neurais (RNN):**
 - **GRU4Rec:** RNN para recomendação sessional (Hidasi et al., 2016)
 - **NARM:** RNN com mecanismo de atenção (Li et al., 2017)
 - **STAMP:** Short-Term Attention/Memory Priority (Liu et al., 2018)
 - **SASRec:** Self-Attentive Sequential Recommendation (Kang & McAuley, 2018)
+
+**Modelos de Fatoração de Matrizes:**
+- **FPMC:** Factorized Personalized Markov Chains (Rendle et al., 2010)
+- **FOSSIL:** Hybrid FISM + FPMC (He & McAuley, 2016)
+
+**Baselines:**
+- **Random:** Recomendação aleatória
+- **POP:** Popularidade global
+- **RPOP:** Popularidade recente (últimos 7 dias)
+- **SPOP:** Popularidade por sessão
 
 ## Quick Start
 
@@ -55,7 +63,48 @@ make run-all
 
 Cada execução cria uma nova pasta timestamped com tudo junto.
 
-Tempo estimado: 1-2 horas (GPU RTX 4090 com batch_size=4096)
+
+## Guia de Execução
+
+### Pipeline Completo
+
+```bash
+# 1. Preparar dados (sliding window)
+make prepare-data
+
+# 2. Converter para RecBole
+make convert-recbole
+
+# 3. Executar todos experimentos
+make run-all
+```
+
+**Tempo estimado:** ~2-3 horas (GPU RTX 4090)
+
+### Execução por Modelo
+
+```bash
+make run-gru4rec    # GRU4Rec (5 slices)
+make run-narm       # NARM (5 slices)
+make run-stamp      # STAMP (5 slices)
+make run-sasrec     # SASRec (5 slices)
+make run-fpmc       # FPMC (5 slices)
+make run-fossil     # FOSSIL (5 slices)
+```
+
+### Execução Granular
+
+```bash
+# Um modelo em um slice
+python src/run_experiments.py --models GRU4Rec --slices 1
+
+# Múltiplos modelos e slices
+python src/run_experiments.py --models GRU4Rec NARM --slices 1 2 3
+
+# Todos os slices
+python src/run_experiments.py --models GRU4Rec --all-slices
+```
+
 
 ## Replicação do Experimento
 
@@ -76,12 +125,9 @@ make prepare-data
 make convert-recbole
 
 # 4. Executar todos os modelos em todos os slices
-#    Saída: outputs/results/raw_results.csv
+#    Saída: outputs/results/YYYYMMDD_HHMMSS/
+#    (Agregação automática ao final)
 make run-all
-
-# 5. Gerar tabelas de resultados agregados
-#    Saída: outputs/results/aggregated_results.csv
-make aggregate-results
 ```
 
 Requisitos:
@@ -104,6 +150,8 @@ make run-gru4rec        # Apenas GRU4Rec em todos slices
 make run-narm           # Apenas NARM em todos slices
 make run-stamp          # Apenas STAMP em todos slices
 make run-sasrec         # Apenas SASRec em todos slices
+make run-fpmc           # Apenas FPMC em todos slices
+make run-fossil         # Apenas FOSSIL em todos slices
 
 # Resultados
 # (Agregação automática no final de run-all)
@@ -168,18 +216,15 @@ Seguindo Domingues et al. (2024):
 
 ## Configurações GPU
 
-Os modelos estão configurados para maximizar o uso da GPU RTX 4090:
+**Otimizações para RTX 4090:**
+- Batch size: 4096 (vs 512 padrão)
+- Hidden/Embedding size: 256 (vs 100 padrão)
+- Uso típico de VRAM: 6-8 GB por experimento
 
-- Batch size: 4096 (8x maior que padrão)
-- Hidden size: 256 (2.5x maior que padrão)
-- Embedding size: 256 (2.5x maior que padrão)
-
-Sistema de cooling automático ativo por padrão:
-- Pausas a cada 5 epochs
-- Duração: 60 segundos
+**Sistema de Cooling Automático:**
+- Pausas a cada 5 epochs (60s)
 - Temperatura máxima: 80°C
-
-Ver [docs/gpu-optimization.md](docs/gpu-optimization.md) e [docs/gpu-cooling.md](docs/gpu-cooling.md) para detalhes.
+- Desativar: `--no-gpu-cooling`
 
 ## Referência
 
@@ -191,3 +236,15 @@ DOI: 10.1007/s10506-023-09378-3
 ## Licença
 
 MIT License
+
+## Referências dos Modelos
+
+**Modelos Neurais:**
+- Hidasi, B., et al. (2016). Session-based recommendations with recurrent neural networks. ICLR.
+- Li, J., et al. (2017). Neural attentive session-based recommendation. CIKM.
+- Liu, Q., et al. (2018). STAMP: Short-term attention/memory priority model. KDD.
+- Kang, W., & McAuley, J. (2018). Self-attentive sequential recommendation. ICDM.
+
+**Modelos de Fatoração:**
+- Rendle, S., et al. (2010). Factorizing personalized markov chains for next-basket recommendation. WWW.
+- He, R., & McAuley, J. (2016). FISM: Factored item similarity models for top-n recommender systems. KDD.

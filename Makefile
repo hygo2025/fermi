@@ -1,4 +1,4 @@
-.PHONY: help install clean clean-results prepare-data convert-recbole run-all aggregate-results run-gru4rec run-narm run-stamp run-sasrec run-gru4rec-parallel run-narm-parallel run-stamp-parallel run-sasrec-parallel run-baselines run-random run-pop run-rpop run-spop
+.PHONY: help install clean clean-results prepare-data convert-recbole run-all aggregate-last run-gru4rec run-narm run-stamp run-sasrec run-fpmc run-fossil run-baselines run-random run-pop run-rpop run-spop
 
 help:
 	@echo "Fermi - Session-Based Recommendation Benchmark"
@@ -9,11 +9,16 @@ help:
 	@echo ""
 	@echo "Experimentos (Sequencial):"
 	@echo "  make run-all              - Executar todos modelos em todos slices (1 por vez)"
-	@echo "  make test-quick           - TESTE RÁPIDO: GRU4Rec em 2 slices (~5-10min)"
+	@echo ""
+	@echo "Modelos Neurais:"
 	@echo "  make run-gru4rec          - Executar apenas GRU4Rec em todos slices"
 	@echo "  make run-narm             - Executar apenas NARM em todos slices"
 	@echo "  make run-stamp            - Executar apenas STAMP em todos slices"
 	@echo "  make run-sasrec           - Executar apenas SASRec em todos slices"
+	@echo ""
+	@echo "Modelos de Fatoração:"
+	@echo "  make run-fpmc             - Executar apenas FPMC em todos slices"
+	@echo "  make run-fossil           - Executar apenas FOSSIL em todos slices"
 	@echo ""
 	@echo "Baselines (Sequencial):"
 	@echo "  make run-baselines        - Executar todos baselines em todos slices"
@@ -22,18 +27,13 @@ help:
 	@echo "  make run-rpop             - Executar RPOP em todos slices"
 	@echo "  make run-spop             - Executar SPOP em todos slices"
 	@echo ""
-	@echo "Experimentos (Paralelo):"
-	@echo "  make run-gru4rec-parallel      - Executar GRU4Rec com slices 1,2,3 em paralelo"
-	@echo "  make run-narm-parallel         - Executar NARM com slices 1,2,3 em paralelo"
-	@echo "  make run-stamp-parallel        - Executar STAMP com slices 1,2,3 em paralelo"
-	@echo "  make run-sasrec-parallel       - Executar SASRec com slices 1,2,3 em paralelo"
-	@echo ""
 	@echo "Resultados:"
-	@echo "  make aggregate-results    - Agregar resultados (média ± std)"
+	@echo "  make aggregate-last       - Agregar último resultado"
 	@echo ""
 	@echo "Utilidades:"
 	@echo "  make install              - Instalar dependências"
 	@echo "  make clean                - Limpar cache e temp files"
+	@echo "  make clean-results        - Limpar resultados e logs"
 
 install:
 	pip install -e .
@@ -96,44 +96,15 @@ run-spop:
 	@echo "Executando SPOP em todos os slices (sequencial)..."
 	python src/run_experiments.py --models SPOP --all-slices
 
-# Experimentos - Paralelo (3 slices simultâneos)
-run-gru4rec-parallel:
-	@echo "Executando GRU4Rec com 3 slices em paralelo..."
-	@chmod +x scripts/run_parallel.sh
-	@./scripts/run_parallel.sh GRU4Rec "1 2 3"
-	@echo "Slices 1,2,3 iniciados. Aguarde a conclusão com 'wait' ou monitore com 'nvidia-smi'"
+# Factorization Models - Sequencial
+run-fpmc:
+	@echo "Executando FPMC em todos os slices (sequencial)..."
+	python src/run_experiments.py --models FPMC --all-slices
 
-run-narm-parallel:
-	@echo "Executando NARM com 3 slices em paralelo..."
-	@chmod +x scripts/run_parallel.sh
-	@./scripts/run_parallel.sh NARM "1 2 3"
-	@echo "Slices 1,2,3 iniciados. Aguarde a conclusão com 'wait' ou monitore com 'nvidia-smi'"
+run-fossil:
+	@echo "Executando FOSSIL em todos os slices (sequencial)..."
+	python src/run_experiments.py --models FOSSIL --all-slices
 
-run-stamp-parallel:
-	@echo "Executando STAMP com 3 slices em paralelo..."
-	@chmod +x scripts/run_parallel.sh
-	@./scripts/run_parallel.sh STAMP "1 2 3"
-	@echo "Slices 1,2,3 iniciados. Aguarde a conclusão com 'wait' ou monitore com 'nvidia-smi'"
-
-run-sasrec-parallel:
-	@echo "Executando SASRec com 3 slices em paralelo..."
-	@chmod +x scripts/run_parallel.sh
-	@./scripts/run_parallel.sh SASRec "1 2 3"
-	@echo "Slices 1,2,3 iniciados. Aguarde a conclusão com 'wait' ou monitore com 'nvidia-smi'"
-
-aggregate-results:
-	@echo "Este comando não é mais necessário!"
-	@echo "A agregação é feita automaticamente ao final de 'make run-all'"
-	@echo "Os resultados estão em: outputs/results/YYYYMMDD_HHMMSS/"
-
-test-quick:
-	@echo "Executando teste rápido (GRU4Rec em slices 1-2)..."
-	@echo "Configuração: 10 épocas, batch_size=512"
-	python src/run_experiments.py \
-		--models GRU4Rec \
-		--slices 1 2 \
-		--epochs 2 \
-		--batch-size 512
 
 # Agregação manual do último resultado
 aggregate-last:
@@ -152,9 +123,10 @@ clean-results:
 	rm -rf outputs/results/* 2>/dev/null || true
 	rm -rf outputs/logs/* 2>/dev/null || true
 	rm -rf outputs/saved/* 2>/dev/null || true
+	rm -rf log_tensorboard/* 2>/dev/null || true
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete 2>/dev/null || true
 	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
-	rm -rf logs/*.log 2>/dev/null || true
+

@@ -18,7 +18,7 @@ torch.load = _patched_torch_load
 
 from recbole.config import Config
 from recbole.data import create_dataset, data_preparation
-from recbole.model.sequential_recommender import GRU4Rec, NARM, STAMP, SASRec
+from recbole.model.sequential_recommender import GRU4Rec, NARM, STAMP, SASRec, FPMC, FOSSIL
 from recbole.trainer import Trainer
 from recbole.utils import init_seed
 
@@ -83,6 +83,8 @@ class ExperimentRunner:
             'NARM': NARM,
             'STAMP': STAMP,
             'SASRec': SASRec,
+            'FPMC': FPMC,
+            'FOSSIL': FOSSIL,
             'Random': RandomRecommender,
             'POP': POPRecommender,
             'RPOP': RPOPRecommender,
@@ -133,11 +135,14 @@ class ExperimentRunner:
         Returns:
             Dict com configurações
         """
-        # Try neural models first, then baselines
+        # Try neural models first, then baselines, then factorization
         config_file = self.config_path / 'neural' / f'{model_name.lower()}.yaml'
         
         if not config_file.exists():
             config_file = self.config_path / 'baselines' / f'{model_name.lower()}.yaml'
+        
+        if not config_file.exists():
+            config_file = self.config_path / 'factorization' / f'{model_name.lower()}.yaml'
         
         if not config_file.exists():
             raise FileNotFoundError(f"Config file not found for model: {model_name}")
