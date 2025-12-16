@@ -16,8 +16,6 @@ echo "Modelo: $MODEL"
 echo "Slices: $SLICES (total: $TOTAL_SLICES)"
 echo "Estratégia: Executar 3 slices por vez"
 echo ""
-echo "Com batch_size=4096, espera-se ~6-8 GB por slice."
-echo ""
 echo "================================================================================"
 echo ""
 

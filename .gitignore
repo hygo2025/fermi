@@ -46,3 +46,6 @@ log_tensorboard
 outputs/saved
 
 outputs/results/**/*.log
+outputs/results/**/*.json
+outputs/results/**/*.png
+outputs/results/**/*.md

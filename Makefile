@@ -1,4 +1,4 @@
-.PHONY: help install clean clean-results prepare-data convert-recbole run-all aggregate-last run-gru4rec run-narm run-stamp run-sasrec run-fpmc run-fossil run-baselines run-random run-pop run-rpop run-spop
+.PHONY: help install clean clean-results prepare-data convert-recbole run-all aggregate-last run-neurais run-factorization run-baselines run-gru4rec run-narm run-stamp run-sasrec run-fpmc run-fossil run-random run-pop run-rpop run-spop
 
 help:
 	@echo "Fermi - Session-Based Recommendation Benchmark"
@@ -10,6 +10,11 @@ help:
 	@echo "Experimentos (Sequencial):"
 	@echo "  make run-all              - Executar todos modelos em todos slices (1 por vez)"
 	@echo ""
+	@echo "Modelos por Categoria:"
+	@echo "  make run-neurais          - Executar todos modelos neurais (GRU4Rec, NARM, STAMP, SASRec)"
+	@echo "  make run-factorization    - Executar todos modelos de fatoração (FPMC, FOSSIL)"
+	@echo "  make run-baselines        - Executar todos baselines (Random, POP, RPOP, SPOP)"
+	@echo ""
 	@echo "Modelos Neurais:"
 	@echo "  make run-gru4rec          - Executar apenas GRU4Rec em todos slices"
 	@echo "  make run-narm             - Executar apenas NARM em todos slices"
@@ -20,8 +25,7 @@ help:
 	@echo "  make run-fpmc             - Executar apenas FPMC em todos slices"
 	@echo "  make run-fossil           - Executar apenas FOSSIL em todos slices"
 	@echo ""
-	@echo "Baselines (Sequencial):"
-	@echo "  make run-baselines        - Executar todos baselines em todos slices"
+	@echo "Baselines (Individuais):"
 	@echo "  make run-random           - Executar Random em todos slices"
 	@echo "  make run-pop              - Executar POP em todos slices"
 	@echo "  make run-rpop             - Executar RPOP em todos slices"
@@ -59,6 +63,7 @@ run-all:
 	@chmod +x scripts/run_all_experiments.sh
 	@./scripts/run_all_experiments.sh
 
+# Neurais
 run-gru4rec:
 	@echo "Executando GRU4Rec em todos os slices (sequencial)..."
 	python src/run_experiments.py --models GRU4Rec --all-slices
@@ -75,11 +80,7 @@ run-sasrec:
 	@echo "Executando SASRec em todos os slices (sequencial)..."
 	python src/run_experiments.py --models SASRec --all-slices
 
-# Baselines - Sequencial
-run-baselines:
-	@echo "Executando todos baselines em todos os slices (sequencial)..."
-	python src/run_experiments.py --models Random POP RPOP SPOP --all-slices
-
+# Baselines
 run-random:
 	@echo "Executando Random em todos os slices (sequencial)..."
 	python src/run_experiments.py --models Random --all-slices
@@ -96,7 +97,7 @@ run-spop:
 	@echo "Executando SPOP em todos os slices (sequencial)..."
 	python src/run_experiments.py --models SPOP --all-slices
 
-# Factorization Models - Sequencial
+# Factorization Models
 run-fpmc:
 	@echo "Executando FPMC em todos os slices (sequencial)..."
 	python src/run_experiments.py --models FPMC --all-slices
@@ -130,3 +131,16 @@ clean:
 	find . -type f -name "*.pyc" -delete 2>/dev/null || true
 	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
 
+
+# Grouped model execution
+run-neurais:
+	@echo "Executando todos modelos neurais em todos os slices..."
+	@./scripts/run_all_experiments.sh GRU4Rec NARM STAMP SASRec
+
+run-baselines:
+	@echo "Executando todos baselines em todos os slices (sequencial)..."
+	python src/run_experiments.py --models Random POP RPOP SPOP --all-slices
+
+run-factorization:
+	@echo "Executando todos modelos de fatoracao em todos os slices..."
+	@./scripts/run_all_experiments.sh FPMC FOSSIL

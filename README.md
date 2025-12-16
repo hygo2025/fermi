@@ -61,7 +61,7 @@ make run-all
 - `loss_curves_average.png` - Curvas de training loss médias (comparação entre modelos)
 - `losses/` - Diretório com histórico de loss em JSON
 
-Cada execução cria uma nova pasta timestamped com tudo junto.
+Cada execução cria uma pasta nova com timestamp para organizar tudo.
 
 
 ## Guia de Execução
@@ -206,10 +206,10 @@ fermi/
 
 ## Metodologia
 
-Seguindo Domingues et al. (2024):
+Seguindo o paper de Domingues et al. (2024):
 
 - Sliding window temporal: 5 slices de 30 dias
-- Protocolo de avaliação: next-item prediction
+- Protocolo: next-item prediction
 - Split temporal: últimos 7 dias de cada janela para teste (sem validação)
 - Métricas: Recall@K, MRR@K, NDCG@K, Hit@K (K=5,10,20)
 - Agregação: média ± desvio padrão entre slices
@@ -217,14 +217,14 @@ Seguindo Domingues et al. (2024):
 ## Configurações GPU
 
 **Otimizações para RTX 4090:**
-- Batch size: 4096 (vs 512 padrão)
-- Hidden/Embedding size: 256 (vs 100 padrão)
-- Uso típico de VRAM: 6-8 GB por experimento
+- Batch size: 4096 (padrão: 512)
+- Hidden/Embedding size: 256 (padrão: 100)
+- VRAM usada: 6-8 GB por experimento
 
 **Sistema de Cooling Automático:**
-- Pausas a cada 5 epochs (60s)
-- Temperatura máxima: 80°C
-- Desativar: `--no-gpu-cooling`
+- Pausas de 60s a cada 5 epochs
+- Limite de temperatura: 80°C
+- Desativar com: `--no-gpu-cooling`
 
 ## Referência
 

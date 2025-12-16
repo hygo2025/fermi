@@ -1,9 +1,17 @@
 #!/bin/bash
-# Executar todos os experimentos usando run_parallel.sh
+# Executar experimentos usando run_parallel.sh
+# Uso: ./run_all_experiments.sh [MODEL1 MODEL2 ...]
+#      Se nenhum modelo for especificado, executa todos
 
 set -e
 
-MODELS=("GRU4Rec" "NARM" "STAMP" "SASRec" "FPMC" "FOSSIL" "Random" "POP" "RPOP" "SPOP")
+# Se argumentos forem passados, usa eles; senão usa todos os modelos
+if [ $# -gt 0 ]; then
+    MODELS=("$@")
+else
+    MODELS=("GRU4Rec" "NARM" "STAMP" "SASRec" "FPMC" "FOSSIL" "Random" "POP" "RPOP" "SPOP")
+fi
+
 ALL_SLICES="1 2 3 4 5"
 
 # Gera timestamp único compartilhado
@@ -11,12 +19,13 @@ TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 export SHARED_TIMESTAMP="$TIMESTAMP"
 
 echo "================================================================================"
-echo "                  EXECUTAR TODOS OS EXPERIMENTOS"
+echo "                  EXECUTAR EXPERIMENTOS"
 echo "================================================================================"
 echo ""
 echo "Timestamp compartilhado: $TIMESTAMP"
 echo "Modelos: ${MODELS[@]}"
-echo "Slices por modelo: $ALL_SLICES (executados em paralelo)"
+echo "Total de modelos: ${#MODELS[@]}"
+echo "Slices por modelo: $ALL_SLICES (executados em paralelo, 3 por vez)"
 echo "Diretório de saída: outputs/results/$TIMESTAMP/"
 echo ""
 echo "================================================================================"
@@ -28,7 +37,7 @@ mkdir -p "outputs/results/$TIMESTAMP/losses"
 # Executar cada modelo sequencialmente (mas slices em paralelo)
 for model in "${MODELS[@]}"; do
     echo "--------------------------------------------------------------------------------"
-    echo "[$(date '+%H:%M:%S')] Executando $model (slices em paralelo)..."
+    echo "[$(date '+%H:%M:%S')] Executando $model (slices em paralelo, lotes de 3)..."
     echo "--------------------------------------------------------------------------------"
     echo ""
     
