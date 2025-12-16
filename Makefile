@@ -1,4 +1,4 @@
-.PHONY: help install clean prepare-data convert-recbole run-all run-all-parallel run-all-neurals-parallel run-all-baselines-parallel aggregate-results run-gru4rec run-narm run-stamp run-sasrec run-gru4rec-parallel run-narm-parallel run-stamp-parallel run-sasrec-parallel run-baselines run-random run-pop run-rpop run-spop run-baselines-parallel
+.PHONY: help install clean clean-results prepare-data convert-recbole run-all aggregate-results run-gru4rec run-narm run-stamp run-sasrec run-gru4rec-parallel run-narm-parallel run-stamp-parallel run-sasrec-parallel run-baselines run-random run-pop run-rpop run-spop
 
 help:
 	@echo "Fermi - Session-Based Recommendation Benchmark"
@@ -22,10 +22,7 @@ help:
 	@echo "  make run-rpop             - Executar RPOP em todos slices"
 	@echo "  make run-spop             - Executar SPOP em todos slices"
 	@echo ""
-	@echo "Experimentos (Paralelo - 3 slices simultâneos):"
-	@echo "  make run-all-parallel          - Executar TODOS modelos (neurais + baselines) em paralelo"
-	@echo "  make run-all-neurals-parallel  - Executar apenas modelos neurais em paralelo"
-	@echo "  make run-all-baselines-parallel- Executar apenas baselines em paralelo"
+	@echo "Experimentos (Paralelo):"
 	@echo "  make run-gru4rec-parallel      - Executar GRU4Rec com slices 1,2,3 em paralelo"
 	@echo "  make run-narm-parallel         - Executar NARM com slices 1,2,3 em paralelo"
 	@echo "  make run-stamp-parallel        - Executar STAMP com slices 1,2,3 em paralelo"
@@ -58,8 +55,9 @@ convert-recbole:
 
 # Experimentos - Sequencial
 run-all:
-	@echo "Executando todos experimentos (sequencial)..."
-	python src/run_experiments.py --all-slices
+	@echo "Executando todos experimentos (slices em paralelo por modelo)..."
+	@chmod +x scripts/run_all_experiments.sh
+	@./scripts/run_all_experiments.sh
 
 run-gru4rec:
 	@echo "Executando GRU4Rec em todos os slices (sequencial)..."
@@ -99,21 +97,6 @@ run-spop:
 	python src/run_experiments.py --models SPOP --all-slices
 
 # Experimentos - Paralelo (3 slices simultâneos)
-run-all-parallel:
-	@echo "Executando TODOS os modelos (neurais + baselines) em paralelo..."
-	@chmod +x scripts/run_all_parallel.sh
-	@./scripts/run_all_parallel.sh GRU4Rec NARM STAMP SASRec Random POP RPOP SPOP
-
-run-all-neurals-parallel:
-	@echo "Executando apenas modelos neurais em paralelo..."
-	@chmod +x scripts/run_all_parallel.sh
-	@./scripts/run_all_parallel.sh GRU4Rec NARM STAMP SASRec
-
-run-all-baselines-parallel:
-	@echo "Executando apenas baselines em paralelo..."
-	@chmod +x scripts/run_all_parallel.sh
-	@./scripts/run_all_parallel.sh Random POP RPOP SPOP
-
 run-gru4rec-parallel:
 	@echo "Executando GRU4Rec com 3 slices em paralelo..."
 	@chmod +x scripts/run_parallel.sh
@@ -164,6 +147,11 @@ aggregate-last:
 	python src/aggregate_results.py \
 		--input "$${LAST_DIR%/}" \
 		--output "$${LAST_DIR%/}/aggregated_results.csv"
+
+clean-results:
+	rm -rf outputs/results/* 2>/dev/null || true
+	rm -rf outputs/logs/* 2>/dev/null || true
+	rm -rf outputs/saved/* 2>/dev/null || true
 
 clean:
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true

@@ -254,7 +254,7 @@ class ResultsAggregator:
                 shutil.copy2(log_file, dest)
             
             # Move model-specific checkpoints if any
-            saved_dir = self.input_path / 'saved'
+            saved_dir = self.input_path / 'outputs' / 'saved'
             if saved_dir.exists():
                 for model_file in saved_dir.glob(f'{model}*'):
                     if model_file.is_file():

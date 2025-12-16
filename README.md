@@ -133,8 +133,8 @@ fermi/
 │   ├── aggregate_results.py      # Agregação de resultados
 │   └── metrics.py                # Métricas customizadas
 ├── scripts/                      # Scripts shell
-│   ├── run_parallel.sh           # Execução paralela
-│   ├── run_all_parallel.sh       # Todos modelos em paralelo
+│   ├── run_parallel.sh           # Execução paralela de slices
+│   ├── run_all_experiments.sh    # Executar todos modelos
 │   └── monitor_gpu.sh            # Monitor de GPU
 ├── docs/                         # Documentação
 │   ├── experiments.md
@@ -148,7 +148,7 @@ fermi/
 │   │   ├── sliding_window/       # Splits temporais (Parquet)
 │   │   └── recbole/              # Formato RecBole (.inter)
 │   ├── results/                  # Resultados CSV
-│   ├── models/                   # Checkpoints de modelos
+│   ├── saved/                    # Checkpoints de modelos
 │   └── logs/tensorboard/         # Logs TensorBoard
 ├── pyproject.toml                # Configuração do pacote
 ├── requirements.txt              # Dependências

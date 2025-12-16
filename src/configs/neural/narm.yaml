@@ -48,7 +48,7 @@ seed: 42
 # Checkpointing (save only best model)
 save_dataset: false
 save_dataloaders: false
-checkpoint_dir: saved
+checkpoint_dir: outputs/saved
 
 # Logging
 log_wandb: false
