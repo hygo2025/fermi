@@ -5,25 +5,74 @@ Benchmark de recomendação baseada em sessões para plataforma de classificados
 ## Documentação
 
 - [Metodologia](docs/metodologia.md) - Detalhes da metodologia do artigo base
-- [Preparação de Dados Brutos](src/data_preparation/README.md) - Pipeline de processamento inicial
+
+## Pipeline de Dados
+
+O projeto processa dados em 4 etapas:
+
+### Etapa 0: Preparação de Dados Brutos
+
+Processa os dados brutos da plataforma de classificados (listings + events) e gera o dataset enriquecido.
+
+Input:
+- Listings: CSV com dados dos anúncios
+- Events: CSV.GZ com eventos de usuários
+
+Processamento:
+- Limpeza e normalização de dados
+- Resolução de identidades (usuários anônimos vs logados)
+- Criação de sessões (timeout 30 min)
+- Enriquecimento com dados geográficos
+- Merge final dos dados
+
+Output:
+- Dataset enriquecido em `/home/hygo2025/Documents/data/processed_data/enriched_events`
+
+```bash
+make prepare-raw-data
+```
+
+Requisitos:
+- Configurar arquivo `.env` com os caminhos dos dados brutos
+- PySpark 3.x, Java 11+, 16GB+ RAM
+
+### Etapa 1: Sliding Window
+
+Cria 5 slices temporais de 30 dias para avaliação temporal.
+
+```bash
+make prepare-data
+```
+
+### Etapa 2: Conversão RecBole
+
+Converte os dados para o formato esperado pela biblioteca RecBole.
+
+```bash
+make convert-recbole
+```
+
+### Etapa 3: Experimentos
+
+Executa os 10 modelos em cada slice e agrega os resultados.
+
+```bash
+make run-all
+```
 
 ## Fonte dos Dados
 
-Os dados utilizados são de uma **plataforma de classificados**:
-- **Listings:** Dados dos anúncios (localização, preço, características)
-- **Events:** Eventos de interação dos usuários (visualizações, cliques, etc.)
-- **Período:** Março de 2024 (30 dias)
-
-O processamento inicial transforma os dados brutos em formato otimizado para análise de sessões.
+Os dados utilizados são de uma plataforma de classificados:
+- Listings: Dados dos anúncios (localização, preço, características)
+- Events: Eventos de interação dos usuários (visualizações, cliques, etc.)
+- Período: Março de 2024 (30 dias)
 
 ## Visão Geral
 
-Pipeline completo para benchmarking de modelos de recomendação baseados em sessão:
-
-0. Preparação de dados brutos (listings + events da plataforma de classificados)
-1. Preparação de dados com sliding window temporal (5 slices de 30 dias)
+0. Preparação de dados brutos (listings + events)
+1. Sliding window temporal (5 slices de 30 dias)
 2. Conversão para formato RecBole
-3. Treinamento de 10 modelos (4 neurais + 2 fatoração + 4 baselines) em cada slice
+3. Treinamento de 10 modelos (4 neurais + 2 fatoração + 4 baselines)
 4. Avaliação com métricas padrão (Recall, MRR, NDCG, Hit)
 5. Agregação de resultados (média ± desvio padrão)
 
@@ -31,51 +80,51 @@ Total: 50 experimentos (10 modelos × 5 slices)
 
 ## Modelos Implementados
 
-**Modelos Neurais (RNN):**
-- **GRU4Rec:** RNN para recomendação sessional (Hidasi et al., 2016)
-- **NARM:** RNN com mecanismo de atenção (Li et al., 2017)
-- **STAMP:** Short-Term Attention/Memory Priority (Liu et al., 2018)
-- **SASRec:** Self-Attentive Sequential Recommendation (Kang & McAuley, 2018)
+Modelos Neurais (RNN):
+- GRU4Rec: RNN para recomendação sessional (Hidasi et al., 2016)
+- NARM: RNN com mecanismo de atenção (Li et al., 2017)
+- STAMP: Short-Term Attention/Memory Priority (Liu et al., 2018)
+- SASRec: Self-Attentive Sequential Recommendation (Kang & McAuley, 2018)
 
-**Modelos de Fatoração de Matrizes:**
-- **FPMC:** Factorized Personalized Markov Chains (Rendle et al., 2010)
-- **FOSSIL:** Hybrid FISM + FPMC (He & McAuley, 2016)
+Modelos de Fatoração de Matrizes:
+- FPMC: Factorized Personalized Markov Chains (Rendle et al., 2010)
+- FOSSIL: Hybrid FISM + FPMC (He & McAuley, 2016)
 
-**Baselines:**
-- **Random:** Recomendação aleatória
-- **POP:** Popularidade global
-- **RPOP:** Popularidade recente (últimos 7 dias)
-- **SPOP:** Popularidade por sessão
+Baselines:
+- Random: Recomendação aleatória
+- POP: Popularidade global
+- RPOP: Popularidade recente (últimos 7 dias)
+- SPOP: Popularidade por sessão
 
 ## Quick Start
 
 ```bash
-# 0. Preparar dados brutos (listings + events) - NOVO!
+# 0. Preparar dados brutos (primeira vez apenas)
 make prepare-raw-data
 
-# 1. Preparar dados (sliding window)
+# 1. Criar sliding window
 make prepare-data
 
 # 2. Converter para RecBole
 make convert-recbole
 
-# 3. Executar experimentos (agregação automática ao final)
+# 3. Executar experimentos
 make run-all
 ```
 
-**Outputs gerados automaticamente em `outputs/results/YYYYMMDD_HHMMSS/`:**
-- `README.md` - Informações da execução e top 3 modelos
-- `raw_results.csv` - Resultados brutos (todos modelos × slices)
-- `aggregated_results.csv` - Resultados agregados (mean ± std)
-- `results_table.md` - Tabela Markdown para README
-- `metrics_comparison.png` - Gráfico de barras comparativo
-- `performance_heatmap.png` - Heatmap de performance
-- `slice_consistency.png` - Consistência temporal
-- `loss_curves_[model].png` - Curvas de training loss por modelo
-- `loss_curves_average.png` - Curvas de training loss médias (comparação entre modelos)
-- `losses/` - Diretório com histórico de loss em JSON
+Outputs gerados automaticamente em `outputs/results/YYYYMMDD_HHMMSS/`:
+- README.md - Informações da execução e top 3 modelos
+- raw_results.csv - Resultados brutos (todos modelos × slices)
+- aggregated_results.csv - Resultados agregados (mean ± std)
+- results_table.md - Tabela Markdown para README
+- metrics_comparison.png - Gráfico de barras comparativo
+- performance_heatmap.png - Heatmap de performance
+- slice_consistency.png - Consistência temporal
+- loss_curves_[model].png - Curvas de training loss por modelo
+- loss_curves_average.png - Curvas de training loss médias
+- losses/ - Diretório com histórico de loss em JSON
 
-Cada execução cria uma pasta nova com timestamp para organizar tudo.
+Cada execução cria uma pasta nova com timestamp.
 
 
 ## Guia de Execução
@@ -86,7 +135,7 @@ Cada execução cria uma pasta nova com timestamp para organizar tudo.
 # 0. Preparar dados brutos (primeira vez apenas)
 make prepare-raw-data
 
-# 1. Preparar dados (sliding window)
+# 1. Criar sliding window
 make prepare-data
 
 # 2. Converter para RecBole
@@ -96,7 +145,7 @@ make convert-recbole
 make run-all
 ```
 
-**Tempo estimado:** ~3-4 horas (GPU RTX 4090)
+Tempo estimado: ~3-4 horas (GPU RTX 4090)
 
 ### Execução por Modelo
 
@@ -125,30 +174,24 @@ python src/run_experiments.py --models GRU4Rec --all-slices
 
 ## Replicação do Experimento
 
-Execute os comandos na ordem abaixo para replicar o experimento completo:
-
 ```bash
 # 1. Instalar dependências
 pip install -e .
 
-# 2. Processar dados brutos (listings + events)
-#    Entrada: dados brutos da plataforma de classificados
-#    Saída: /home/hygo2025/Documents/data/processed_data/enriched_events
+# 2. Configurar variáveis de ambiente
+cp .env.example .env
+# Editar .env com os caminhos dos dados
+
+# 3. Processar dados brutos
 make prepare-raw-data
 
-# 3. Criar sliding window splits (30 dias → 5 slices)
-#    Entrada: enriched_events
-#    Saída: outputs/data/sliding_window/slice_{1..5}/
+# 4. Criar sliding window splits
 make prepare-data
 
-# 4. Converter para formato RecBole
-#    Entrada: outputs/data/sliding_window/
-#    Saída: outputs/data/recbole/realestate_slice{1..5}/*.inter
+# 5. Converter para formato RecBole
 make convert-recbole
 
-# 5. Executar todos os modelos em todos os slices
-#    Saída: outputs/results/YYYYMMDD_HHMMSS/
-#    (Agregação automática ao final)
+# 6. Executar todos os modelos
 make run-all
 ```
 
@@ -156,6 +199,7 @@ Requisitos:
 - Python 3.9+
 - 16GB+ RAM (para PySpark)
 - GPU recomendada (para modelos neurais)
+- Java 11+ (para Spark)
 - Dados brutos da plataforma de classificados
 
 ## Comandos do Makefile
@@ -192,50 +236,45 @@ fermi/
 ├── src/
 │   ├── data_preparation/         # Preparação de dados brutos
 │   │   ├── pipelines/            # Pipelines de processamento
-│   │   │   ├── listings_pipeline.py    # Processar anúncios
-│   │   │   ├── events_pipeline.py      # Processar eventos
-│   │   │   └── merge_events.py         # Merge final
-│   │   ├── prepare_raw_data.py   # Script principal
-│   │   └── README.md             # Documentação
+│   │   │   ├── listings_pipeline.py
+│   │   │   ├── events_pipeline.py
+│   │   │   └── merge_events.py
+│   │   └── prepare_raw_data.py
 │   ├── preprocessing/            # Pipeline de sliding window
-│   │   ├── sliding_window_pipeline.py  # Splits temporais
-│   │   ├── recbole_converter.py        # Conversão RecBole
-│   │   └── prepare_dataset.py          # Preparação datasets
+│   │   ├── sliding_window_pipeline.py
+│   │   ├── recbole_converter.py
+│   │   └── prepare_dataset.py
 │   ├── models/                   # Modelos baseline
 │   ├── configs/                  # Configurações
-│   │   ├── baselines/            # Configs baselines
-│   │   └── neural/               # Configs neurais
+│   │   ├── baselines/
+│   │   └── neural/
 │   ├── utils/                    # Utilitários
-│   │   ├── spark_session.py      # Config Spark
-│   │   ├── spark_utils.py        # Utils Spark
-│   │   ├── data_utils.py         # Utils dados
-│   │   ├── enviroment.py         # Variáveis ambiente
-│   │   ├── geocode.py            # Geocodificação
-│   │   └── gpu_cooling.py        # Cooling GPU
-│   ├── run_experiments.py        # Runner principal
-│   ├── aggregate_results.py      # Agregação resultados
-│   └── metrics.py                # Métricas customizadas
-├── scripts/                      # Scripts shell
-│   ├── run_parallel.sh           # Execução paralela de slices
-│   ├── run_all_experiments.sh    # Executar todos modelos
-│   └── monitor_gpu.sh            # Monitor de GPU
-├── docs/                         # Documentação
-│   ├── experiments.md
-│   ├── execution.md
-│   ├── gpu-optimization.md
-│   ├── gpu-cooling.md
-│   ├── REORGANIZATION.md         # Log de reorganização
-│   └── papers/                   # Artigos de referência
-├── outputs/                      # Tudo que é gerado
+│   │   ├── spark_session.py
+│   │   ├── spark_utils.py
+│   │   ├── data_utils.py
+│   │   ├── enviroment.py
+│   │   ├── geocode.py
+│   │   └── gpu_cooling.py
+│   ├── run_experiments.py
+│   ├── aggregate_results.py
+│   └── metrics.py
+├── scripts/
+│   ├── run_parallel.sh
+│   ├── run_all_experiments.sh
+│   └── monitor_gpu.sh
+├── docs/
+│   ├── metodologia.md
+│   └── papers/
+├── outputs/
 │   ├── data/
-│   │   ├── sliding_window/       # Splits temporais (Parquet)
-│   │   └── recbole/              # Formato RecBole (.inter)
-│   ├── results/                  # Resultados CSV
-│   ├── saved/                    # Checkpoints de modelos
-│   └── logs/tensorboard/         # Logs TensorBoard
-├── pyproject.toml                # Configuração do pacote
-├── requirements.txt              # Dependências
-├── Makefile                      # Comandos do pipeline
+│   │   ├── sliding_window/
+│   │   └── recbole/
+│   ├── results/
+│   ├── saved/
+│   └── logs/tensorboard/
+├── pyproject.toml
+├── requirements.txt
+├── Makefile
 └── README.md
 ```
 
@@ -245,18 +284,18 @@ Seguindo o paper de Domingues et al. (2024):
 
 - Sliding window temporal: 5 slices de 30 dias
 - Protocolo: next-item prediction
-- Split temporal: últimos 7 dias de cada janela para teste (sem validação)
+- Split temporal: últimos 7 dias de cada janela para teste
 - Métricas: Recall@K, MRR@K, NDCG@K, Hit@K (K=5,10,20)
 - Agregação: média ± desvio padrão entre slices
 
 ## Configurações GPU
 
-**Otimizações para RTX 4090:**
+Otimizações para RTX 4090:
 - Batch size: 4096 (padrão: 512)
 - Hidden/Embedding size: 256 (padrão: 100)
 - VRAM usada: 6-8 GB por experimento
 
-**Sistema de Cooling Automático:**
+Sistema de Cooling Automático:
 - Pausas de 60s a cada 5 epochs
 - Limite de temperatura: 80°C
 - Desativar com: `--no-gpu-cooling`
@@ -274,12 +313,12 @@ MIT License
 
 ## Referências dos Modelos
 
-**Modelos Neurais:**
+Modelos Neurais:
 - Hidasi, B., et al. (2016). Session-based recommendations with recurrent neural networks. ICLR.
 - Li, J., et al. (2017). Neural attentive session-based recommendation. CIKM.
 - Liu, Q., et al. (2018). STAMP: Short-term attention/memory priority model. KDD.
 - Kang, W., & McAuley, J. (2018). Self-attentive sequential recommendation. ICDM.
 
-**Modelos de Fatoração:**
+Modelos de Fatoração:
 - Rendle, S., et al. (2010). Factorizing personalized markov chains for next-basket recommendation. WWW.
 - He, R., & McAuley, J. (2016). FISM: Factored item similarity models for top-n recommender systems. KDD.
