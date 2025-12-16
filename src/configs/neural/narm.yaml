@@ -4,19 +4,26 @@ model: NARM
 dataset: realestate_slice1
 data_path: recbole_data/
 
-# Training
-epochs: 5
+# Training - HIGH QUALITY
+epochs: 50
 train_batch_size: 4096
 eval_batch_size: 4096
 learning_rate: 0.001
 train_neg_sample_args: ~
 
-# Model Parameters
+# Early Stopping
+stopping_step: 10
+
+# Model Parameters - HIGH QUALITY (RNN + Attention)
 embedding_size: 256
 hidden_size: 256
-n_layers: 1
-dropout_probs: [0.25, 0.5]
+n_layers: 2
+dropout_probs: [0.3, 0.3]
 loss_type: 'CE'
+
+# Gradient Clipping
+clip_grad_norm: 
+  max_norm: 5.0
 
 # Evaluation
 metrics: ['Recall', 'MRR', 'NDCG', 'Hit']

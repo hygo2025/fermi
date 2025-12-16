@@ -110,7 +110,7 @@ def run_listings_pipeline(spark: SparkSession):
     all_raw_listings = read_csv_data(spark, raw_path, multiline=True)
 
     all_raw_listings = all_raw_listings.filter(
-        (col("status") != "DRAFT") & (col("status") != "BLOCKED")
+        (col("status") != "DRAFT") & (col("status") != "BLOCKED") & (col("price") > 50000) #isso é uma tentativa de remover aluguel
     )
 
     cleaned_listings = clean_data(all_raw_listings)

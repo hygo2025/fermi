@@ -82,13 +82,19 @@ Total: 50 experimentos (10 modelos × 5 slices)
 
 Modelos Neurais (RNN):
 - GRU4Rec: RNN para recomendação sessional (Hidasi et al., 2016)
+  - Config: 2 layers, 256 hidden, dropout 0.3, 50 epochs
 - NARM: RNN com mecanismo de atenção (Li et al., 2017)
+  - Config: 2 layers, 256 hidden, dropout 0.3, 50 epochs
 - STAMP: Short-Term Attention/Memory Priority (Liu et al., 2018)
+  - Config: 256 hidden, dropout 0.3, 50 epochs
 - SASRec: Self-Attentive Sequential Recommendation (Kang & McAuley, 2018)
+  - Config: 3 layers, 4 heads, 256 hidden, 1024 inner, dropout 0.3, 50 epochs
 
 Modelos de Fatoração de Matrizes:
 - FPMC: Factorized Personalized Markov Chains (Rendle et al., 2010)
+  - Config: 256 embedding, reg_weight 0.0001, 50 epochs
 - FOSSIL: Hybrid FISM + FPMC (He & McAuley, 2016)
+  - Config: order 3, alpha 0.5, 256 embedding, reg_weight 0.0001, 50 epochs
 
 Baselines:
 - Random: Recomendação aleatória
@@ -96,7 +102,24 @@ Baselines:
 - RPOP: Popularidade recente (últimos 7 dias)
 - SPOP: Popularidade por sessão
 
+Todas as configurações incluem:
+- Early stopping com patience 10
+- Gradient clipping (max_norm: 5.0)
+- Batch size: 4096
+- Learning rate: 0.001
+
 ## Quick Start
+
+### Pipeline Completo (Automático)
+
+```bash
+# Executar todo pipeline de uma vez (prepare-raw-data + prepare-data + convert-recbole + run-all)
+make pipeline-complete
+```
+
+Tempo estimado: 40-60 horas (com early stopping)
+
+### Pipeline Manual (Passo a Passo)
 
 ```bash
 # 0. Preparar dados brutos (primeira vez apenas)

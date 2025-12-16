@@ -4,17 +4,26 @@ model: FOSSIL
 dataset: realestate_slice1
 data_path: recbole_data/
 
-# Training
-epochs: 5
+# Training - HIGH QUALITY
+epochs: 50
 train_batch_size: 4096
 eval_batch_size: 4096
 learning_rate: 0.001
 train_neg_sample_args: ~
 
-# Model Parameters - FOSSIL specific
+# Early Stopping
+stopping_step: 10
+
+# Model Parameters - FOSSIL (Hybrid)
 embedding_size: 256
-order: 2  # FOSSIL order parameter
-loss_type: 'CE'  # Cross Entropy
+order: 3
+alpha: 0.5
+reg_weight: 0.0001
+loss_type: 'CE'
+
+# Gradient Clipping
+clip_grad_norm: 
+  max_norm: 5.0
 
 # Evaluation
 metrics: ['Recall', 'MRR', 'NDCG', 'Hit']
@@ -42,8 +51,8 @@ gpu_id: 0
 benchmark: false
 
 # Optimization
-weight_decay: 0.0
-stopping_step: 5
+weight_decay: 0.0001
+stopping_step: 10
 require_pow: false
 
 # Output

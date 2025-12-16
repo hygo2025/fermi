@@ -4,23 +4,30 @@ model: SASRec
 dataset: realestate_slice1
 data_path: recbole_data/
 
-# Training
-epochs: 5
+# Training - HIGH QUALITY
+epochs: 50
 train_batch_size: 4096
 eval_batch_size: 4096
 learning_rate: 0.001
 train_neg_sample_args: ~
 
-# Model Parameters
-n_layers: 2
-n_heads: 2
+# Early Stopping
+stopping_step: 10
+
+# Model Parameters - HIGH QUALITY (Self-Attention)
+n_layers: 3
+n_heads: 4
 hidden_size: 256
-inner_size: 512
-hidden_dropout_prob: 0.5
-attn_dropout_prob: 0.5
+inner_size: 1024
+hidden_dropout_prob: 0.3
+attn_dropout_prob: 0.3
 hidden_act: 'gelu'
 layer_norm_eps: 1e-12
 loss_type: 'CE'
+
+# Gradient Clipping
+clip_grad_norm: 
+  max_norm: 5.0
 
 # Evaluation
 metrics: ['Recall', 'MRR', 'NDCG', 'Hit']

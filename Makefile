@@ -1,7 +1,10 @@
-.PHONY: help install clean clean-results prepare-raw-data prepare-data convert-recbole run-all aggregate-last run-neurais run-factorization run-baselines run-gru4rec run-narm run-stamp run-sasrec run-fpmc run-fossil run-random run-pop run-rpop run-spop run-gru4rec-parallel run-parallel analyze-model
+.PHONY: help install clean clean-results prepare-raw-data prepare-data convert-recbole run-all aggregate-last run-neurais run-factorization run-baselines run-gru4rec run-narm run-stamp run-sasrec run-fpmc run-fossil run-random run-pop run-rpop run-spop run-gru4rec-parallel run-parallel analyze-model pipeline-complete
 
 help:
 	@echo "Fermi - Session-Based Recommendation Benchmark"
+	@echo ""
+	@echo "Pipeline Completo:"
+	@echo "  make pipeline-complete    - [PIPELINE COMPLETO] Executar todo pipeline (prepare → run-all)"
 	@echo ""
 	@echo "Pipeline de Dados (em ordem):"
 	@echo "  make prepare-raw-data     - [ETAPA 1] Processar dados brutos (listings + events)"
@@ -199,3 +202,36 @@ run-baselines:
 run-factorization:
 	@echo "Executando todos modelos de fatoracao em todos os slices..."
 	@./scripts/run_all_experiments.sh FPMC FOSSIL
+
+# Pipeline completo - executar tudo em sequencia
+pipeline-complete:
+	@echo "========================================"
+	@echo "PIPELINE COMPLETO - Fermi Benchmark"
+	@echo "========================================"
+	@echo ""
+	@echo "Este comando executará em sequência:"
+	@echo "  1. Processamento de dados brutos"
+	@echo "  2. Criação de sliding window splits"
+	@echo "  3. Conversão para formato RecBole"
+	@echo "  4. Execução de todos os modelos"
+	@echo ""
+	@echo "Tempo estimado: 40-60 horas (com early stopping)"
+	@echo ""
+	@read -p "Deseja continuar? (y/N): " confirm && [ "$$confirm" = "y" ] || exit 1
+	@echo ""
+	@echo "[1/4] Processando dados brutos..."
+	@$(MAKE) prepare-raw-data
+	@echo ""
+	@echo "[2/4] Criando sliding window splits..."
+	@$(MAKE) prepare-data
+	@echo ""
+	@echo "[3/4] Convertendo para RecBole..."
+	@$(MAKE) convert-recbole
+	@echo ""
+	@echo "[4/4] Executando todos os modelos..."
+	@$(MAKE) run-all
+	@echo ""
+	@echo "========================================"
+	@echo "PIPELINE COMPLETO - CONCLUÍDO!"
+	@echo "========================================"
+	@echo "Resultados disponíveis em: outputs/results/"

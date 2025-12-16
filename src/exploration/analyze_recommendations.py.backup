@@ -498,31 +498,28 @@ def create_visualizations(
                  fontsize=18, fontweight='bold')
     axes = axes.flatten()
     
-
-    # 1. Gráfico de Similaridade
+    # 1. Gráfico de Similaridade (NOVO - mais importante no topo)
     if results_df is not None and 'avg_similarity' in results_df.columns:
         similarities = results_df['avg_similarity'].dropna()
         
         if len(similarities) > 0:
+            # Histograma
             axes[0].hist(similarities, bins=15, color='green', alpha=0.7, edgecolor='black')
+            
+            # Linhas de threshold
             axes[0].axvline(70, color='darkgreen', linestyle='--', linewidth=2, label='Excelente (70%)')
             axes[0].axvline(50, color='orange', linestyle='--', linewidth=2, label='Bom (50%)')
             axes[0].axvline(30, color='red', linestyle='--', linewidth=2, label='Moderado (30%)')
             
+            # Média
             mean_sim = similarities.mean()
             axes[0].axvline(mean_sim, color='blue', linestyle='-', linewidth=3, label=f'Media: {mean_sim:.1f}%')
             
-            axes[0].set_xlabel('Similaridade Ponderada (%)', fontsize=11)
-            axes[0].set_ylabel('Frequencia', fontsize=11)
+            axes[1].set_xlabel('Similaridade Ponderada (%)', fontsize=11)
+            axes[1].set_ylabel('Frequencia', fontsize=11)
             axes[0].set_title('Distribuicao de Similaridade', fontsize=13, fontweight='bold')
-            axes[0].legend(fontsize=8)
-            axes[0].grid(True, alpha=0.3)
-        else:
-            axes[0].text(0.5, 0.5, 'Sem dados', ha='center', va='center', transform=axes[0].transAxes)
-            axes[0].set_title('Distribuicao de Similaridade', fontsize=13, fontweight='bold')
-    else:
-        axes[0].text(0.5, 0.5, 'Dados nao disponiveis', ha='center', va='center', transform=axes[0].transAxes)
-        axes[0].set_title('Distribuicao de Similaridade', fontsize=13, fontweight='bold')
+            axes[1].legend(fontsize=8)
+            axes[6].grid(True, alpha=0.3)
     
     # 2. Histograma de preços
     if 'price' in sess_df.columns and 'price' in rec_df.columns:
@@ -530,13 +527,17 @@ def create_visualizations(
         rec_prices = rec_df['price'].dropna()
         
         if len(sess_prices) > 0 and len(rec_prices) > 0:
-            axes[1].hist(sess_prices, bins=10, alpha=0.6, label='Sessao', color='blue', edgecolor='black')
-            axes[1].hist(rec_prices, bins=10, alpha=0.6, label='Recomendacoes', color='red', edgecolor='black')
+            axes[1].hist(sess_prices, bins=10, alpha=0.6, 
+                        label='Sessao', color='blue', edgecolor='black')
+            axes[1].hist(rec_prices, bins=10, alpha=0.6, 
+                        label='Recomendacoes', color='red', edgecolor='black')
             
             sess_mean = sess_prices.mean()
             rec_mean = rec_prices.mean()
-            axes[1].axvline(sess_mean, color='blue', linestyle='--', linewidth=2, label=f'Media sessao: R$ {sess_mean:,.0f}')
-            axes[1].axvline(rec_mean, color='red', linestyle='--', linewidth=2, label=f'Media recs: R$ {rec_mean:,.0f}')
+            axes[1].axvline(sess_mean, color='blue', linestyle='--', 
+                           linewidth=2, label=f'Media sessao: R$ {sess_mean:,.0f}')
+            axes[1].axvline(rec_mean, color='red', linestyle='--', 
+                           linewidth=2, label=f'Media recs: R$ {rec_mean:,.0f}')
             
             axes[1].set_xlabel('Preco (R$)', fontsize=11)
             axes[1].set_ylabel('Frequencia', fontsize=11)
@@ -544,7 +545,7 @@ def create_visualizations(
             axes[1].legend(fontsize=9)
             axes[1].grid(True, alpha=0.3)
         else:
-            axes[1].text(0.5, 0.5, 'Sem dados', ha='center', va='center', transform=axes[1].transAxes)
+            axes[1].text(0.5, 0.5, 'Dados insuficientes', ha='center', va='center', transform=axes[1].transAxes)
             axes[1].set_title('Distribuicao de Precos', fontsize=13, fontweight='bold')
     else:
         axes[1].text(0.5, 0.5, 'Dados nao disponiveis', ha='center', va='center', transform=axes[1].transAxes)
@@ -566,169 +567,138 @@ def create_visualizations(
             
             axes[2].set_ylabel('Area (m2)', fontsize=11)
             axes[2].set_title('Distribuicao de Areas', fontsize=13, fontweight='bold')
-            axes[2].grid(True, alpha=0.3, axis='y')
+            axes[6].grid(True, alpha=0.3, axis='y')
             
             sess_median = sess_areas.median()
             rec_median = rec_areas.median()
-            axes[2].text(1, sess_median, f'{sess_median:.0f}m2', ha='left', va='center', fontweight='bold', fontsize=9)
-            axes[2].text(2, rec_median, f'{rec_median:.0f}m2', ha='left', va='center', fontweight='bold', fontsize=9)
-        else:
-            axes[2].text(0.5, 0.5, 'Sem dados', ha='center', va='center', transform=axes[2].transAxes)
-            axes[2].set_title('Distribuicao de Areas', fontsize=13, fontweight='bold')
-    else:
-        axes[2].text(0.5, 0.5, 'Dados nao disponiveis', ha='center', va='center', transform=axes[2].transAxes)
-        axes[2].set_title('Distribuicao de Areas', fontsize=13, fontweight='bold')
+            axes[2].text(1, sess_median, f'{sess_median:.0f}m2', 
+                        ha='left', va='center', fontweight='bold', fontsize=9)
+            axes[2].text(2, rec_median, f'{rec_median:.0f}m2', 
+                        ha='left', va='center', fontweight='bold', fontsize=9)
     
-    # 4. Gráfico de barras - Quartos
+    # 3. Gráfico de barras - Quartos
     if 'bedrooms' in sess_df.columns and 'bedrooms' in rec_df.columns:
         sess_bedrooms = sess_df['bedrooms'].value_counts().sort_index()
         rec_bedrooms = rec_df['bedrooms'].value_counts().sort_index()
         
-        if len(sess_bedrooms) > 0 and len(rec_bedrooms) > 0:
-            all_bedrooms = sorted(set(sess_bedrooms.index) | set(rec_bedrooms.index))
-            
-            x = np.arange(len(all_bedrooms))
-            width = 0.35
-            
-            sess_counts = [sess_bedrooms.get(b, 0) for b in all_bedrooms]
-            rec_counts = [rec_bedrooms.get(b, 0) for b in all_bedrooms]
-            
-            axes[3].bar(x - width/2, sess_counts, width, label='Sessao', color='blue', alpha=0.7)
-            axes[3].bar(x + width/2, rec_counts, width, label='Recomendacoes', color='red', alpha=0.7)
-            
-            axes[3].set_xlabel('Numero de Quartos', fontsize=11)
-            axes[3].set_ylabel('Frequencia', fontsize=11)
-            axes[3].set_title('Distribuicao de Quartos', fontsize=13, fontweight='bold')
-            axes[3].set_xticks(x)
-            axes[3].set_xticklabels([f'{int(b)}' for b in all_bedrooms])
-            axes[3].legend(fontsize=9)
-            axes[3].grid(True, alpha=0.3, axis='y')
-        else:
-            axes[3].text(0.5, 0.5, 'Sem dados', ha='center', va='center', transform=axes[3].transAxes)
-            axes[3].set_title('Distribuicao de Quartos', fontsize=13, fontweight='bold')
-    else:
-        axes[3].text(0.5, 0.5, 'Dados nao disponiveis', ha='center', va='center', transform=axes[3].transAxes)
-        axes[3].set_title('Distribuicao de Quartos', fontsize=13, fontweight='bold')
+        all_bedrooms = sorted(set(sess_bedrooms.index) | set(rec_bedrooms.index))
+        
+        x = np.arange(len(all_bedrooms))
+        width = 0.35
+        
+        sess_counts = [sess_bedrooms.get(b, 0) for b in all_bedrooms]
+        rec_counts = [rec_bedrooms.get(b, 0) for b in all_bedrooms]
+        
+        axes[6].bar(x - width/2, sess_counts, width, 
+                   label='Sessao', color='blue', alpha=0.7)
+        axes[6].bar(x + width/2, rec_counts, width, 
+                   label='Recomendacoes', color='red', alpha=0.7)
+        
+        axes[3].set_xlabel('Numero de Quartos', fontsize=11)
+        axes[6].set_ylabel('Frequencia', fontsize=11)
+        axes[2].set_title('Distribuicao de Quartos', fontsize=13, fontweight='bold')
+        axes[6].set_xticks(x)
+        axes[4].set_xticklabels([f'{int(b)}' for b in all_bedrooms])
+        axes[6].legend(fontsize=9)
+        axes[6].grid(True, alpha=0.3, axis='y')
     
-    # 5. Gráfico de barras - Banheiros
+    # 4. Gráfico de barras - Banheiros
     if 'bathrooms' in sess_df.columns and 'bathrooms' in rec_df.columns:
         sess_bath = sess_df['bathrooms'].value_counts().sort_index()
         rec_bath = rec_df['bathrooms'].value_counts().sort_index()
         
-        if len(sess_bath) > 0 and len(rec_bath) > 0:
-            all_bath = sorted(set(sess_bath.index) | set(rec_bath.index))
-            
-            x = np.arange(len(all_bath))
-            width = 0.35
-            
-            sess_counts = [sess_bath.get(b, 0) for b in all_bath]
-            rec_counts = [rec_bath.get(b, 0) for b in all_bath]
-            
-            axes[4].bar(x - width/2, sess_counts, width, label='Sessao', color='blue', alpha=0.7)
-            axes[4].bar(x + width/2, rec_counts, width, label='Recomendacoes', color='red', alpha=0.7)
-            
-            axes[4].set_xlabel('Numero de Banheiros', fontsize=11)
-            axes[4].set_ylabel('Frequencia', fontsize=11)
-            axes[4].set_title('Distribuicao de Banheiros', fontsize=13, fontweight='bold')
-            axes[4].set_xticks(x)
-            axes[4].set_xticklabels([f'{int(b)}' for b in all_bath])
-            axes[4].legend(fontsize=9)
-            axes[4].grid(True, alpha=0.3, axis='y')
-        else:
-            axes[4].text(0.5, 0.5, 'Sem dados', ha='center', va='center', transform=axes[4].transAxes)
-            axes[4].set_title('Distribuicao de Banheiros', fontsize=13, fontweight='bold')
-    else:
-        axes[4].text(0.5, 0.5, 'Dados nao disponiveis', ha='center', va='center', transform=axes[4].transAxes)
-        axes[4].set_title('Distribuicao de Banheiros', fontsize=13, fontweight='bold')
+        all_bath = sorted(set(sess_bath.index) | set(rec_bath.index))
+        
+        x = np.arange(len(all_bath))
+        width = 0.35
+        
+        sess_counts = [sess_bath.get(b, 0) for b in all_bath]
+        rec_counts = [rec_bath.get(b, 0) for b in all_bath]
+        
+        axes[6].bar(x - width/2, sess_counts, width, 
+                   label='Sessao', color='blue', alpha=0.7)
+        axes[6].bar(x + width/2, rec_counts, width, 
+                   label='Recomendacoes', color='red', alpha=0.7)
+        
+        axes[4].set_xlabel('Numero de Banheiros', fontsize=11)
+        axes[6].set_ylabel('Frequencia', fontsize=11)
+        axes[3].set_title('Distribuicao de Banheiros', fontsize=13, fontweight='bold')
+        axes[6].set_xticks(x)
+        axes[4].set_xticklabels([f'{int(b)}' for b in all_bath])
+        axes[6].legend(fontsize=9)
+        axes[6].grid(True, alpha=0.3, axis='y')
     
-    # 6. Gráfico de barras - Vagas
+    # 5. Gráfico de barras - Vagas
     if 'parking_spaces' in sess_df.columns and 'parking_spaces' in rec_df.columns:
         sess_park = sess_df['parking_spaces'].value_counts().sort_index()
         rec_park = rec_df['parking_spaces'].value_counts().sort_index()
         
-        if len(sess_park) > 0 and len(rec_park) > 0:
-            all_park = sorted(set(sess_park.index) | set(rec_park.index))
-            
-            x = np.arange(len(all_park))
-            width = 0.35
-            
-            sess_counts = [sess_park.get(p, 0) for p in all_park]
-            rec_counts = [rec_park.get(p, 0) for p in all_park]
-            
-            axes[5].bar(x - width/2, sess_counts, width, label='Sessao', color='blue', alpha=0.7)
-            axes[5].bar(x + width/2, rec_counts, width, label='Recomendacoes', color='red', alpha=0.7)
-            
-            axes[5].set_xlabel('Numero de Vagas', fontsize=11)
-            axes[5].set_ylabel('Frequencia', fontsize=11)
-            axes[5].set_title('Distribuicao de Vagas', fontsize=13, fontweight='bold')
-            axes[5].set_xticks(x)
-            axes[5].set_xticklabels([f'{int(p)}' for p in all_park])
-            axes[5].legend(fontsize=9)
-            axes[5].grid(True, alpha=0.3, axis='y')
-        else:
-            axes[5].text(0.5, 0.5, 'Sem dados', ha='center', va='center', transform=axes[5].transAxes)
-            axes[5].set_title('Distribuicao de Vagas', fontsize=13, fontweight='bold')
-    else:
-        axes[5].text(0.5, 0.5, 'Dados nao disponiveis', ha='center', va='center', transform=axes[5].transAxes)
-        axes[5].set_title('Distribuicao de Vagas', fontsize=13, fontweight='bold')
+        all_park = sorted(set(sess_park.index) | set(rec_park.index))
+        
+        x = np.arange(len(all_park))
+        width = 0.35
+        
+        sess_counts = [sess_park.get(p, 0) for p in all_park]
+        rec_counts = [rec_park.get(p, 0) for p in all_park]
+        
+        axes[6].bar(x - width/2, sess_counts, width, 
+                   label='Sessao', color='blue', alpha=0.7)
+        axes[6].bar(x + width/2, rec_counts, width, 
+                   label='Recomendacoes', color='red', alpha=0.7)
+        
+        axes[5].set_xlabel('Numero de Vagas', fontsize=11)
+        axes[6].set_ylabel('Frequencia', fontsize=11)
+        axes[4].set_title('Distribuicao de Vagas', fontsize=13, fontweight='bold')
+        axes[6].set_xticks(x)
+        axes[5].set_xticklabels([f'{int(p)}' for p in all_park])
+        axes[6].legend(fontsize=9)
+        axes[6].grid(True, alpha=0.3, axis='y')
     
-    # 7. Gráfico de barras - Tipo de Unidade
+    # 6. Gráfico de barras - Tipo de Unidade
     if 'unit_type' in sess_df.columns and 'unit_type' in rec_df.columns:
         sess_types = sess_df['unit_type'].value_counts()
         rec_types = rec_df['unit_type'].value_counts()
         
-        if len(sess_types) > 0 and len(rec_types) > 0:
-            all_types = sorted(set(sess_types.index) | set(rec_types.index))
-            
-            x = np.arange(len(all_types))
-            width = 0.35
-            
-            sess_counts = [sess_types.get(t, 0) for t in all_types]
-            rec_counts = [rec_types.get(t, 0) for t in all_types]
-            
-            axes[6].bar(x - width/2, sess_counts, width, label='Sessao', color='blue', alpha=0.7)
-            axes[6].bar(x + width/2, rec_counts, width, label='Recomendacoes', color='red', alpha=0.7)
-            
-            axes[6].set_xlabel('Tipo de Unidade', fontsize=11)
-            axes[6].set_ylabel('Frequencia', fontsize=11)
-            axes[6].set_title('Distribuicao de Tipos', fontsize=13, fontweight='bold')
-            axes[6].set_xticks(x)
-            axes[6].set_xticklabels(all_types, rotation=45, ha='right')
-            axes[6].legend(fontsize=9)
-            axes[6].grid(True, alpha=0.3, axis='y')
-        else:
-            axes[6].text(0.5, 0.5, 'Sem dados', ha='center', va='center', transform=axes[6].transAxes)
-            axes[6].set_title('Distribuicao de Tipos', fontsize=13, fontweight='bold')
-    else:
-        axes[6].text(0.5, 0.5, 'Dados nao disponiveis', ha='center', va='center', transform=axes[6].transAxes)
+        all_types = sorted(set(sess_types.index) | set(rec_types.index))
+        
+        x = np.arange(len(all_types))
+        width = 0.35
+        
+        sess_counts = [sess_types.get(t, 0) for t in all_types]
+        rec_counts = [rec_types.get(t, 0) for t in all_types]
+        
+        axes[6].bar(x - width/2, sess_counts, width, 
+                   label='Sessao', color='blue', alpha=0.7)
+        axes[6].bar(x + width/2, rec_counts, width, 
+                   label='Recomendacoes', color='red', alpha=0.7)
+        
+        axes[6].set_xlabel('Tipo de Unidade', fontsize=11)
+        axes[6].set_ylabel('Frequencia', fontsize=11)
         axes[6].set_title('Distribuicao de Tipos', fontsize=13, fontweight='bold')
+        axes[6].set_xticks(x)
+        axes[6].set_xticklabels(all_types, rotation=45, ha='right')
+        axes[6].legend(fontsize=9)
+        axes[6].grid(True, alpha=0.3, axis='y')
     
-    # 8. Gráfico de barras - Status de Similaridade
+    # 7. Gráfico de barras - Status de Similaridade
     if results_df is not None and 'similarity_status' in results_df.columns:
         status_counts = results_df['similarity_status'].value_counts()
+        colors_map = {'EXCELENTE': 'darkgreen', 'BOM': 'green', 'MODERADO': 'orange', 'RUIM': 'red'}
+        colors = [colors_map.get(s, 'gray') for s in status_counts.index]
         
-        if len(status_counts) > 0:
-            colors_map = {'EXCELENTE': 'darkgreen', 'BOM': 'green', 'MODERADO': 'orange', 'RUIM': 'red'}
-            colors = [colors_map.get(s, 'gray') for s in status_counts.index]
-            
-            axes[7].bar(range(len(status_counts)), status_counts.values, color=colors, alpha=0.7, edgecolor='black')
-            axes[7].set_xlabel('Status', fontsize=11)
-            axes[7].set_ylabel('Numero de Sessoes', fontsize=11)
-            axes[7].set_title('Distribuicao de Status', fontsize=13, fontweight='bold')
-            axes[7].set_xticks(range(len(status_counts)))
-            axes[7].set_xticklabels(status_counts.index, rotation=45, ha='right')
-            axes[7].grid(True, alpha=0.3, axis='y')
-            
-            for i, v in enumerate(status_counts.values):
-                axes[7].text(i, v, str(v), ha='center', va='bottom', fontweight='bold')
-        else:
-            axes[7].text(0.5, 0.5, 'Sem dados', ha='center', va='center', transform=axes[7].transAxes)
-            axes[7].set_title('Distribuicao de Status', fontsize=13, fontweight='bold')
-    else:
-        axes[7].text(0.5, 0.5, 'Dados nao disponiveis', ha='center', va='center', transform=axes[7].transAxes)
+        axes[7].bar(range(len(status_counts)), status_counts.values, color=colors, alpha=0.7, edgecolor='black')
+        axes[7].set_xlabel('Status', fontsize=11)
+        axes[7].set_ylabel('Numero de Sessoes', fontsize=11)
         axes[7].set_title('Distribuicao de Status', fontsize=13, fontweight='bold')
+        axes[7].set_xticks(range(len(status_counts)))
+        axes[7].set_xticklabels(status_counts.index, rotation=45, ha='right')
+        axes[7].grid(True, alpha=0.3, axis='y')
+        
+        # Adicionar valores nas barras
+        for i, v in enumerate(status_counts.values):
+            axes[7].text(i, v, str(v), ha='center', va='bottom', fontweight='bold')
     
-    # 9. Resumo de Métricas
+    # 8. Resumo de Métricas (Radar/Spider Chart ou Barras Horizontais)
     if results_df is not None:
         metrics_scores = []
         metrics_labels = []
@@ -758,7 +728,7 @@ def create_visualizations(
             metrics_scores.append(score)
             metrics_labels.append('Tipo')
         
-        if len(metrics_scores) > 0:
+        if metrics_scores:
             y_pos = np.arange(len(metrics_labels))
             colors = ['green' if s >= 60 else 'orange' if s >= 30 else 'red' for s in metrics_scores]
             
@@ -773,14 +743,10 @@ def create_visualizations(
             axes[8].legend(fontsize=8)
             axes[8].grid(True, alpha=0.3, axis='x')
             
+            # Adicionar valores nas barras
             for i, v in enumerate(metrics_scores):
                 axes[8].text(v + 1, i, f'{v:.1f}%', va='center', fontsize=9)
-        else:
-            axes[8].text(0.5, 0.5, 'Sem dados', ha='center', va='center', transform=axes[8].transAxes)
-            axes[8].set_title('Score por Metrica', fontsize=13, fontweight='bold')
-    else:
-        axes[8].text(0.5, 0.5, 'Dados nao disponiveis', ha='center', va='center', transform=axes[8].transAxes)
-        axes[8].set_title('Score por Metrica', fontsize=13, fontweight='bold')
+    
     plt.tight_layout()
     
     if output_dir:
