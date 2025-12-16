@@ -1,11 +1,12 @@
-.PHONY: help install clean clean-results prepare-data convert-recbole run-all aggregate-last run-neurais run-factorization run-baselines run-gru4rec run-narm run-stamp run-sasrec run-fpmc run-fossil run-random run-pop run-rpop run-spop
+.PHONY: help install clean clean-results prepare-raw-data prepare-data convert-recbole run-all aggregate-last run-neurais run-factorization run-baselines run-gru4rec run-narm run-stamp run-sasrec run-fpmc run-fossil run-random run-pop run-rpop run-spop
 
 help:
 	@echo "Fermi - Session-Based Recommendation Benchmark"
 	@echo ""
-	@echo "Pipeline de Dados:"
-	@echo "  make prepare-data         - Criar sliding window splits (PySpark)"
-	@echo "  make convert-recbole      - Converter para formato RecBole"
+	@echo "Pipeline de Dados (em ordem):"
+	@echo "  make prepare-raw-data     - [ETAPA 1] Processar dados brutos (listings + events)"
+	@echo "  make prepare-data         - [ETAPA 2] Criar sliding window splits (PySpark)"
+	@echo "  make convert-recbole      - [ETAPA 3] Converter para formato RecBole"
 	@echo ""
 	@echo "Experimentos (Sequencial):"
 	@echo "  make run-all              - Executar todos modelos em todos slices (1 por vez)"
@@ -43,8 +44,13 @@ install:
 	pip install -e .
 
 # Pipeline de dados
+prepare-raw-data:
+	@echo "[ETAPA 1/3] Processando dados brutos (listings + events)..."
+	@echo "Isso pode levar alguns minutos..."
+	export $(shell cat .env) && python src/data_preparation/prepare_raw_data.py
+
 prepare-data:
-	@echo "Criando sliding window splits..."
+	@echo "[ETAPA 2/3] Criando sliding window splits..."
 	python src/preprocessing/sliding_window_pipeline.py \
 		--input /home/hygo2025/Documents/data/processed_data/enriched_events \
 		--output outputs/data/sliding_window \
@@ -52,7 +58,7 @@ prepare-data:
 		--n-days 30
 
 convert-recbole:
-	@echo "Convertendo para formato RecBole..."
+	@echo "[ETAPA 3/3] Convertendo para formato RecBole..."
 	python src/preprocessing/recbole_converter.py \
 		--input outputs/data/sliding_window \
 		--output outputs/data/recbole

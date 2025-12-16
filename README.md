@@ -1,15 +1,26 @@
 # Fermi - Session-Based Recommendation Benchmark
 
-Benchmark de recomendação baseada em sessões para dados de real estate, replicando a metodologia de Domingues et al. (2024).
+Benchmark de recomendação baseada em sessões para plataforma de classificados, replicando a metodologia de Domingues et al. (2024).
 
 ## Documentação
 
 - [Metodologia](docs/metodologia.md) - Detalhes da metodologia do artigo base
+- [Preparação de Dados Brutos](src/data_preparation/README.md) - Pipeline de processamento inicial
+
+## Fonte dos Dados
+
+Os dados utilizados são de uma **plataforma de classificados**:
+- **Listings:** Dados dos anúncios (localização, preço, características)
+- **Events:** Eventos de interação dos usuários (visualizações, cliques, etc.)
+- **Período:** Março de 2024 (30 dias)
+
+O processamento inicial transforma os dados brutos em formato otimizado para análise de sessões.
 
 ## Visão Geral
 
 Pipeline completo para benchmarking de modelos de recomendação baseados em sessão:
 
+0. Preparação de dados brutos (listings + events da plataforma de classificados)
 1. Preparação de dados com sliding window temporal (5 slices de 30 dias)
 2. Conversão para formato RecBole
 3. Treinamento de 10 modelos (4 neurais + 2 fatoração + 4 baselines) em cada slice
@@ -39,6 +50,9 @@ Total: 50 experimentos (10 modelos × 5 slices)
 ## Quick Start
 
 ```bash
+# 0. Preparar dados brutos (listings + events) - NOVO!
+make prepare-raw-data
+
 # 1. Preparar dados (sliding window)
 make prepare-data
 
@@ -69,6 +83,9 @@ Cada execução cria uma pasta nova com timestamp para organizar tudo.
 ### Pipeline Completo
 
 ```bash
+# 0. Preparar dados brutos (primeira vez apenas)
+make prepare-raw-data
+
 # 1. Preparar dados (sliding window)
 make prepare-data
 
@@ -79,7 +96,7 @@ make convert-recbole
 make run-all
 ```
 
-**Tempo estimado:** ~2-3 horas (GPU RTX 4090)
+**Tempo estimado:** ~3-4 horas (GPU RTX 4090)
 
 ### Execução por Modelo
 
@@ -114,17 +131,22 @@ Execute os comandos na ordem abaixo para replicar o experimento completo:
 # 1. Instalar dependências
 pip install -e .
 
-# 2. Criar sliding window splits (30 dias → 5 slices)
-#    Entrada: /home/hygo2025/Documents/data/processed_data/enriched_events
+# 2. Processar dados brutos (listings + events)
+#    Entrada: dados brutos da plataforma de classificados
+#    Saída: /home/hygo2025/Documents/data/processed_data/enriched_events
+make prepare-raw-data
+
+# 3. Criar sliding window splits (30 dias → 5 slices)
+#    Entrada: enriched_events
 #    Saída: outputs/data/sliding_window/slice_{1..5}/
 make prepare-data
 
-# 3. Converter para formato RecBole
+# 4. Converter para formato RecBole
 #    Entrada: outputs/data/sliding_window/
 #    Saída: outputs/data/recbole/realestate_slice{1..5}/*.inter
 make convert-recbole
 
-# 4. Executar todos os modelos em todos os slices
+# 5. Executar todos os modelos em todos os slices
 #    Saída: outputs/results/YYYYMMDD_HHMMSS/
 #    (Agregação automática ao final)
 make run-all
@@ -134,11 +156,13 @@ Requisitos:
 - Python 3.9+
 - 16GB+ RAM (para PySpark)
 - GPU recomendada (para modelos neurais)
+- Dados brutos da plataforma de classificados
 
 ## Comandos do Makefile
 
 ```bash
 # Pipeline de dados
+make prepare-raw-data   # Processar dados brutos (listings + events)
 make prepare-data       # Criar sliding window splits (PySpark)
 make convert-recbole    # Converter para RecBole (.inter)
 
@@ -165,20 +189,31 @@ make help               # Ver todos comandos
 
 ```
 fermi/
-├── src/                          # Código fonte
-│   ├── models/                   # Modelos baseline (POP, RPOP, SPOP, Random)
-│   ├── preprocessing/            # Pipeline de dados
-│   │   ├── sliding_window_pipeline.py  # Criação de splits temporais
-│   │   ├── recbole_converter.py        # Conversão para RecBole
-│   │   └── prepare_dataset.py          # Preparação de datasets
-│   ├── configs/                  # Configurações dos modelos
-│   │   ├── baselines/            # Configs de baselines
-│   │   └── neural/               # Configs de modelos neurais
+├── src/
+│   ├── data_preparation/         # Preparação de dados brutos
+│   │   ├── pipelines/            # Pipelines de processamento
+│   │   │   ├── listings_pipeline.py    # Processar anúncios
+│   │   │   ├── events_pipeline.py      # Processar eventos
+│   │   │   └── merge_events.py         # Merge final
+│   │   ├── prepare_raw_data.py   # Script principal
+│   │   └── README.md             # Documentação
+│   ├── preprocessing/            # Pipeline de sliding window
+│   │   ├── sliding_window_pipeline.py  # Splits temporais
+│   │   ├── recbole_converter.py        # Conversão RecBole
+│   │   └── prepare_dataset.py          # Preparação datasets
+│   ├── models/                   # Modelos baseline
+│   ├── configs/                  # Configurações
+│   │   ├── baselines/            # Configs baselines
+│   │   └── neural/               # Configs neurais
 │   ├── utils/                    # Utilitários
-│   │   ├── spark_session.py      # Configuração do Spark
-│   │   └── gpu_cooling.py        # Sistema de cooling GPU
+│   │   ├── spark_session.py      # Config Spark
+│   │   ├── spark_utils.py        # Utils Spark
+│   │   ├── data_utils.py         # Utils dados
+│   │   ├── enviroment.py         # Variáveis ambiente
+│   │   ├── geocode.py            # Geocodificação
+│   │   └── gpu_cooling.py        # Cooling GPU
 │   ├── run_experiments.py        # Runner principal
-│   ├── aggregate_results.py      # Agregação de resultados
+│   ├── aggregate_results.py      # Agregação resultados
 │   └── metrics.py                # Métricas customizadas
 ├── scripts/                      # Scripts shell
 │   ├── run_parallel.sh           # Execução paralela de slices
