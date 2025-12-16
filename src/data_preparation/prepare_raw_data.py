@@ -1,15 +1,3 @@
-"""
-Script de preparação dos dados brutos.
-
-Processa os dados brutos da plataforma de classificados (listings + events) e 
-gera o dataset enriquecido usado como entrada para o sliding window.
-
-Uso:
-    python src/data_preparation/prepare_raw_data.py
-    ou
-    make prepare-raw-data
-"""
-
 import sys
 from pathlib import Path
 
@@ -23,30 +11,29 @@ from src.data_preparation.pipelines.merge_events import run_merge_events_pipelin
 
 
 def main():
-    """Executa o pipeline de preparação de dados brutos."""
     print("\n" + "="*60)
-    print(" PREPARAÇÃO DE DADOS BRUTOS - CLASSIFICADOS")
+    print(" RAW DATA PREPARATION - CLASSIFIED ADS")
     print("="*60 + "\n")
     
     spark = make_spark()
     
     try:
-        print("Etapa 1/3: Processando anúncios...")
+        print("Step 1/3: Processing listings...")
         run_listings_pipeline(spark=spark)
         
-        print("\nEtapa 2/3: Processando eventos de usuários...")
+        print("\nStep 2/3: Processing user events...")
         run_events_pipeline(spark=spark)
         
-        print("\nEtapa 3/3: Fazendo merge final...")
+        print("\nStep 3/3: Merging data...")
         run_merge_events_pipeline(spark=spark)
         
         print("\n" + "="*60)
-        print(" PREPARAÇÃO CONCLUÍDA COM SUCESSO!")
+        print(" PREPARATION COMPLETE")
         print("="*60)
-        print("\nPróximos passos:")
-        print("  1. make prepare-data      # Criar sliding window")
-        print("  2. make convert-recbole   # Converter para RecBole")
-        print("  3. make run-all           # Executar experimentos\n")
+        print("\nNext steps:")
+        print("  1. make prepare-data      # Create sliding window")
+        print("  2. make convert-recbole   # Convert to RecBole format")
+        print("  3. make run-all           # Run experiments\n")
         
     except Exception as e:
         print(f"\nERRO: {e}")

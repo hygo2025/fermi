@@ -9,7 +9,7 @@ import seaborn as sns
 
 
 class ResultsAggregator:
-    """Agrega resultados e gera tabelas/gráficos estilo paper acadêmico"""
+    """Aggregate experimental results and generate publication-ready tables/plots"""
     
     def __init__(self, input_path: str, output_dir: str, create_timestamped: bool = True):
         self.input_path = Path(input_path)
@@ -30,7 +30,6 @@ class ResultsAggregator:
         sns.set_palette("husl")
         
     def load_results(self) -> pd.DataFrame:
-        """Carrega resultados brutos"""
         input_file = self.input_path / 'raw_results.csv'
         
         if not input_file.exists():

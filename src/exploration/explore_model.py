@@ -1,15 +1,3 @@
-"""
-Script de Exploração de Modelos
-
-Exemplo de como usar o ModelExplorer para analisar recomendações
-de um modelo treinado.
-
-Uso:
-    python src/exploration/explore_model.py --model outputs/saved/GRU4Rec-Dec-16-2024.pth \\
-                                            --features /path/to/listings_features.parquet \\
-                                            --session-ids 123,456,789
-"""
-
 import argparse
 import sys
 from pathlib import Path

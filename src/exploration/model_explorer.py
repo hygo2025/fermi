@@ -1,10 +1,3 @@
-"""
-Explorador de Modelos - Análise de Recomendações
-
-Permite carregar modelos treinados e analisar as recomendações geradas,
-incluindo características dos anúncios recomendados.
-"""
-
 import sys
 import pandas as pd
 import numpy as np
@@ -17,18 +10,9 @@ from recbole.utils import init_seed, get_model
 
 
 class ModelExplorer:
-    """
-    Explorador de modelos treinados para análise de recomendações.
-    """
+    """Explore trained recommendation models"""
     
     def __init__(self, model_path: str, dataset_path: str = None):
-        """
-        Inicializa o explorador com um modelo treinado.
-        
-        Args:
-            model_path: Caminho para o checkpoint do modelo (.pth)
-            dataset_path: Caminho para os dados RecBole (opcional, se quiser recriar dataset)
-        """
         self.model_path = model_path
         self.dataset_path = dataset_path
         self.model = None
@@ -40,7 +24,6 @@ class ModelExplorer:
         self._load_model()
         
     def _load_model(self):
-        """Carrega o modelo e configurações."""
         checkpoint = torch.load(self.model_path, map_location='cpu', weights_only=False)
         
         # Extrair configuração do checkpoint

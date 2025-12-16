@@ -1,8 +1,3 @@
-"""
-RecBole Benchmark Runner for Real Estate Dataset
-Modern framework with native GPU support
-"""
-
 import argparse
 import yaml
 from pathlib import Path

@@ -4,25 +4,18 @@ from typing import Optional
 
 
 class GPUCoolingCallback:
-    """Callback para adicionar cooling intervals durante treinamento"""
+    """Add cooling intervals during training to prevent overheating"""
     
     def __init__(self, 
                  cool_every_n_epochs: int = 5,
                  cool_duration_seconds: int = 60,
                  max_temp_celsius: int = 80):
-        """
-        Args:
-            cool_every_n_epochs: Pausar a cada N epochs
-            cool_duration_seconds: Duração da pausa em segundos
-            max_temp_celsius: Temperatura máxima antes de forçar pausa
-        """
         self.cool_every = cool_every_n_epochs
         self.cool_duration = cool_duration_seconds
         self.max_temp = max_temp_celsius
         self.epoch_count = 0
         
     def get_gpu_temp(self) -> Optional[int]:
-        """Obtém temperatura atual da GPU"""
         try:
             result = subprocess.run(
                 ['nvidia-smi', '--query-gpu=temperature.gpu', 
@@ -38,12 +31,11 @@ class GPUCoolingCallback:
         return None
     
     def should_cool(self, epoch: int) -> bool:
-        """Verifica se deve pausar para resfriar"""
-        # Pausa a cada N epochs
+        # Cool every N epochs
         if (epoch + 1) % self.cool_every == 0:
             return True
         
-        # Pausa se temperatura muito alta
+        # Force cool if too hot
         temp = self.get_gpu_temp()
         if temp and temp >= self.max_temp:
             return True

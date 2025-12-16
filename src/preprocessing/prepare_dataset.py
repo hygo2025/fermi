@@ -9,18 +9,6 @@ from src.utils import make_spark
 
 
 def load_date_range_spark(spark, events_path: str, start_date: str, end_date: str):
-    """
-    Load events from Parquet partitions for a date range using Spark.
-    
-    Args:
-        spark: SparkSession
-        events_path: Path to events folder with dt=YYYY-MM-DD partitions
-        start_date: Start date (YYYY-MM-DD)
-        end_date: End date (YYYY-MM-DD)
-    
-    Returns:
-        Spark DataFrame with events
-    """
     start = datetime.strptime(start_date, '%Y-%m-%d')
     end = datetime.strptime(end_date, '%Y-%m-%d')
     
@@ -34,7 +22,7 @@ def load_date_range_spark(spark, events_path: str, start_date: str, end_date: st
         partition_path = os.path.join(events_path, partition)
         if os.path.exists(partition_path):
             partitions.append(partition)
-            print(f"  ✓ Found partition: {partition}")
+            print(f"  Found partition: {partition}")
         current += timedelta(days=1)
     
     if not partitions:
@@ -51,17 +39,12 @@ def load_date_range_spark(spark, events_path: str, start_date: str, end_date: st
         (F.col('business_type') != 'SALE')
     )
     
-    print(f"  ✓ Loaded data with Spark")
+    print(f"  Loaded data with Spark")
     
     return df
 
 
 def prepare_session_rec_format_spark(df):
-    """
-    Convert raw events to session-rec format using Spark.
-    
-    Expected columns: session_id, listing_id, event_ts
-    """
     required_cols = ['session_id', 'listing_id', 'event_ts']
     
     # Check required columns

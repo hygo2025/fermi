@@ -5,7 +5,7 @@ from datetime import datetime
 
 
 class RecBoleConverter:
-    """Converte dados parquet para formato RecBole"""
+    """Convert parquet data to RecBole format"""
     
     def __init__(self, input_path: str, output_path: str):
         self.input_path = Path(input_path)
@@ -16,7 +16,6 @@ class RecBoleConverter:
         print(f"[{datetime.now().strftime('%H:%M:%S')}] {message}")
         
     def convert_slice(self, slice_id: int):
-        """Converte um slice específico para formato RecBole"""
         self.log(f"Converting slice {slice_id}...")
         
         slice_dir = self.input_path / f"slice_{slice_id}"

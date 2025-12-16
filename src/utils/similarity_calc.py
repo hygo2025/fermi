@@ -18,10 +18,7 @@ class PropertySimilarityCalculator:
             self.df[col] = pd.to_numeric(self.df[col], errors='coerce').fillna(0)
 
         self.df.set_index(self.id_column, inplace=True)
-
         self.value_ranges = {col: self.df[col].max() - self.df[col].min() for col in self.numerical_features}
-
-        print("Calculador de Similaridade pronto!")
 
     @staticmethod
     def _safe_literal_eval(s):

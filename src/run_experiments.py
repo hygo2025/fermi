@@ -27,7 +27,7 @@ from src.utils.gpu_cooling import inject_cooling_callback
 from src.models import RandomRecommender, POPRecommender, RPOPRecommender, SPOPRecommender
 
 class ExperimentRunner:
-    """Executa experimentos de recomendação em múltiplos slices"""
+    """Run recommendation experiments across multiple time slices"""
     
     def __init__(self, 
                  data_path: str = 'recbole_data',
@@ -43,17 +43,12 @@ class ExperimentRunner:
                  save_checkpoints: bool = False):
         """
         Args:
-            data_path: Diretório com dados RecBole
-            output_path: Diretório para salvar resultados
-            config_path: Diretório com configs YAML dos modelos
-            models: Lista de modelos para executar (None = todos)
-            slices: Lista de slices para processar (None = todos)
-            enable_gpu_cooling: Ativar pausas para resfriamento
-            cool_every_n_epochs: Pausar a cada N epochs
-            cool_duration_seconds: Duração da pausa em segundos
-            max_temp_celsius: Temperatura máxima antes de forçar pausa
-            shared_timestamp: Timestamp compartilhado (para run_all)
-            save_checkpoints: Se True, salva checkpoints (padrão: False para economizar espaço)
+            enable_gpu_cooling: Enable GPU cooling pauses
+            cool_every_n_epochs: Pause every N epochs
+            cool_duration_seconds: Pause duration in seconds
+            max_temp_celsius: Max temperature before forced pause
+            shared_timestamp: Shared timestamp (for run_all)
+            save_checkpoints: If True, saves checkpoints (default: False to save space)
         """
         self.data_path = Path(data_path)
         self.config_path = Path(config_path)

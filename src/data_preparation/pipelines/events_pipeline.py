@@ -29,7 +29,7 @@ def clean_event_data(df: DataFrame) -> DataFrame:
 
 
 def process_raw_events(spark: SparkSession) -> DataFrame:
-    print("\nIniciando processamento de eventos brutos...")
+    print("\nProcessing raw events...")
 
     sale_raw_path = events_raw_path() + "/*.csv.gz"
     all_raw_events = read_csv_data(spark, sale_raw_path, multiline=False)
@@ -41,7 +41,7 @@ def process_raw_events(spark: SparkSession) -> DataFrame:
 
 
 def resolve_user_identities(events: DataFrame) -> DataFrame:
-    print("\nIniciando resolve_user_identities...")
+    print("\nResolving user identities...")
 
     num_partitions = 512
     collision_threshold = 7
