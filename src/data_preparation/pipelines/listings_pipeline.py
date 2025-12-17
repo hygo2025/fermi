@@ -1,49 +1,9 @@
 import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession, Window
-from pyspark.sql.functions import col, lower, regexp_replace, trim, lit
-from pyspark.sql.types import StringType
+from pyspark.sql.functions import col
 
 from src.utils.enviroment import listing_id_mapping_path, listings_raw_path, listings_processed_path
-from src.utils.geocode import load_cep_cache, geocode_new_ceps
 from src.utils.spark_utils import read_csv_data
-
-
-def normalize_column(df: DataFrame, col_name: str) -> DataFrame:
-    return (
-        df.withColumn(col_name, trim(lower(col(col_name))))
-          .withColumn(col_name, regexp_replace(col(col_name), "\\s+", " "))
-    )
-
-
-def enrich_listings(spark: SparkSession, df: DataFrame) -> DataFrame:
-    df = df.dropna(subset=["state", "city", "neighborhood"])
-    for c in ["state", "city", "neighborhood"]:
-        df = normalize_column(df, c)
-
-    print("\nIniciando geocodificação por CEP...")
-    if "zip_code" in df.columns:
-        df_final = df.withColumn("cep", regexp_replace(col("zip_code"), "[^0-9]", ""))
-    else:
-        df_final = df.withColumn("cep", lit(None).cast(StringType()))
-
-    cache_df_cep = load_cep_cache()
-    cache_keys_cep = set(cache_df_cep.cep)
-
-    unique_ceps = df_final.select("cep").filter(col("cep") != "").distinct().toPandas()
-    new_ceps = [
-        r.cep
-        for r in unique_ceps.itertuples(index=False)
-        if r.cep and r.cep not in cache_keys_cep
-    ]
-
-    updated_cache_cep = geocode_new_ceps(new_ceps, cache_df_cep)
-
-    cols_to_select = ['cep', 'state', 'city', 'neighborhood', 'street', 'longitude', 'latitude']
-    spark_cache_cep = spark.createDataFrame(updated_cache_cep).select(cols_to_select)
-
-    cols_to_drop = ['state', 'city', 'neighborhood', 'zip_code']
-    df_merged = df_final.drop(*cols_to_drop).join(spark_cache_cep, on='cep', how='left')
-    return df_merged
 
 
 def clean_data(df: DataFrame) -> DataFrame:
@@ -108,16 +68,15 @@ def run_listings_pipeline(spark: SparkSession):
     print("Iniciando pipeline de listings...")
     raw_path = listings_raw_path() + "/*.csv.gz"
     all_raw_listings = read_csv_data(spark, raw_path, multiline=True)
-
+    all_raw_listings = all_raw_listings.filter((col("state") == "Espírito Santo"))
     all_raw_listings = all_raw_listings.filter(
-        (col("status") != "DRAFT") & (col("status") != "BLOCKED") & (col("price") > 50000) #isso é uma tentativa de remover aluguel
+        (col("city") == "Vitória") | (col("city") == "Serra") | (col("city") == "Vila Velha") | (col("city") == "Cariacica") | (col("city") == "Viana") | (col("city") == "Guarapari") | (col("city") == "Fundão")
     )
 
     cleaned_listings = clean_data(all_raw_listings)
     final_df, mapping_table = deduplicate_and_map_ids(cleaned_listings)
 
-    final_df = final_df.drop("status", "floors", "ceiling_height")
-    final_df = enrich_listings(spark, final_df)
+    # final_df = final_df.drop("status", "floors", "ceiling_height")
 
     save_results(final_df, mapping_table)
     print("\nListings pipeline concluído.")

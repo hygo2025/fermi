@@ -155,7 +155,7 @@ class ExperimentRunner:
         # Controle de salvamento de checkpoints
         if not self.save_checkpoints:
             # Desabilitar salvamento para economizar espaço
-            config['checkpoint_dir'] = None
+            config['save_model'] = False
         
         return config
     

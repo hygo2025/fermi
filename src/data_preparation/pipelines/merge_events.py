@@ -18,7 +18,7 @@ def run_merge_events_pipeline(spark: SparkSession):
     listings = (
         listings
         .withColumnRenamed("listing_id_numeric", "listing_id")
-        .drop("month", "dt")
+        .drop("month", "dt", "business_type")
     )
 
     df = events.join(listings, on="listing_id", how="inner")
