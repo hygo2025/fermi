@@ -1,4 +1,4 @@
-.PHONY: help install clean clean-results prepare-raw-data prepare-data prepare-simple-data convert-recbole convert-recbole-simple run-all aggregate-last run-neurais run-factorization run-baselines run-gru4rec run-narm run-stamp run-sasrec run-fpmc run-fossil run-random run-pop run-rpop run-spop run-gru4rec-parallel run-parallel analyze-model pipeline-complete
+.PHONY: help install clean clean-results prepare-raw-data prepare-data prepare-simple-data convert-recbole convert-recbole-simple run-all aggregate-last run-neurais run-factorization run-baselines run-gru4rec run-narm run-stamp run-sasrec run-fpmc run-fossil run-random run-pop run-rpop run-spop run-gru4rec-parallel run-parallel tune-model analyze-model pipeline-complete
 
 help:
 	@echo "Fermi - Session-Based Recommendation Benchmark"
@@ -43,6 +43,9 @@ help:
 	@echo ""
 	@echo "Analise:"
 	@echo "  make analyze-model        - Analisar recomendacoes (requer MODEL_PATH e opcionalmente SLICE)"
+	@echo ""
+	@echo "Tuning:"
+	@echo "  make tune-model           - Busca de hiperparametros (requer MODEL=<nome>)"
 	@echo ""
 	@echo "Resultados:"
 	@echo "  make aggregate-last       - Agregar último resultado"
@@ -182,6 +185,24 @@ aggregate-last:
 
 # Analise de recomendacoes
 # Uso: make analyze-model MODEL_PATH=outputs/saved/GRU4Rec.pth [NUM_SESSIONS=5] [TOP_K=10] [SLICE=slice2]
+# Hyperparameter Tuning
+tune-model:
+	@if [ -z "$(MODEL)" ]; then \
+		echo "ERROR: MODEL nao especificado"; \
+		echo "Uso: make tune-model MODEL=GRU4Rec"; \
+		echo "Modelos disponiveis: GRU4Rec, NARM, STAMP, SASRec"; \
+		exit 1; \
+	fi
+	@echo "Executando tuning para $(MODEL)..."
+	python src/hyperparameter_tuning.py \
+		--model $(MODEL) \
+		--dataset realestate_simple \
+		--data-path outputs/data/recbole_simple \
+		--output-path outputs/tuning \
+		--algo exhaustive \
+		--max-evals 20 \
+		--early-stop 10
+
 analyze-model:
 	@if [ -z "$(MODEL_PATH)" ]; then \
 		echo "ERROR: MODEL_PATH nao especificado"; \

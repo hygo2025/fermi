@@ -2,6 +2,7 @@ dask>=2021.10.0
 dill>=0.3.4
 fastparquet
 geopy
+hyperopt>=0.2.7
 ipywidgets>=7.6.0
 jupyter>=1.0.0
 LibRecommender
