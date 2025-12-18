@@ -1,4 +1,4 @@
-.PHONY: help install clean clean-results prepare-raw-data prepare-data convert-recbole run-all aggregate-last run-neurais run-factorization run-baselines run-gru4rec run-narm run-stamp run-sasrec run-fpmc run-fossil run-random run-pop run-rpop run-spop run-gru4rec-parallel run-parallel analyze-model pipeline-complete
+.PHONY: help install clean clean-results prepare-raw-data prepare-data prepare-simple-data convert-recbole convert-recbole-simple run-all aggregate-last run-neurais run-factorization run-baselines run-gru4rec run-narm run-stamp run-sasrec run-fpmc run-fossil run-random run-pop run-rpop run-spop run-gru4rec-parallel run-parallel analyze-model pipeline-complete
 
 help:
 	@echo "Fermi - Session-Based Recommendation Benchmark"
@@ -9,7 +9,9 @@ help:
 	@echo "Pipeline de Dados (em ordem):"
 	@echo "  make prepare-raw-data     - [ETAPA 1] Processar dados brutos (listings + events)"
 	@echo "  make prepare-data         - [ETAPA 2] Criar sliding window splits (PySpark)"
+	@echo "  make prepare-simple-data  - [ETAPA 2 ALT] Preparar dados sem sliding windows (train/test simples)"
 	@echo "  make convert-recbole      - [ETAPA 3] Converter para formato RecBole"
+	@echo "  make convert-recbole-simple - [ETAPA 3 ALT] Converter dados simples para RecBole"
 	@echo ""
 	@echo "Experimentos (Sequencial):"
 	@echo "  make run-all              - Executar todos modelos em todos slices (1 por vez)"
@@ -67,11 +69,32 @@ prepare-data:
 		--start-date 2024-03-01 \
 		--n-days 30
 
+prepare-simple-data:
+	@echo "[ETAPA 2/3 - SIMPLES] Preparando dados sem sliding windows..."
+	python src/preprocessing/simple_data_pipeline.py \
+		--input /home/hygo2025/Documents/data/processed_data/enriched_events \
+		--output outputs/data/simple_data \
+		--start-date 2024-03-01 \
+		--n-days 30 \
+		--train-ratio 0.8
+
 convert-recbole:
 	@echo "[ETAPA 3/3] Convertendo para formato RecBole..."
 	python src/preprocessing/recbole_converter.py \
 		--input outputs/data/sliding_window \
 		--output outputs/data/recbole
+
+convert-recbole-simple:
+	@echo "[ETAPA 3/3] Convertendo dados simples para formato RecBole..."
+	python src/preprocessing/recbole_converter.py \
+		--input outputs/data/simple_data \
+		--output outputs/data/recbole_simple
+
+convert-recbole-simple:
+	@echo "[ETAPA 3/3] Convertendo para formato RecBole..."
+	python src/preprocessing/recbole_converter.py \
+		--input outputs/data/simple_data \
+		--output outputs/data/recbole_simple
 
 # Experimentos - Sequencial
 run-all:
@@ -97,6 +120,10 @@ run-gru4rec-parallel:
 	@./scripts/run_parallel_gpu.sh GRU4Rec yes
 
 # Neurais
+run-gru4rec-quick:
+	@echo "Executando GRU4Rec em 1 slice (slice1)..."
+	python src/run_experiments.py --models GRU4Rec --slices 1 --save-checkpoints
+
 run-gru4rec:
 	@echo "Executando GRU4Rec em todos os slices (sequencial)..."
 	python src/run_experiments.py --models GRU4Rec --all-slices --save-checkpoints
@@ -172,7 +199,7 @@ analyze-model:
 	echo "Output: $$OUTPUT_DIR"; \
 	python src/exploration/analyze_recommendations.py \
 		--model_path $(MODEL_PATH) \
-		--features_path /home/hygo2025/Documents/data/processed_data/listings/part-00000-bf98a429-f6d4-47a3-a1c0-94dc622ae21a-c000.snappy.parquet \
+		--features_path /home/hygo2025/Documents/data/processed_data/listings/part-00000-147c4e9e-f355-4a0f-92b2-9701e8657b41-c000.snappy.parquet \
 		--test_data_path outputs/data/recbole/realestate_$$SLICE/realestate_$$SLICE.test.inter \
 		--num_sessions $(or $(NUM_SESSIONS),5) \
 		--top_k $(or $(TOP_K),10) \

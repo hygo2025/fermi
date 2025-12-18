@@ -4,33 +4,29 @@ import argparse
 
 from pyspark.sql import DataFrame, Window
 from pyspark.sql import functions as F
-from pyspark.sql.types import StringType, IntegerType, TimestampType
+from pyspark.sql.types import IntegerType
 from src.utils.spark_session import make_spark
 
 
-class SlidingWindowPreparer:
-    """Prepares session-based recommendation data with sliding window protocol using Spark"""
+class SimpleDataPreparer:
+    """Prepares session-based recommendation data without sliding windows using Spark"""
     
     def __init__(self, 
                  input_path: str,
                  output_path: str,
                  start_date: str,
                  n_days: int = 30,
-                 n_slices: int = 5,
-                 train_days: int = 5,
-                 test_days: int = 1,
+                 train_ratio: float = 0.8,
                  min_session_len: int = 2,
                  max_session_len: int = 50,
                  min_item_support: int = 5):
         """
         Args:
             input_path: Path to enriched_events parquet data
-            output_path: Where to save processed slices
+            output_path: Where to save processed data
             start_date: First date to include (YYYY-MM-DD)
             n_days: Total days to use (default: 30)
-            n_slices: Number of sliding window slices to create (default: 5)
-            train_days: Days for training in each slice (default: 5)
-            test_days: Days for testing in each slice (default: 1)
+            train_ratio: Proportion of data for training (default: 0.8)
             min_session_len: Min interactions per session (default: 2)
             max_session_len: Max interactions per session (default: 50)
             min_item_support: Min occurrences for item to be kept (default: 5)
@@ -40,9 +36,7 @@ class SlidingWindowPreparer:
         self.output_path = output_path
         self.start_date = start_date
         self.n_days = n_days
-        self.n_slices = n_slices
-        self.train_days = train_days
-        self.test_days = test_days
+        self.train_ratio = train_ratio
         self.min_session_len = min_session_len
         self.max_session_len = max_session_len
         self.min_item_support = min_item_support
@@ -74,11 +68,7 @@ class SlidingWindowPreparer:
 
         df = df.filter((F.col("business_type") == "SALE"))
         total_events = df.count()
-        self.log(f"Loaded filter business_type {total_events:_} events")
-
-        df = df.filter((F.col("business_type") == "SALE"))
-        total_events = df.count()
-        self.log(f"Loaded filter business_type {total_events:_} events")
+        self.log(f"Filtered business_type=SALE: {total_events:_} events")
 
         return df
     
@@ -190,117 +180,79 @@ class SlidingWindowPreparer:
         
         return df_filtered
     
-    def create_sliding_window_slices(self, df: DataFrame) -> list:
-        """
-        Create 5 slices with sliding window protocol:
-        Slice 1: Days 1-5 (train) + Day 6 (test)
-        Slice 2: Days 7-11 (train) + Day 12 (test)
-        ...
-        Slice 5: Days 25-29 (train) + Day 30 (test)
-        """
-        self.log("Creating 5 sliding window slices (5 days train + 1 day test)")
+    def split_train_test(self, df: DataFrame) -> tuple:
+        """Split data into train/test by time"""
+        self.log(f"Splitting data: {self.train_ratio*100:.0f}% train, {(1-self.train_ratio)*100:.0f}% test")
         
-        slices = []
-        days_per_slice = 6  # 5 train + 1 test
-        n_slices = self.n_days // days_per_slice
+        # Get min and max timestamps
+        time_stats = df.agg(
+            F.min('timestamp').alias('min_ts'),
+            F.max('timestamp').alias('max_ts')
+        ).collect()[0]
         
-        start_dt = datetime.strptime(self.start_date, '%Y-%m-%d')
+        min_ts = time_stats['min_ts']
+        max_ts = time_stats['max_ts']
         
-        for slice_idx in range(n_slices):
-            slice_start = start_dt + timedelta(days=slice_idx * days_per_slice)
-            train_start = slice_start
-            train_end = slice_start + timedelta(days=4, hours=23, minutes=59, seconds=59)
-            test_start = slice_start + timedelta(days=5)
-            test_end = slice_start + timedelta(days=5, hours=23, minutes=59, seconds=59)
-            
-            # Filter train data
-            train_df = df.filter(
-                (F.col('timestamp') >= train_start) &
-                (F.col('timestamp') <= train_end)
-            ).cache()
-            
-            # Filter test data
-            test_df = df.filter(
-                (F.col('timestamp') >= test_start) &
-                (F.col('timestamp') <= test_end)
-            ).cache()
-            
-            train_count = train_df.count()
-            train_sessions_count = train_df.select('session_id').distinct().count()
-            test_count = test_df.count()
-            test_sessions_count = test_df.select('session_id').distinct().count()
-            
-            self.log(f"\nSlice {slice_idx + 1}:")
-            self.log(f"  Train: {train_start.date()} to {train_end.date()} | {train_count:,} events | {train_sessions_count:,} sessions")
-            self.log(f"  Test:  {test_start.date()} to {test_end.date()} | {test_count:,} events | {test_sessions_count:,} sessions")
-            
-            slices.append({
-                'slice_id': slice_idx + 1,
-                'train': train_df,
-                'test': test_df,
-                'train_period': f"{train_start.date()}_{train_end.date()}",
-                'test_period': f"{test_start.date()}_{test_end.date()}"
-            })
+        # Calculate split point
+        time_range = (max_ts - min_ts).total_seconds()
+        train_cutoff = min_ts + timedelta(seconds=time_range * self.train_ratio)
         
-        return slices
+        # Split data
+        train_df = df.filter(F.col('timestamp') < train_cutoff).cache()
+        test_df = df.filter(F.col('timestamp') >= train_cutoff).cache()
+        
+        train_count = train_df.count()
+        test_count = test_df.count()
+        train_sessions = train_df.select('session_id').distinct().count()
+        test_sessions = test_df.select('session_id').distinct().count()
+        
+        self.log(f"Train: {min_ts} to {train_cutoff} | {train_count:,} events | {train_sessions:,} sessions")
+        self.log(f"Test:  {train_cutoff} to {max_ts} | {test_count:,} events | {test_sessions:,} sessions")
+        
+        return train_df, test_df
     
-    def save_slices(self, slices: list):
-        """Save each slice as separate train/test parquet files"""
-        self.log(f"\nSaving slices to {self.output_path}")
+    def save_data(self, train_df: DataFrame, test_df: DataFrame):
+        """Save train/test data as parquet files"""
+        self.log(f"\nSaving data to {self.output_path}")
         
-        stats = []
+        # Save train
+        train_df.coalesce(10).write.mode('overwrite').parquet(f"{self.output_path}/train")
+        self.log("  Saved train data")
         
-        for slice_data in slices:
-            slice_id = slice_data['slice_id']
-            slice_dir = f"{self.output_path}/slice_{slice_id}"
-            
-            train_df = slice_data['train']
-            test_df = slice_data['test']
-            
-            # Save train (coalesce to reduce number of files)
-            train_df.coalesce(10).write.mode('overwrite').parquet(f"{slice_dir}/train")
-            
-            # Save test
-            test_df.coalesce(5).write.mode('overwrite').parquet(f"{slice_dir}/test")
-            
-            # Collect metadata
-            metadata = {
-                'slice_id': slice_id,
-                'train_period': slice_data['train_period'],
-                'test_period': slice_data['test_period'],
-                'train_events': train_df.count(),
-                'test_events': test_df.count(),
-                'train_sessions': train_df.select('session_id').distinct().count(),
-                'test_sessions': test_df.select('session_id').distinct().count(),
-                'train_users': train_df.select('user_id').distinct().count(),
-                'test_users': test_df.select('user_id').distinct().count(),
-                'train_items': train_df.select('item_id').distinct().count(),
-                'test_items': test_df.select('item_id').distinct().count(),
-            }
-            
-            # Save metadata as CSV
-            import pandas as pd
-            pd.DataFrame([metadata]).to_csv(f"{slice_dir}/metadata.csv", index=False)
-            stats.append(metadata)
-            
-            self.log(f"  Saved slice {slice_id} to {slice_dir}")
-            
-            # Unpersist cached DataFrames
-            train_df.unpersist()
-            test_df.unpersist()
+        # Save test
+        test_df.coalesce(5).write.mode('overwrite').parquet(f"{self.output_path}/test")
+        self.log("  Saved test data")
         
-        # Save overall summary
+        # Collect metadata
+        metadata = {
+            'start_date': self.start_date,
+            'n_days': self.n_days,
+            'train_ratio': self.train_ratio,
+            'train_events': train_df.count(),
+            'test_events': test_df.count(),
+            'train_sessions': train_df.select('session_id').distinct().count(),
+            'test_sessions': test_df.select('session_id').distinct().count(),
+            'train_users': train_df.select('user_id').distinct().count(),
+            'test_users': test_df.select('user_id').distinct().count(),
+            'train_items': train_df.select('item_id').distinct().count(),
+            'test_items': test_df.select('item_id').distinct().count(),
+        }
+        
+        # Save metadata
         import pandas as pd
-        summary_df = pd.DataFrame(stats)
-        summary_df.to_csv(f"{self.output_path}/summary.csv", index=False)
-        self.log(f"\nSummary saved to {self.output_path}/summary.csv")
+        pd.DataFrame([metadata]).to_csv(f"{self.output_path}/metadata.csv", index=False)
+        self.log(f"Metadata saved to {self.output_path}/metadata.csv")
         
-        return summary_df
+        # Unpersist
+        train_df.unpersist()
+        test_df.unpersist()
+        
+        return metadata
     
     def run(self):
         """Execute full pipeline"""
         self.log("="*80)
-        self.log("SLIDING WINDOW DATA PREPARATION PIPELINE (PySpark)")
+        self.log("SIMPLE DATA PREPARATION PIPELINE (PySpark)")
         self.log("="*80)
         
         # 1. Load raw data
@@ -321,15 +273,15 @@ class SlidingWindowPreparer:
         # 6. Re-filter sessions after item filtering
         df = self.filter_sessions(df)
         
-        # Cache for sliding window creation
+        # Cache for splitting
         df = df.cache()
         df.count()  # Materialize cache
         
-        # 7. Create sliding window slices
-        slices = self.create_sliding_window_slices(df)
+        # 7. Split train/test
+        train_df, test_df = self.split_train_test(df)
         
-        # 8. Save slices
-        summary = self.save_slices(slices)
+        # 8. Save data
+        metadata = self.save_data(train_df, test_df)
         
         # Cleanup
         df.unpersist()
@@ -338,25 +290,28 @@ class SlidingWindowPreparer:
         self.log("PIPELINE COMPLETED SUCCESSFULLY")
         self.log("="*80)
         print("\nFINAL SUMMARY:")
-        print(summary.to_string(index=False))
+        for key, value in metadata.items():
+            print(f"  {key}: {value}")
         
         self.spark.stop()
-        return summary
+        return metadata
 
 
 def main():
-    parser = argparse.ArgumentParser(description='Prepare sliding window data for session-based RecSys')
+    parser = argparse.ArgumentParser(description='Prepare simple train/test data for session-based RecSys')
     parser.add_argument('--input', type=str, 
                        default='/home/hygo2025/Documents/data/processed_data/enriched_events',
                        help='Path to enriched events')
     parser.add_argument('--output', type=str,
-                       default='data/sliding_window',
-                       help='Output directory for slices')
+                       default='data/simple_data',
+                       help='Output directory')
     parser.add_argument('--start-date', type=str,
                        default='2024-03-01',
                        help='Start date (YYYY-MM-DD)')
     parser.add_argument('--n-days', type=int, default=30,
                        help='Total days to process')
+    parser.add_argument('--train-ratio', type=float, default=0.8,
+                       help='Train/test split ratio (default: 0.8)')
     parser.add_argument('--min-session-len', type=int, default=2,
                        help='Minimum session length')
     parser.add_argument('--max-session-len', type=int, default=50,
@@ -366,11 +321,12 @@ def main():
     
     args = parser.parse_args()
     
-    preparer = SlidingWindowPreparer(
+    preparer = SimpleDataPreparer(
         input_path=args.input,
         output_path=args.output,
         start_date=args.start_date,
         n_days=args.n_days,
+        train_ratio=args.train_ratio,
         min_session_len=args.min_session_len,
         max_session_len=args.max_session_len,
         min_item_support=args.min_item_support

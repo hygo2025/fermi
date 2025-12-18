@@ -993,18 +993,18 @@ def main():
             top_k=5
         )
         
-        if not args.no_viz:
-            output_dir = Path(args.output_dir) if args.output_dir else None
-            print(f"\nGerando visualizacoes...")
-            print(f"  Output dir: {output_dir}")
-            print(f"  Sessao exemplo: {first_session_items}")
-            create_visualizations(
-                explorer,
-                first_session_items,
-                args.top_k,
-                output_dir,
-                results_df  # Passar results_df para gráficos agregados
-            )
+        #if not args.no_viz:
+        output_dir = Path(args.output_dir) if args.output_dir else None
+        print(f"\nGerando visualizacoes...")
+        print(f"  Output dir: {output_dir}")
+        print(f"  Sessao exemplo: {first_session_items}")
+        create_visualizations(
+            explorer,
+            first_session_items,
+            args.top_k,
+            output_dir,
+            results_df  # Passar results_df para gráficos agregados
+        )
         
         print_final_summary(results_df)
         
