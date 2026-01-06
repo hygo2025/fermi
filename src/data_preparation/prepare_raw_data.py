@@ -25,7 +25,7 @@ def main():
         run_events_pipeline(spark=spark)
         
         print("\nStep 3/3: Merging data...")
-        run_merge_events_pipeline(spark=spark)
+        #run_merge_events_pipeline(spark=spark)
         
         print("\n" + "="*60)
         print(" PREPARATION COMPLETE")
