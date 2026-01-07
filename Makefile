@@ -92,6 +92,27 @@ aggregate: ## Agrega os resultados da execução mais recente em um CSV único
 		--output "$${LAST_DIR%/}/aggregated_results.csv"
 
 # -----------------------------------------------------------------------------
+##@ API Server
+# -----------------------------------------------------------------------------
+api: ## Inicia servidor API (Requer: MODEL=nome_do_modelo ou path.pth)
+	@if [ -z "$(MODEL)" ]; then \
+		echo "[ERROR] MODEL argument is required."; \
+		echo "[INFO] Usage: make api MODEL=GRU4Rec"; \
+		echo "[INFO]    or: make api MODEL=outputs/saved/GRU4Rec-Dec-31-2024_12-34-56.pth"; \
+		exit 1; \
+	fi
+	@echo "[INFO] Starting API with model: $(MODEL)..."
+	python src/api/app.py --model $(MODEL)
+
+api-dev: ## Inicia API em modo desenvolvimento com auto-reload
+	@if [ -z "$(MODEL)" ]; then \
+		echo "[ERROR] MODEL argument is required."; \
+		exit 1; \
+	fi
+	@echo "[INFO] Starting API (dev mode) with model: $(MODEL)..."
+	python src/api/app.py --model $(MODEL) --reload
+
+# -----------------------------------------------------------------------------
 ##@ Manutenção e Limpeza
 # -----------------------------------------------------------------------------
 clean: ## Remove arquivos de cache do Python (__pycache__, .pyc)
