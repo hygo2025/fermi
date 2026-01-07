@@ -9,6 +9,7 @@ from src.utils.enviroment import (
     listing_id_mapping_path,
 )
 from src.utils.spark_utils import read_csv_data
+from src.utils import log
 
 
 def clean_event_data(df: DataFrame) -> DataFrame:

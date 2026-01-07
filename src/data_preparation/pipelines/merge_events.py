@@ -8,6 +8,7 @@ from src.utils.enviroment import (
     events_processed_path,
     enriched_events_path, listing_id_mapping_path
 )
+from src.utils import log
 
 def run_merge_events_pipeline(spark: SparkSession):
     print("\nExecutando pipeline completo de eventos...")

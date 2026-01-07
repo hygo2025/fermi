@@ -6,13 +6,13 @@ from pyspark.sql import functions as F
 from pyspark.sql.types import LongType
 
 from src.utils import make_spark
-
+from src.utils import log
 
 def load_date_range_spark(spark, events_path: str, start_date: str, end_date: str):
     start = datetime.strptime(start_date, '%Y-%m-%d')
     end = datetime.strptime(end_date, '%Y-%m-%d')
     
-    print(f"\nLoading data from {start_date} to {end_date} using Spark...")
+    log(f"\nLoading data from {start_date} to {end_date} using Spark...")
     
     # Build partition filter
     partitions = []
@@ -22,7 +22,7 @@ def load_date_range_spark(spark, events_path: str, start_date: str, end_date: st
         partition_path = os.path.join(events_path, partition)
         if os.path.exists(partition_path):
             partitions.append(partition)
-            print(f"  Found partition: {partition}")
+            log(f"  Found partition: {partition}")
         current += timedelta(days=1)
     
     if not partitions:
@@ -39,7 +39,7 @@ def load_date_range_spark(spark, events_path: str, start_date: str, end_date: st
         (F.col('business_type') != 'SALE')
     )
     
-    print(f"  Loaded data with Spark")
+    log(f"  Loaded data with Spark")
     
     return df
 
@@ -82,7 +82,7 @@ def save_session_rec_data_spark(df, output_path: str, name: str):
     # Save as single Parquet file (coalesce to 1 partition)
     parquet_file = os.path.join(output_path, f"{name}.parquet")
     
-    print(f"  Saving Parquet: {parquet_file}")
+    log(f"  Saving Parquet: {parquet_file}")
     df.coalesce(1).write.mode('overwrite').parquet(parquet_file + '.tmp')
     
     # Move the actual parquet file to desired location
@@ -93,9 +93,9 @@ def save_session_rec_data_spark(df, output_path: str, name: str):
         shutil.move(tmp_files[0], parquet_file)
         shutil.rmtree(f"{parquet_file}.tmp")
     
-    print(f"  ✓ Saved Parquet: {parquet_file}")
+    log(f"  ✓ Saved Parquet: {parquet_file}")
     
-    # Compute and print stats
+    # Compute and log stats
     n_events = df.count()
     n_sessions = df.select('SessionId').distinct().count()
     n_items = df.select('ItemId').distinct().count()
@@ -108,7 +108,7 @@ def save_session_rec_data_spark(df, output_path: str, name: str):
     date_min = datetime.fromtimestamp(time_stats['min_time']).strftime('%Y-%m-%d')
     date_max = datetime.fromtimestamp(time_stats['max_time']).strftime('%Y-%m-%d')
     
-    print(f"""
+    log(f"""
     Stats for {name}:
       Events: {n_events:,}
       Sessions: {n_sessions:,}
@@ -136,12 +136,12 @@ def main():
     
     args = parser.parse_args()
     
-    print("="*80)
-    print("Session-Rec Dataset Preparation (Spark-optimized)")
-    print("="*80)
+    log("="*80)
+    log("Session-Rec Dataset Preparation (Spark-optimized)")
+    log("="*80)
     
     # Initialize Spark
-    print("\nInitializing Spark session...")
+    log("\nInitializing Spark session...")
     spark = make_spark(memory_storage_fraction=0.3)
     
     try:
@@ -149,10 +149,10 @@ def main():
         df = load_date_range_spark(spark, args.source_path, args.start_date, args.end_date)
         
         total_events = df.count()
-        print(f"\n✓ Loaded {total_events:,} total events")
+        log(f"\n✓ Loaded {total_events:,} total events")
         
         # Prepare session-rec format
-        print("\nConverting to session-rec format with Spark...")
+        log("\nConverting to session-rec format with Spark...")
         df_prepared = prepare_session_rec_format_spark(df)
         
         # Cache for reuse
@@ -163,9 +163,9 @@ def main():
         test_start_date = end_date - timedelta(days=args.test_days - 1)
         test_start_ts = int(test_start_date.timestamp())
         
-        print(f"\nSplitting data: Last {args.test_days} days for test")
-        print(f"  Train: {args.start_date} to {(test_start_date - timedelta(days=1)).strftime('%Y-%m-%d')}")
-        print(f"  Test: {test_start_date.strftime('%Y-%m-%d')} to {args.end_date}")
+        log(f"\nSplitting data: Last {args.test_days} days for test")
+        log(f"  Train: {args.start_date} to {(test_start_date - timedelta(days=1)).strftime('%Y-%m-%d')}")
+        log(f"  Test: {test_start_date.strftime('%Y-%m-%d')} to {args.end_date}")
         
         train_df = df_prepared.filter(F.col('Time') < test_start_ts)
         test_df = df_prepared.filter(F.col('Time') >= test_start_ts)
@@ -173,19 +173,19 @@ def main():
         # Save datasets
         output_path = os.path.join(args.output_path, args.name)
         
-        print("\nSaving train set...")
+        log("\nSaving train set...")
         save_session_rec_data_spark(train_df, output_path, f"{args.name}_train_full")
         
-        print("\nSaving test set...")
+        log("\nSaving test set...")
         save_session_rec_data_spark(test_df, output_path, f"{args.name}_test")
         
-        print("\n" + "="*80)
-        print("✓ Dataset preparation complete!")
-        print("="*80)
-        print(f"\nOutput location: {output_path}")
-        print(f"\nFormats generated:")
-        print(f"  • Parquet files (.parquet) - Fast loading with Spark optimization")
-        print(f"\nNext step: Run benchmark with config pointing to '{args.name}' dataset")
+        log("\n" + "="*80)
+        log("✓ Dataset preparation complete!")
+        log("="*80)
+        log(f"\nOutput location: {output_path}")
+        log(f"\nFormats generated:")
+        log(f"  • Parquet files (.parquet) - Fast loading with Spark optimization")
+        log(f"\nNext step: Run benchmark with config pointing to '{args.name}' dataset")
         
     finally:
         # Clean up Spark

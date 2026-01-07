@@ -22,13 +22,13 @@ class FermiValidator:
         self.passed = []
         
     def log_pass(self, msg: str):
-        self.passed.append(f"✅ {msg}")
+        self.passed.append(f" {msg}")
         
     def log_warning(self, msg: str):
-        self.warnings.append(f"⚠️  {msg}")
+        self.warnings.append(f"  {msg}")
         
     def log_error(self, msg: str):
-        self.errors.append(f"❌ {msg}")
+        self.errors.append(f" {msg}")
     
     def check_project_config(self):
         """Valida config/project_config.yaml"""
@@ -203,32 +203,32 @@ class FermiValidator:
         print("=" * 80)
         
         if self.passed:
-            print(f"\n✅ PASSOU ({len(self.passed)}):")
+            print(f"\n PASSOU ({len(self.passed)}):")
             for msg in self.passed:
                 print(f"  {msg}")
         
         if self.warnings:
-            print(f"\n⚠️  AVISOS ({len(self.warnings)}):")
+            print(f"\n  AVISOS ({len(self.warnings)}):")
             for msg in self.warnings:
                 print(f"  {msg}")
         
         if self.errors:
-            print(f"\n❌ ERROS ({len(self.errors)}):")
+            print(f"\n ERROS ({len(self.errors)}):")
             for msg in self.errors:
                 print(f"  {msg}")
         
         print("\n" + "=" * 80)
         
         if self.errors:
-            print("❌ VALIDAÇÃO FALHOU - Corrija os erros antes de prosseguir")
+            print(" VALIDAÇÃO FALHOU - Corrija os erros antes de prosseguir")
             print("=" * 80)
             return False
         elif self.warnings:
-            print("⚠️  VALIDAÇÃO PASSOU COM AVISOS - Revise as configurações")
+            print("  VALIDAÇÃO PASSOU COM AVISOS - Revise as configurações")
             print("=" * 80)
             return True
         else:
-            print("✅ VALIDAÇÃO PASSOU - Sistema pronto para uso!")
+            print(" VALIDAÇÃO PASSOU - Sistema pronto para uso!")
             print("=" * 80)
             return True
 

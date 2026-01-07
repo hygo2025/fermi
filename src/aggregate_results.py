@@ -2,6 +2,7 @@ import argparse
 from pathlib import Path
 from datetime import datetime
 
+from src.utils import log
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -52,11 +53,11 @@ class ResultsAggregator:
         initial_count = len(df)
         df = df.drop_duplicates(subset=['model', 'slice'], keep='last')
         if len(df) < initial_count:
-            print(f"WARNING: Removed {initial_count - len(df)} duplicate entries")
+            log(f"WARNING: Removed {initial_count - len(df)} duplicate entries")
         
-        print(f"Loaded {len(df)} results from {input_file}")
-        print(f"Models: {sorted(df['model'].unique())}")
-        print(f"Slices: {sorted(df['slice'].unique())}")
+        log(f"Loaded {len(df)} results from {input_file}")
+        log(f"Models: {sorted(df['model'].unique())}")
+        log(f"Slices: {sorted(df['slice'].unique())}")
         
         return df
     
@@ -65,7 +66,7 @@ class ResultsAggregator:
         
         # Find metric columns
         metric_cols = [col for col in df.columns if '@' in col]
-        print(f"\nMetrics found: {metric_cols}")
+        log(f"\nMetrics found: {metric_cols}")
         
         aggregated = []
         for model in sorted(df['model'].unique()):
@@ -114,7 +115,7 @@ class ResultsAggregator:
         available_metrics = [m for m in metrics if f'{m}_mean' in df.columns]
         
         if not available_metrics:
-            print("No metrics found for plotting")
+            log("No metrics found for plotting")
             return
         
         n_metrics = len(available_metrics)
@@ -150,7 +151,7 @@ class ResultsAggregator:
         plt.tight_layout()
         output_file = self.output_dir / 'metrics_comparison.png'
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
-        print(f"Saved plot: {output_file}")
+        log(f"Saved plot: {output_file}")
         plt.close()
     
     def plot_metrics_heatmap(self, df: pd.DataFrame):
@@ -160,7 +161,7 @@ class ResultsAggregator:
         mean_cols = [col for col in df.columns if col.endswith('_mean')]
         
         if not mean_cols:
-            print("No mean metrics for heatmap")
+            log("No mean metrics for heatmap")
             return
         
         # Create matrix
@@ -186,7 +187,7 @@ class ResultsAggregator:
         plt.tight_layout()
         output_file = self.output_dir / 'performance_heatmap.png'
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
-        print(f"Saved heatmap: {output_file}")
+        log(f"Saved heatmap: {output_file}")
         plt.close()
     
     def plot_slice_consistency(self, raw_df: pd.DataFrame):
@@ -194,7 +195,7 @@ class ResultsAggregator:
         
         metric = 'Recall@10'
         if metric not in raw_df.columns:
-            print(f"Metric {metric} not found for slice analysis")
+            log(f"Metric {metric} not found for slice analysis")
             return
         
         # Pivot data
@@ -217,7 +218,7 @@ class ResultsAggregator:
         plt.tight_layout()
         output_file = self.output_dir / 'slice_consistency.png'
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
-        print(f"Saved slice consistency plot: {output_file}")
+        log(f"Saved slice consistency plot: {output_file}")
         plt.close()
     
     def organize_model_files(self):
@@ -225,7 +226,7 @@ class ResultsAggregator:
         import shutil
         import json
         
-        print("\nOrganizing model-specific files...")
+        log("\nOrganizing model-specific files...")
         
         # Get all models from results
         raw_results = self.input_path / 'raw_results.csv'
@@ -260,7 +261,7 @@ class ResultsAggregator:
                         dest = model_dir / model_file.name
                         shutil.copy2(model_file, dest)
         
-        print(f"Organized files for {len(models)} models into separate folders")
+        log(f"Organized files for {len(models)} models into separate folders")
     
     def plot_loss_curves(self):
         """Gráficos de training loss curves"""
@@ -268,7 +269,7 @@ class ResultsAggregator:
         losses_dir = self.input_path / 'losses'
         
         if not losses_dir.exists():
-            print("No loss data found. Skipping loss curves...")
+            log("No loss data found. Skipping loss curves...")
             return
         
         import json
@@ -278,7 +279,7 @@ class ResultsAggregator:
         loss_files = list(losses_dir.glob('*_loss.json'))
         
         if not loss_files:
-            print("No loss files found")
+            log("No loss files found")
             return
         
         # Group by model
@@ -342,7 +343,7 @@ class ResultsAggregator:
             plt.tight_layout()
             output_file = model_dir / 'loss_curves.png'
             plt.savefig(output_file, dpi=300, bbox_inches='tight')
-            print(f"Saved loss curves: {output_file}")
+            log(f"Saved loss curves: {output_file}")
             plt.close()
         
         # Create summary plot - average loss across slices
@@ -384,7 +385,7 @@ class ResultsAggregator:
         plt.tight_layout()
         output_file = self.output_dir / 'loss_curves_average.png'
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
-        print(f"Saved average loss curves: {output_file}")
+        log(f"Saved average loss curves: {output_file}")
         plt.close()
     
     def create_summary_tables(self, agg_df: pd.DataFrame):
@@ -393,7 +394,7 @@ class ResultsAggregator:
         # 1. CSV completo
         csv_file = self.output_dir / 'aggregated_results.csv'
         agg_df.to_csv(csv_file, index=False)
-        print(f"Saved CSV: {csv_file}")
+        log(f"Saved CSV: {csv_file}")
         
         # 2. Markdown table (for GitHub/docs)
         md_file = self.output_dir / 'results_table.md'
@@ -407,7 +408,7 @@ class ResultsAggregator:
             f.write("# Experiment Results\n\n")
             f.write(md_df.to_markdown(index=False))
             f.write("\n\n*Values shown as mean ± std across 5 temporal slices*\n")
-        print(f"Saved Markdown table: {md_file}")
+        log(f"Saved Markdown table: {md_file}")
     
     def create_execution_readme(self, raw_df: pd.DataFrame, agg_df: pd.DataFrame):
         """Cria README com informações detalhadas da execução"""
@@ -612,21 +613,21 @@ Higher values are better for all metrics.
         with open(readme_file, 'w') as f:
             f.write(content)
         
-        print(f"Saved execution README: {readme_file}")
+        log(f"Saved execution README: {readme_file}")
     
     def run(self):
         """Executa pipeline completo de agregação e visualização"""
         
-        print("="*80)
-        print("Results Aggregation & Visualization Pipeline")
-        print("="*80)
-        print()
+        log("="*80)
+        log("Results Aggregation & Visualization Pipeline")
+        log("="*80)
+        log()
         
         # Load data
         raw_df = self.load_results()
         
         # Aggregate
-        print("\nAggregating metrics...")
+        log("\nAggregating metrics...")
         agg_df = self.aggregate_metrics(raw_df)
         
         # Sort by best Recall@10
@@ -634,44 +635,44 @@ Higher values are better for all metrics.
             agg_df = agg_df.sort_values('Recall@10_mean', ascending=False)
         
         # Display in terminal
-        print("\n" + "="*80)
-        print("AGGREGATED RESULTS (mean ± std)")
-        print("="*80)
+        log("\n" + "="*80)
+        log("AGGREGATED RESULTS (mean ± std)")
+        log("="*80)
         display_cols = ['Model'] + [col for col in agg_df.columns 
                                     if '@' in col and not col.endswith('_mean') 
                                     and not col.endswith('_std')]
-        print(agg_df[display_cols].to_string(index=False))
-        print()
+        log(agg_df[display_cols].to_string(index=False))
+        log()
         
         # Organize model-specific files into folders
         self.organize_model_files()
         
         # Create tables
-        print("\nGenerating tables...")
+        log("\nGenerating tables...")
         self.create_summary_tables(agg_df)
         self.create_execution_readme(raw_df, agg_df)
         
         # Create plots
-        print("\nGenerating plots...")
+        log("\nGenerating plots...")
         self.plot_metrics_comparison(agg_df)
         self.plot_metrics_heatmap(agg_df)
         self.plot_slice_consistency(raw_df)
         self.plot_loss_curves()  # Training loss curves
         
-        print("\n" + "="*80)
-        print(f"All outputs saved to: {self.output_dir}")
-        print("="*80)
-        print("\nGenerated files:")
+        log("\n" + "="*80)
+        log(f"All outputs saved to: {self.output_dir}")
+        log("="*80)
+        log("\nGenerated files:")
         for f in sorted(self.output_dir.glob('*')):
             if f.is_file():
-                print(f"  - {f.name}")
+                log(f"  - {f.name}")
             else:
-                print(f"  - {f.name}/ (model-specific files)")
-        print("\nModel-specific folders contain:")
-        print("  - Loss curves (loss_curves.png)")
-        print("  - Loss data (*.json)")
-        print("  - Execution logs (*.log)")
-        print("  - Model checkpoints (if saved)")
+                log(f"  - {f.name}/ (model-specific files)")
+        log("\nModel-specific folders contain:")
+        log("  - Loss curves (loss_curves.png)")
+        log("  - Loss data (*.json)")
+        log("  - Execution logs (*.log)")
+        log("  - Model checkpoints (if saved)")
 
 
 def aggregate_results(input_path: str, output_path: str):

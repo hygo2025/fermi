@@ -1,7 +1,10 @@
 from pyspark.sql import DataFrame, SparkSession
 
+from src.utils import log
+
+
 def read_csv_data(spark: SparkSession, file_path: str, multiline: bool = True) -> DataFrame:
-    print(f"Lendo dados CSV de: {file_path}")
+    log(f"Lendo dados CSV de: {file_path}")
     return (
         spark.read.format("csv")
         .option("header", "true")

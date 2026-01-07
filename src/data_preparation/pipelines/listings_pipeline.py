@@ -4,7 +4,7 @@ from pyspark.sql.functions import col
 
 from src.utils.enviroment import listing_id_mapping_path, listings_raw_path, listings_processed_path
 from src.utils.spark_utils import read_csv_data
-
+from src.utils import log
 
 def clean_data(df: DataFrame) -> DataFrame:
     for c in ['price', 'usable_areas', 'total_areas', 'ceiling_height']:
