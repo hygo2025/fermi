@@ -52,10 +52,10 @@ def save_results(df_final: DataFrame, mapping_table: DataFrame):
         df_final_persisted = df_final.persist()
         mapping_table_persisted = mapping_table.persist()
 
-        print(f"\nSalvando listings processados em: {final_path}")
+        log(f"\nSalvando listings processados em: {final_path}")
         df_final_persisted.coalesce(1).write.mode("overwrite").parquet(final_path)
 
-        print(f"\nSalvando mapeamento de listings em: {mapping_path}")
+        log(f"\nSalvando mapeamento de listings em: {mapping_path}")
         mapping_table_persisted.write.mode("overwrite").parquet(mapping_path)
     finally:
         if df_final_persisted:
@@ -65,7 +65,7 @@ def save_results(df_final: DataFrame, mapping_table: DataFrame):
 
 
 def run_listings_pipeline(spark: SparkSession):
-    print("Iniciando pipeline de listings...")
+    log("Iniciando pipeline de listings...")
     raw_path = listings_raw_path() + "/*.csv.gz"
     all_raw_listings = read_csv_data(spark, raw_path, multiline=True)
     # all_raw_listings = all_raw_listings.filter((col("state") == "Espírito Santo"))
@@ -79,4 +79,4 @@ def run_listings_pipeline(spark: SparkSession):
     # final_df = final_df.drop("status", "floors", "ceiling_height")
 
     save_results(final_df, mapping_table)
-    print("\nListings pipeline concluído.")
+    log("\nListings pipeline concluído.")

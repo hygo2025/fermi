@@ -11,10 +11,10 @@ from src.utils.enviroment import (
 from src.utils import log
 
 def run_merge_events_pipeline(spark: SparkSession):
-    print("\nExecutando pipeline completo de eventos...")
+    log("\nExecutando pipeline completo de eventos...")
     listings = spark.read.option("mergeSchema", "true").parquet(listings_processed_path())
     events = spark.read.option("mergeSchema", "true").parquet(events_processed_path())
-    print("\nIniciando merge_with_listings...")
+    log("\nIniciando merge_with_listings...")
 
     listings = (
         listings
@@ -31,8 +31,8 @@ def run_merge_events_pipeline(spark: SparkSession):
     df = df.drop(*columns_to_drop)
 
 
-    print(f"Salvando eventos enriquecidos em: {enriched_events_path()}")
+    log(f"Salvando eventos enriquecidos em: {enriched_events_path()}")
     df.coalesce(4).write.mode("overwrite").partitionBy("dt").parquet(enriched_events_path())
 
-    print("merge_with_listings concluído.")
-    print("Pipeline completo concluído com sucesso.")
+    log("merge_with_listings concluído.")
+    log("Pipeline completo concluído com sucesso.")

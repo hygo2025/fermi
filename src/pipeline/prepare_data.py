@@ -43,7 +43,7 @@ class RecBoleDataPipeline:
         """Carrega eventos brutos do período especificado"""
         events_path = self.config['events_path']
         
-        log(f"\n📂 Carregando eventos: {start_date} → {end_date}")
+        log(f"\n Carregando eventos: {start_date} → {end_date}")
         log(f"   Path: {events_path}")
         
         df = self.spark.read.parquet(events_path)
@@ -55,18 +55,18 @@ class RecBoleDataPipeline:
         )
         
         count = df.count()
-        log(f"   ✓ {count:,} eventos carregados")
+        log(f"    {count:,} eventos carregados")
         
         # Filtra business_type = SALE (importante para o domínio)
         df = df.filter(F.col('business_type') == 'SALE')
         count_sale = df.count()
-        log(f"   ✓ {count_sale:,} eventos após filtrar business_type=SALE")
+        log(f"    {count_sale:,} eventos após filtrar business_type=SALE")
         
         return df
     
     def filter_interaction_events(self, df):
         """Mantém apenas eventos de interação real (exclui RankingRendered)"""
-        log("\n🔍 Filtrando eventos de interação...")
+        log("\n Filtrando eventos de interação...")
         
         # Eventos que representam interesse real do usuário
         interaction_types = [
@@ -77,7 +77,7 @@ class RecBoleDataPipeline:
         
         total_before = df.count()
         total_after = df_filtered.count()
-        log(f"   ✓ {total_after:,} eventos de interação ({total_after/total_before*100:.2f}%)")
+        log(f"    {total_after:,} eventos de interação ({total_after/total_before*100:.2f}%)")
         
         return df_filtered
     
@@ -86,10 +86,10 @@ class RecBoleDataPipeline:
         listings_path = self.config.get('listings_path')
         
         if not listings_path:
-            log("   ⚠️  listings_path não configurado, pulando filtro de localização")
+            log("     listings_path não configurado, pulando filtro de localização")
             return df
         
-        log("\n📍 Filtrando por localização...")
+        log("\n Filtrando por localização...")
         
         # Carrega listings
         listings = self.spark.read.option("mergeSchema", "true").parquet(listings_path)
@@ -100,7 +100,7 @@ class RecBoleDataPipeline:
         listings = listings.filter(F.col('city').isin(target_cities))
         listings_after = listings.count()
         
-        log(f"   ✓ {listings_before:,} listings → {listings_after:,} nas cidades alvo")
+        log(f"    {listings_before:,} listings → {listings_after:,} nas cidades alvo")
         
         # Join com eventos (left_semi = mantém apenas eventos de listings válidos)
         events_before = df.count()
@@ -111,13 +111,13 @@ class RecBoleDataPipeline:
         )
         events_after = df.count()
         
-        log(f"   ✓ {events_before:,} eventos → {events_after:,} após filtro geográfico")
+        log(f"    {events_before:,} eventos → {events_after:,} após filtro geográfico")
         
         return df
     
     def prepare_sessions(self, df):
         """Prepara dados em formato session-based"""
-        log("\n🔧 Preparando sessões...")
+        log("\n Preparando sessões...")
         
         # Seleciona e renomeia colunas
         df = df.select(
@@ -144,13 +144,13 @@ class RecBoleDataPipeline:
         df = df.withColumn('position', F.row_number().over(window_spec))
         
         unique_sessions = df.select('user_id').distinct().count()
-        log(f"   ✓ {unique_sessions:,} sessões únicas criadas")
+        log(f"    {unique_sessions:,} sessões únicas criadas")
         
         return df
     
     def filter_sessions_by_length(self, df, min_length: int, max_length: int):
         """Filtra sessões por comprimento"""
-        log(f"\n📏 Filtrando sessões ({min_length}-{max_length} interações)...")
+        log(f"\n Filtrando sessões ({min_length}-{max_length} interações)...")
         
         # Conta tamanho das sessões
         session_sizes = df.groupBy('user_id').agg(
@@ -175,14 +175,14 @@ class RecBoleDataPipeline:
         events_before = df.count()
         events_after = df_filtered.count()
         
-        log(f"   ✓ Sessões: {sessions_before:,} → {sessions_after:,}")
-        log(f"   ✓ Eventos: {events_before:,} → {events_after:,}")
+        log(f"    Sessões: {sessions_before:,} → {sessions_after:,}")
+        log(f"    Eventos: {events_before:,} → {events_after:,}")
         
         return df_filtered
     
     def filter_rare_items(self, df, min_support: int):
         """Remove itens com menos de min_support ocorrências"""
-        log(f"\n🔢 Filtrando itens raros (mín. {min_support} ocorrências)...")
+        log(f"\n Filtrando itens raros (mín. {min_support} ocorrências)...")
         
         # Conta ocorrências de itens
         item_counts = df.groupBy('item_id').agg(
@@ -206,14 +206,14 @@ class RecBoleDataPipeline:
         events_before = df.count()
         events_after = df_filtered.count()
         
-        log(f"   ✓ Itens: {items_before:,} → {items_after:,}")
-        log(f"   ✓ Eventos: {events_before:,} → {events_after:,}")
+        log(f"    Itens: {items_before:,} → {items_after:,}")
+        log(f"    Eventos: {events_before:,} → {events_after:,}")
         
         return df_filtered
     
     def save_inter_file(self, df, output_path: Path):
         """Salva DataFrame como arquivo .inter do RecBole"""
-        log(f"\n💾 Salvando arquivo .inter...")
+        log(f"\n Salvando arquivo .inter...")
         log(f"   Path: {output_path}")
         
         # Converte para Pandas (cabe em memória após filtros)
@@ -240,7 +240,7 @@ class RecBoleDataPipeline:
                 f.write(f"{row['user_id']}\t{row['item_id']}\t{row['timestamp']}\n")
         
         size_mb = output_path.stat().st_size / (1024 * 1024)
-        log(f"   ✓ Arquivo salvo: {len(pdf):,} interações ({size_mb:.1f} MB)")
+        log(f"    Arquivo salvo: {len(pdf):,} interações ({size_mb:.1f} MB)")
         
         return pdf
     
@@ -285,10 +285,10 @@ class RecBoleDataPipeline:
         n_users = df.select('user_id').distinct().count()
         n_items = df.select('item_id').distinct().count()
         
-        log("\n📊 ESTATÍSTICAS FINAIS:")
-        log(f"   ✓ {count:,} interações")
-        log(f"   ✓ {n_users:,} sessões")
-        log(f"   ✓ {n_items:,} itens únicos")
+        log("\n ESTATÍSTICAS FINAIS:")
+        log(f"    {count:,} interações")
+        log(f"    {n_users:,} sessões")
+        log(f"    {n_items:,} itens únicos")
         
         # 8. Salva arquivo atômico .inter
         dataset_name = self.config.get('dataset_name', 'realestate')
@@ -298,7 +298,7 @@ class RecBoleDataPipeline:
         self.save_inter_file(df, inter_file)
         
         log("\n" + "=" * 80)
-        log("✅ PIPELINE COMPLETO!")
+        log(" PIPELINE COMPLETO!")
         log("=" * 80)
         log(f"\nDataset: {dataset_name}")
         log(f"Arquivo: {inter_file}")

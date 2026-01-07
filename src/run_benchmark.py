@@ -37,6 +37,7 @@ from recbole.trainer import Trainer
 from recbole.utils import init_seed
 
 from src.models import RandomRecommender, POPRecommender, RPOPRecommender, SPOPRecommender
+from src.utils import log
 
 
 MODEL_REGISTRY = {
@@ -85,15 +86,15 @@ class BenchmarkRunner:
         log_dir = self.output_dir / 'logs'
         log_dir.mkdir(exist_ok=True)
         
+        # Setup básico de logging (mantém para o RecBole interno)
         logging.basicConfig(
             level=logging.INFO,
-            format='%(asctime)s - %(levelname)s - %(message)s',
+            format='%(message)s',
             handlers=[
                 logging.FileHandler(log_dir / f'benchmark_{self.timestamp}.log'),
                 logging.StreamHandler(sys.stdout)
             ]
         )
-        self.logger = logging.getLogger(__name__)
     
     def _get_model_config(self, model_name: str, dataset_name: str) -> dict:
         """Carrega config do modelo e merge com config do projeto"""
@@ -118,9 +119,9 @@ class BenchmarkRunner:
     
     def run_single_model(self, model_name: str, dataset_name: str) -> dict:
         """Executa um único modelo"""
-        self.logger.info(f"{'='*80}")
-        self.logger.info(f"Executando: {model_name} | Dataset: {dataset_name}")
-        self.logger.info(f"{'='*80}")
+        log(f"{'='*80}")
+        log(f"Executando: {model_name} | Dataset: {dataset_name}")
+        log(f"{'='*80}")
         
         try:
             # Load config
@@ -137,12 +138,12 @@ class BenchmarkRunner:
             init_seed(config['seed'], config['reproducibility'])
             
             # Load dataset
-            self.logger.info("Carregando dataset...")
+            log("Carregando dataset...")
             dataset = create_dataset(config)
             train_data, valid_data, test_data = data_preparation(config, dataset)
             
             # Create model
-            self.logger.info("Instanciando modelo...")
+            log("Instanciando modelo...")
             model_class = MODEL_REGISTRY[model_name]
             model = model_class(config, train_data.dataset).to(config['device'])
             
@@ -150,13 +151,13 @@ class BenchmarkRunner:
             trainer = Trainer(config, model)
             
             # Train
-            self.logger.info("Iniciando treinamento...")
+            log("Iniciando treinamento...")
             best_valid_score, best_valid_result = trainer.fit(
                 train_data, valid_data, show_progress=True
             )
             
             # Test
-            self.logger.info("Avaliando no conjunto de teste...")
+            log("Avaliando no conjunto de teste...")
             test_result = trainer.evaluate(test_data, show_progress=True)
             
             # Format results
@@ -168,12 +169,12 @@ class BenchmarkRunner:
                 **test_result
             }
             
-            self.logger.info(f"✅ Resultados: {test_result}")
+            log(f" Resultados: {test_result}")
             
             return results
             
         except Exception as e:
-            self.logger.error(f"❌ ERRO ao executar {model_name}: {e}")
+            log(f" ERRO ao executar {model_name}: {e}")
             import traceback
             traceback.print_exc()
             return {
@@ -185,19 +186,19 @@ class BenchmarkRunner:
     
     def run(self, models: List[str], dataset: str):
         """Executa benchmark para lista de modelos"""
-        self.logger.info(f"\n{'='*80}")
-        self.logger.info(f"FERMI BENCHMARK - INÍCIO")
-        self.logger.info(f"{'='*80}")
-        self.logger.info(f"Dataset: {dataset}")
-        self.logger.info(f"Modelos: {models}")
-        self.logger.info(f"Output: {self.output_dir}")
-        self.logger.info(f"{'='*80}\n")
+        log(f"\n{'='*80}")
+        log(f"FERMI BENCHMARK - INÍCIO")
+        log(f"{'='*80}")
+        log(f"Dataset: {dataset}")
+        log(f"Modelos: {models}")
+        log(f"Output: {self.output_dir}")
+        log(f"{'='*80}\n")
         
         results_file = self.output_dir / 'results.csv'
         all_results = []
         
         for i, model_name in enumerate(models, 1):
-            self.logger.info(f"\n[{i}/{len(models)}] Processando: {model_name}")
+            log(f"\n[{i}/{len(models)}] Processando: {model_name}")
             
             result = self.run_single_model(model_name, dataset)
             all_results.append(result)
@@ -205,14 +206,14 @@ class BenchmarkRunner:
             # Save incremental
             df = pd.DataFrame(all_results)
             df.to_csv(results_file, index=False)
-            self.logger.info(f"Resultado salvo: {results_file}")
+            log(f"Resultado salvo: {results_file}")
         
-        self.logger.info(f"\n{'='*80}")
-        self.logger.info(f"BENCHMARK COMPLETO!")
-        self.logger.info(f"{'='*80}")
-        self.logger.info(f"Total de modelos executados: {len(all_results)}")
-        self.logger.info(f"Resultados salvos em: {results_file}")
-        self.logger.info(f"{'='*80}\n")
+        log(f"\n{'='*80}")
+        log(f"BENCHMARK COMPLETO!")
+        log(f"{'='*80}")
+        log(f"Total de modelos executados: {len(all_results)}")
+        log(f"Resultados salvos em: {results_file}")
+        log(f"{'='*80}\n")
 
 
 def parse_models(model_input: List[str]) -> List[str]:
@@ -278,9 +279,9 @@ Grupos disponíveis:
     try:
         models = parse_models(args.models)
     except ValueError as e:
-        print(f"ERRO: {e}")
-        print(f"\nModelos disponíveis: {list(MODEL_REGISTRY.keys())}")
-        print(f"Grupos disponíveis: {list(MODEL_GROUPS.keys())}")
+        log(f"ERRO: {e}")
+        log(f"\nModelos disponíveis: {list(MODEL_REGISTRY.keys())}")
+        log(f"Grupos disponíveis: {list(MODEL_GROUPS.keys())}")
         sys.exit(1)
     
     # Load dataset from config if not specified

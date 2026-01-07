@@ -93,7 +93,7 @@ def save_session_rec_data_spark(df, output_path: str, name: str):
         shutil.move(tmp_files[0], parquet_file)
         shutil.rmtree(f"{parquet_file}.tmp")
     
-    log(f"  ✓ Saved Parquet: {parquet_file}")
+    log(f"   Saved Parquet: {parquet_file}")
     
     # Compute and log stats
     n_events = df.count()
@@ -149,7 +149,7 @@ def main():
         df = load_date_range_spark(spark, args.source_path, args.start_date, args.end_date)
         
         total_events = df.count()
-        log(f"\n✓ Loaded {total_events:,} total events")
+        log(f"\n Loaded {total_events:,} total events")
         
         # Prepare session-rec format
         log("\nConverting to session-rec format with Spark...")
@@ -180,7 +180,7 @@ def main():
         save_session_rec_data_spark(test_df, output_path, f"{args.name}_test")
         
         log("\n" + "="*80)
-        log("✓ Dataset preparation complete!")
+        log(" Dataset preparation complete!")
         log("="*80)
         log(f"\nOutput location: {output_path}")
         log(f"\nFormats generated:")
