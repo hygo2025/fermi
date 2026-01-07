@@ -214,11 +214,11 @@ class RecBoleDataPipeline:
         # Escreve arquivo com header RecBole
         with open(output_path, 'w') as f:
             # Header: field_name:type
-            f.write("user_id:token\titem_id:token\ttimestamp:float")
+            f.write("user_id:token\titem_id:token\ttimestamp:float\n")
             
             # Data (tab-separated)
             for _, row in pdf.iterrows():
-                f.write(f"{row['user_id']}\t{row['item_id']}\t{row['timestamp']}")
+                f.write(f"{row['user_id']}\t{row['item_id']}\t{row['timestamp']}\n")
         
         size_mb = output_path.stat().st_size / (1024 * 1024)
         log(f"    Arquivo salvo: {len(pdf):_} interações ({size_mb:.1f} MB)")
