@@ -1,7 +1,4 @@
 # =============================================================================
-# FERMI - SESSION-BASED RECOMMENDATION BENCHMARK
-# Project-wide Configuration (Paper Standard)
-# =============================================================================
 # Este arquivo define a configuração GLOBAL do benchmark.
 # Configurações específicas de modelos ficam em src/configs/{neural,baselines,factorization}/
 # =============================================================================
@@ -14,7 +11,6 @@ data_path: outputs/data/recbole  # RecBole procura: {data_path}/{dataset}/{datas
 
 # Raw data paths (para pipeline de preparação)
 raw_data:
-  # Raw source data (from .env migration)
   listings_raw_path: /home/hygo2025/Documents/data/listings
   events_raw_path: /home/hygo2025/Documents/data/events
   
@@ -29,7 +25,7 @@ raw_data:
   user_sessions_path: /home/hygo2025/Documents/data/processed_mapping/user_sessions
   
   # Enriched events (for RecBole pipeline)
-  events_path: /home/hygo2025/Documents/data/processed_data/enriched_events
+  events_path: /home/hygo2025/Documents/data/processed_data/events
   listings_path: /home/hygo2025/Documents/data/processed_data/listings
   
   # Output
@@ -38,8 +34,8 @@ raw_data:
   
 # Data preparation parameters
 data_preparation:
-  start_date: "2024-03-01"
-  end_date: "2024-03-30"  # 30 dias de dados
+  start_date: "2024-05-01"
+  end_date: "2024-05-30"  # 30 dias de dados
   min_session_length: 2    # Mínimo de interações por sessão
   max_session_length: 50   # Máximo de interações por sessão
   min_item_freq: 5         # Mínimo de vezes que um item deve aparecer

@@ -184,19 +184,19 @@ class BenchmarkRunner:
     
     def run(self, models: List[str], dataset: str):
         """Executa benchmark para lista de modelos"""
-        log(f"\n{'='*80}")
+        log(f"{'='*80}")
         log(f"FERMI BENCHMARK - INÍCIO")
         log(f"{'='*80}")
         log(f"Dataset: {dataset}")
         log(f"Modelos: {models}")
         log(f"Output: {self.output_dir}")
-        log(f"{'='*80}\n")
+        log(f"{'='*80}")
         
         results_file = self.output_dir / 'results.csv'
         all_results = []
         
         for i, model_name in enumerate(models, 1):
-            log(f"\n[{i}/{len(models)}] Processando: {model_name}")
+            log(f"[{i}/{len(models)}] Processando: {model_name}")
             
             result = self.run_single_model(model_name, dataset)
             all_results.append(result)
@@ -206,12 +206,12 @@ class BenchmarkRunner:
             df.to_csv(results_file, index=False)
             log(f"Resultado salvo: {results_file}")
         
-        log(f"\n{'='*80}")
+        log(f"{'='*80}")
         log(f"BENCHMARK COMPLETO!")
         log(f"{'='*80}")
         log(f"Total de modelos executados: {len(all_results)}")
         log(f"Resultados salvos em: {results_file}")
-        log(f"{'='*80}\n")
+        log(f"{'='*80}")
 
 
 def parse_models(model_input: List[str]) -> List[str]:
@@ -272,7 +272,7 @@ Grupos disponíveis:
         models = parse_models(args.models)
     except ValueError as e:
         log(f"ERRO: {e}")
-        log(f"\nModelos disponíveis: {list(MODEL_REGISTRY.keys())}")
+        log(f"Modelos disponíveis: {list(MODEL_REGISTRY.keys())}")
         log(f"Grupos disponíveis: {list(MODEL_GROUPS.keys())}")
         sys.exit(1)
     

@@ -4,4 +4,4 @@ from datetime import datetime
 def log(message: str):
  """Print timestamped log message"""
  timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
- print(f"[{timestamp}] {message}")
+ print(f"\n[{timestamp}] {message}")

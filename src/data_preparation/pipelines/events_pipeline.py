@@ -25,7 +25,7 @@ def clean_event_data(df: DataFrame) -> DataFrame:
 
 
 def process_raw_events(spark: SparkSession) -> DataFrame:
-    log("\nProcessing raw events...")
+    log("Processing raw events...")
 
     config = get_config()
     sale_raw_path = config['raw_data']['events_raw_path'] + "/*.csv.gz"
@@ -38,7 +38,7 @@ def process_raw_events(spark: SparkSession) -> DataFrame:
 
 
 def resolve_user_identities(events: DataFrame) -> DataFrame:
-    log("\nResolving user identities...")
+    log("Resolving user identities...")
 
     num_partitions = 512
     collision_threshold = 7
@@ -92,12 +92,12 @@ def resolve_user_identities(events: DataFrame) -> DataFrame:
         F.col("user_session.id")
     )
 
-    log(f"\nTotal de usuários resolvidos: {user_sessions.count()}")
+    log(f"Total de usuários resolvidos: {user_sessions.count()}")
     return user_sessions
 
 
 def join_events_with_sessions(events: DataFrame, users: DataFrame, listings: DataFrame) -> DataFrame:
-    log("\nIniciando join_events_with_sessions...")
+    log("Iniciando join_events_with_sessions...")
 
     listings = listings.withColumnRenamed("anonymized_listing_id", "listing_id")
 
@@ -134,7 +134,7 @@ def join_events_with_sessions(events: DataFrame, users: DataFrame, listings: Dat
 
 
 def create_numeric_keys(events: DataFrame) -> DataFrame:
-    log("\nIniciando criação de chaves numéricas...")
+    log("Iniciando criação de chaves numéricas...")
 
     id_window = Window.orderBy(F.lit(1))
 
@@ -171,7 +171,7 @@ def create_numeric_keys(events: DataFrame) -> DataFrame:
     return events
 
 def save_events(spark: SparkSession, events: DataFrame) -> None:
-    log("\nIniciando salvamento dos eventos...")
+    log("Iniciando salvamento dos eventos...")
 
     events = events.withColumn(
         "unique_user_id",
@@ -215,14 +215,14 @@ def save_events(spark: SparkSession, events: DataFrame) -> None:
 
     config = get_config()
     events_path = config['raw_data']['events_processed_path']
-    log(f"\nSalvando eventos com chaves numéricas em: {events_path}")
+    log(f"Salvando eventos com chaves numéricas em: {events_path}")
     df.coalesce(8).write.mode("overwrite").partitionBy("dt").parquet(events_path)
 
     log("Eventos salvos com sucesso.")
 
 
 def run_events_pipeline(spark: SparkSession):
-    log("\nExecutando pipeline completo de eventos...")
+    log("Executando pipeline completo de eventos...")
     config = get_config()
     listings = spark.read.option("mergeSchema", "true").parquet(config['raw_data']['listings_processed_path'])
 

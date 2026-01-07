@@ -66,7 +66,7 @@ class ResultsAggregator:
         
         # Find metric columns
         metric_cols = [col for col in df.columns if '@' in col]
-        log(f"\nMetrics found: {metric_cols}")
+        log(f"Metrics found: {metric_cols}")
         
         aggregated = []
         for model in sorted(df['model'].unique()):
@@ -226,7 +226,7 @@ class ResultsAggregator:
         import shutil
         import json
         
-        log("\nOrganizing model-specific files...")
+        log("Organizing model-specific files...")
         
         # Get all models from results
         raw_results = self.input_path / 'raw_results.csv'
@@ -405,9 +405,9 @@ class ResultsAggregator:
         md_df = agg_df[['Model'] + key_metrics]
         
         with open(md_file, 'w') as f:
-            f.write("# Experiment Results\n\n")
+            f.write("# Experiment Results")
             f.write(md_df.to_markdown(index=False))
-            f.write("\n\n*Values shown as mean ± std across 5 temporal slices*\n")
+            f.write("*Values shown as mean ± std across 5 temporal slices*")
         log(f"Saved Markdown table: {md_file}")
     
     def create_execution_readme(self, raw_df: pd.DataFrame, agg_df: pd.DataFrame):
@@ -456,7 +456,7 @@ class ResultsAggregator:
 
 """
         for metric, info in best_models.items():
-            content += f"- **{metric}:** {info['model']} (`{info['value']}`)\n"
+            content += f"- **{metric}:** {info['model']} (`{info['value']}`)"
         
         content += f"""
 
@@ -466,32 +466,32 @@ class ResultsAggregator:
         for model in models_list:
             stats = stats_per_model[model]
             model_type = "[Neural]" if model in ['GRU4Rec', 'NARM', 'STAMP', 'SASRec'] else "[Baseline]"
-            content += f"### {model_type} {model}\n"
-            content += f"- Experiments: {stats['n_experiments']}\n"
-            content += f"- Slices: {stats['slices']}\n"
+            content += f"### {model_type} {model}"
+            content += f"- Experiments: {stats['n_experiments']}"
+            content += f"- Slices: {stats['slices']}"
             
             # Get model performance summary
             model_perf = agg_df[agg_df['Model'] == model].iloc[0]
-            content += f"- **Recall@10:** {model_perf['Recall@10']}\n"
-            content += f"- **MRR@10:** {model_perf['MRR@10']}\n"
-            content += f"- **NDCG@10:** {model_perf['NDCG@10']}\n"
-            content += f"- **Hit@10:** {model_perf['Hit@10']}\n\n"
+            content += f"- **Recall@10:** {model_perf['Recall@10']}"
+            content += f"- **MRR@10:** {model_perf['MRR@10']}"
+            content += f"- **NDCG@10:** {model_perf['NDCG@10']}"
+            content += f"- **Hit@10:** {model_perf['Hit@10']}"
         
         content += f"""## Temporal Slices
 
 """
         for slice_id in slices_list:
             slice_data = raw_df[raw_df['slice'] == slice_id]
-            content += f"### Slice {slice_id}\n"
-            content += f"- Models evaluated: {len(slice_data)}\n"
+            content += f"### Slice {slice_id}"
+            content += f"- Models evaluated: {len(slice_data)}"
             
             # Best model in this slice
             best_model_slice = slice_data.loc[slice_data['Recall@10'].idxmax()]
-            content += f"- Best model: **{best_model_slice['model']}** (Recall@10: {best_model_slice['Recall@10']:.4f})\n"
+            content += f"- Best model: **{best_model_slice['model']}** (Recall@10: {best_model_slice['Recall@10']:.4f})"
             
             # Statistics for this slice
-            content += f"- Mean Recall@10: {slice_data['Recall@10'].mean():.4f} ± {slice_data['Recall@10'].std():.4f}\n"
-            content += f"- Mean MRR@10: {slice_data['MRR@10'].mean():.4f} ± {slice_data['MRR@10'].std():.4f}\n\n"
+            content += f"- Mean Recall@10: {slice_data['Recall@10'].mean():.4f} ± {slice_data['Recall@10'].std():.4f}"
+            content += f"- Mean MRR@10: {slice_data['MRR@10'].mean():.4f} ± {slice_data['MRR@10'].std():.4f}"
         
         content += f"""## Top 3 Models (by Recall@10)
 
@@ -499,9 +499,9 @@ class ResultsAggregator:
         # Add top 3 models with all metrics
         top3 = agg_df.nlargest(3, 'Recall@10_mean')
         for rank, (idx, row) in enumerate(top3.iterrows(), start=1):
-            content += f"### {rank}. {row['Model']}\n\n"
-            content += "| Metric | @5 | @10 | @20 |\n"
-            content += "|--------|-----|-----|-----|\n"
+            content += f"### {rank}. {row['Model']}"
+            content += "| Metric | @5 | @10 | @20 |"
+            content += "|--------|-----|-----|-----|"
             
             for metric_base in ['Recall', 'MRR', 'NDCG', 'Hit']:
                 values = []
@@ -511,8 +511,8 @@ class ResultsAggregator:
                         values.append(row[col])
                     else:
                         values.append('N/A')
-                content += f"| **{metric_base}** | {values[0]} | {values[1]} | {values[2]} |\n"
-            content += "\n"
+                content += f"| **{metric_base}** | {values[0]} | {values[1]} | {values[2]} |"
+            content += ""
         
         content += f"""## Generated Files
 
@@ -555,7 +555,7 @@ Higher values are better for all metrics.
                 std_val = raw_df[metric].std()
                 min_val = raw_df[metric].min()
                 max_val = raw_df[metric].max()
-                content += f"- **{metric}:** {mean_val:.4f} ± {std_val:.4f} (range: {min_val:.4f} - {max_val:.4f})\n"
+                content += f"- **{metric}:** {mean_val:.4f} ± {std_val:.4f} (range: {min_val:.4f} - {max_val:.4f})"
         
         content += f"""
 
@@ -567,19 +567,19 @@ Higher values are better for all metrics.
         
         if neural_models:
             neural_data = raw_df[raw_df['model'].isin(neural_models)]
-            content += f"\n**Neural Models ({len([m for m in neural_models if m in models_list])} models):**\n"
+            content += f"**Neural Models ({len([m for m in neural_models if m in models_list])} models):**"
             for metric in ['Recall@10', 'MRR@10', 'NDCG@10']:
                 if metric in neural_data.columns:
                     mean_val = neural_data[metric].mean()
-                    content += f"- {metric}: {mean_val:.4f}\n"
+                    content += f"- {metric}: {mean_val:.4f}"
         
         if baseline_models:
             baseline_data = raw_df[raw_df['model'].isin(baseline_models)]
-            content += f"\n**Baseline Models ({len(baseline_models)} models):**\n"
+            content += f"**Baseline Models ({len(baseline_models)} models):**"
             for metric in ['Recall@10', 'MRR@10', 'NDCG@10']:
                 if metric in baseline_data.columns:
                     mean_val = baseline_data[metric].mean()
-                    content += f"- {metric}: {mean_val:.4f}\n"
+                    content += f"- {metric}: {mean_val:.4f}"
         
         content += f"""
 
@@ -597,10 +597,10 @@ Higher values are better for all metrics.
                 # Variance within models (across slices)
                 within_variance = raw_df.groupby('model')[metric].var().mean()
                 
-                content += f"\n**{metric}:**\n"
-                content += f"- Between-model variance: {model_variance:.6f}\n"
-                content += f"- Within-model variance: {within_variance:.6f}\n"
-                content += f"- Ratio: {model_variance/within_variance:.2f}x\n"
+                content += f"**{metric}:**"
+                content += f"- Between-model variance: {model_variance:.6f}"
+                content += f"- Within-model variance: {within_variance:.6f}"
+                content += f"- Ratio: {model_variance/within_variance:.2f}x"
         
         content += f"""
 
@@ -627,7 +627,7 @@ Higher values are better for all metrics.
         raw_df = self.load_results()
         
         # Aggregate
-        log("\nAggregating metrics...")
+        log("Aggregating metrics...")
         agg_df = self.aggregate_metrics(raw_df)
         
         # Sort by best Recall@10
@@ -635,7 +635,7 @@ Higher values are better for all metrics.
             agg_df = agg_df.sort_values('Recall@10_mean', ascending=False)
         
         # Display in terminal
-        log("\n" + "="*80)
+        log("" + "="*80)
         log("AGGREGATED RESULTS (mean ± std)")
         log("="*80)
         display_cols = ['Model'] + [col for col in agg_df.columns 
@@ -648,27 +648,27 @@ Higher values are better for all metrics.
         self.organize_model_files()
         
         # Create tables
-        log("\nGenerating tables...")
+        log("Generating tables...")
         self.create_summary_tables(agg_df)
         self.create_execution_readme(raw_df, agg_df)
         
         # Create plots
-        log("\nGenerating plots...")
+        log("Generating plots...")
         self.plot_metrics_comparison(agg_df)
         self.plot_metrics_heatmap(agg_df)
         self.plot_slice_consistency(raw_df)
         self.plot_loss_curves()  # Training loss curves
         
-        log("\n" + "="*80)
+        log("" + "="*80)
         log(f"All outputs saved to: {self.output_dir}")
         log("="*80)
-        log("\nGenerated files:")
+        log("Generated files:")
         for f in sorted(self.output_dir.glob('*')):
             if f.is_file():
                 log(f"  - {f.name}")
             else:
                 log(f"  - {f.name}/ (model-specific files)")
-        log("\nModel-specific folders contain:")
+        log("Model-specific folders contain:")
         log("  - Loss curves (loss_curves.png)")
         log("  - Loss data (*.json)")
         log("  - Execution logs (*.log)")

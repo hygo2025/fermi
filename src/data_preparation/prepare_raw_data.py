@@ -11,7 +11,7 @@ from src.utils import log
 
 def main():
     log(" RAW DATA PREPARATION - CLASSIFIED ADS")
-    log("="*60 + "\n")
+    log("="*60 + "")
     
     spark = make_spark()
     
@@ -19,11 +19,11 @@ def main():
         log("Step 1/3: Processing listings...")
         run_listings_pipeline(spark=spark)
         
-        log("\nStep 2/3: Processing user events...")
+        log("Step 2/3: Processing user events...")
         run_events_pipeline(spark=spark)
         
     except Exception as e:
-        log(f"\nERRO: {e}")
+        log(f"ERRO: {e}")
         import traceback
         traceback.log_exc()
         sys.exit(1)

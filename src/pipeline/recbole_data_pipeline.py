@@ -1,50 +1,23 @@
-"""
-FERMI - Data Preparation Pipeline
-==================================
-Gera um arquivo atômico .inter compatível com RecBole a partir dos dados brutos.
-
-ESTRATÉGIA:
-    1. Carrega eventos brutos (Spark)
-    2. Filtra e limpa dados
-    3. Gera um ÚNICO arquivo .inter (sem splits físicos)
-    4. RecBole fará o split temporal em runtime (Leave-One-Out)
-
-OUTPUT:
-    {output_path}/{dataset_name}/{dataset_name}.inter
-    
-SCHEMA CRÍTICO:
-    user_id:token    item_id:token    timestamp:float
-"""
-
 import argparse
-from datetime import datetime, timedelta
 from pathlib import Path
 
-import pandas as pd
-from pyspark.sql import SparkSession, functions as F
+from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 
-from src.utils import log
+from src.utils import log, make_spark
 from src.utils.enviroment import get_config
 
 
 class RecBoleDataPipeline:
     def __init__(self, config: dict):
         self.config = config
-        self.spark = self._init_spark()
-        
-    def _init_spark(self) -> SparkSession:
-        return (SparkSession.builder
-                .appName("Fermi-RecBole-Pipeline")
-                .config("spark.driver.memory", "8g")
-                .config("spark.sql.shuffle.partitions", "200")
-                .getOrCreate())
-    
+        self.spark = make_spark()
+
     def load_events(self, start_date: str, end_date: str):
         """Carrega eventos brutos do período especificado"""
         events_path = self.config['events_path']
         
-        log(f"\n Carregando eventos: {start_date} → {end_date}")
+        log(f" Carregando eventos: {start_date} → {end_date}")
         log(f"   Path: {events_path}")
         
         df = self.spark.read.parquet(events_path)
@@ -67,7 +40,7 @@ class RecBoleDataPipeline:
     
     def filter_interaction_events(self, df):
         """Mantém apenas eventos de interação real (exclui RankingRendered)"""
-        log("\n Filtrando eventos de interação...")
+        log(" Filtrando eventos de interação...")
         
         # Eventos que representam interesse real do usuário
         interaction_types = [
@@ -97,7 +70,7 @@ class RecBoleDataPipeline:
             log("     listings_path não configurado, pulando filtro de localização")
             return df
         
-        log("\n Filtrando por localização...")
+        log(" Filtrando por localização...")
         
         # Carrega listings
         listings = self.spark.read.option("mergeSchema", "true").parquet(listings_path)
@@ -125,7 +98,7 @@ class RecBoleDataPipeline:
     
     def prepare_sessions(self, df):
         """Prepara dados em formato session-based"""
-        log("\n Preparando sessões...")
+        log(" Preparando sessões...")
         
         # Seleciona e renomeia colunas
         df = df.select(
@@ -158,7 +131,7 @@ class RecBoleDataPipeline:
     
     def filter_sessions_by_length(self, df, min_length: int, max_length: int):
         """Filtra sessões por comprimento"""
-        log(f"\n Filtrando sessões ({min_length}-{max_length} interações)...")
+        log(f" Filtrando sessões ({min_length}-{max_length} interações)...")
         
         # Conta tamanho das sessões
         session_sizes = df.groupBy('user_id').agg(
@@ -190,7 +163,7 @@ class RecBoleDataPipeline:
     
     def filter_rare_items(self, df, min_support: int):
         """Remove itens com menos de min_support ocorrências"""
-        log(f"\n Filtrando itens raros (mín. {min_support} ocorrências)...")
+        log(f" Filtrando itens raros (mín. {min_support} ocorrências)...")
         
         # Conta ocorrências de itens
         item_counts = df.groupBy('item_id').agg(
@@ -221,7 +194,7 @@ class RecBoleDataPipeline:
     
     def save_inter_file(self, df, output_path: Path):
         """Salva DataFrame como arquivo .inter do RecBole"""
-        log(f"\n Salvando arquivo .inter...")
+        log(f" Salvando arquivo .inter...")
         log(f"   Path: {output_path}")
         
         # Converte para Pandas (cabe em memória após filtros)
@@ -241,11 +214,11 @@ class RecBoleDataPipeline:
         # Escreve arquivo com header RecBole
         with open(output_path, 'w') as f:
             # Header: field_name:type
-            f.write("user_id:token\titem_id:token\ttimestamp:float\n")
+            f.write("user_id:token\titem_id:token\ttimestamp:float")
             
             # Data (tab-separated)
             for _, row in pdf.iterrows():
-                f.write(f"{row['user_id']}\t{row['item_id']}\t{row['timestamp']}\n")
+                f.write(f"{row['user_id']}\t{row['item_id']}\t{row['timestamp']}")
         
         size_mb = output_path.stat().st_size / (1024 * 1024)
         log(f"    Arquivo salvo: {len(pdf):,} interações ({size_mb:.1f} MB)")
@@ -254,10 +227,6 @@ class RecBoleDataPipeline:
     
     def run(self):
         """Executa pipeline completo"""
-        log("=" * 80)
-        log("FERMI - DATA PREPARATION PIPELINE")
-        log("=" * 80)
-        
         # 1. Carrega eventos
         df = self.load_events(
             self.config['start_date'],
@@ -293,7 +262,7 @@ class RecBoleDataPipeline:
         n_users = df.select('user_id').distinct().count()
         n_items = df.select('item_id').distinct().count()
         
-        log("\n ESTATÍSTICAS FINAIS:")
+        log(" ESTATÍSTICAS FINAIS:")
         log(f"    {count:,} interações")
         log(f"    {n_users:,} sessões")
         log(f"    {n_items:,} itens únicos")
@@ -305,12 +274,12 @@ class RecBoleDataPipeline:
         
         self.save_inter_file(df, inter_file)
         
-        log("\n" + "=" * 80)
+        log("" + "=" * 80)
         log(" PIPELINE COMPLETO!")
         log("=" * 80)
-        log(f"\nDataset: {dataset_name}")
+        log(f"Dataset: {dataset_name}")
         log(f"Arquivo: {inter_file}")
-        log("\nPróximo passo:")
+        log("Próximo passo:")
         log(f"  make benchmark --dataset {dataset_name}")
         
         self.spark.stop()
@@ -323,8 +292,6 @@ def main():
     parser.add_argument('--output', type=str, help='Override output path')
     
     args = parser.parse_args()
-    
-    # Load config from centralized function
     project_config = get_config()
     
     # Build pipeline config
