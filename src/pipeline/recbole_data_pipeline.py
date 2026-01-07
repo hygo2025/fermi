@@ -1,6 +1,7 @@
 import argparse
 from pathlib import Path
 
+import pandas as pd
 from pyspark.sql import functions as F
 from pyspark.sql.window import Window
 
@@ -223,7 +224,34 @@ class RecBoleDataPipeline:
         size_mb = output_path.stat().st_size / (1024 * 1024)
         log(f"    Arquivo salvo: {len(pdf):_} interações ({size_mb:.1f} MB)")
         
-        return pdf
+        return pdf  # Retorna pandas para reutilizar
+    
+    def save_sessions_for_api(self, pdf, output_path: Path):
+        """Salva sessions em formato parquet para a API (recebe pandas DataFrame)"""
+        log(f" Salvando sessions para API...")
+        log(f"   Path: {output_path}")
+        
+        # Renomeia colunas para formato esperado pela API
+        pdf_api = pdf.copy()
+        pdf_api.rename(columns={'user_id': 'session_id'}, inplace=True)
+        
+        # Converte item_id para int
+        pdf_api['item_id'] = pdf_api['item_id'].astype(int)
+        
+        # Adiciona user_id (mesmo que session_id)
+        pdf_api['user_id'] = pdf_api['session_id']
+        
+        # Converte timestamp para datetime
+        pdf_api['timestamp'] = pd.to_datetime(pdf_api['timestamp'], unit='s')
+        
+        # Salva parquet
+        output_path.parent.mkdir(parents=True, exist_ok=True)
+        pdf_api.to_parquet(output_path, index=False)
+        
+        size_mb = output_path.stat().st_size / (1024 * 1024)
+        log(f"    Arquivo salvo: {len(pdf_api):_} interações ({size_mb:.1f} MB)")
+        log(f"    Sessões: {pdf_api['session_id'].nunique():_}")
+        log(f"    Itens: {pdf_api['item_id'].nunique():_}")
     
     def run(self):
         """Executa pipeline completo"""
@@ -267,12 +295,16 @@ class RecBoleDataPipeline:
         log(f"    {n_users:_} sessões")
         log(f"    {n_items:_} itens únicos")
         
-        # 8. Salva arquivo atômico .inter
+        # 8. Salva arquivo atômico .inter (e retorna pandas df)
         dataset_name = self.config.get('dataset_name', 'realestate')
         output_dir = Path(self.config['output_path']) / dataset_name
         inter_file = output_dir / f"{dataset_name}.inter"
         
-        self.save_inter_file(df, inter_file)
+        pdf = self.save_inter_file(df, inter_file)
+        
+        # 9. Salva sessions para API (reutiliza pandas df)
+        sessions_api_file = Path(self.config['output_path']) / 'sessions_for_api.parquet'
+        self.save_sessions_for_api(pdf, sessions_api_file)
         
         log("" + "=" * 80)
         log(" PIPELINE COMPLETO!")

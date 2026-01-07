@@ -17,6 +17,7 @@ raw_data:
   # Processed data paths
   events_processed_path: /home/hygo2025/Documents/data/processed_data/events
   listings_processed_path: /home/hygo2025/Documents/data/processed_data/listings
+  sessions_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole/sessions_for_api.parquet
   
   # Mapping tables
   listing_id_mapping_path: /home/hygo2025/Documents/data/processed_mapping/listing_id_mapping

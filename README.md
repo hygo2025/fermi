@@ -428,3 +428,48 @@ DOI: 10.1007/s10506-023-09378-3
 ## Licença
 
 MIT License
+
+## Web API - Visualização de Sessões e Recomendações
+
+O projeto inclui uma API web FastAPI para visualização interativa de sessões e análise de recomendações.
+
+### Iniciar a API
+
+```bash
+# Com nome do modelo (busca automaticamente o mais recente)
+make api MODEL=GRU4Rec
+
+# Com path específico do modelo
+make api MODEL=outputs/saved/GRU4Rec-Jan-07-2026_19-25-00.pth
+
+# Modo desenvolvimento (com auto-reload)
+make api-dev MODEL=GRU4Rec
+```
+
+### Features
+
+- **Lista de Sessões**: Navegue por todas as sessões com paginação e ordenação
+- **Detalhes da Sessão**: Visualize itens visitados em uma sessão com mapa interativo
+- **Recomendações**: Gere recomendações para qualquer sessão e visualize no mapa
+- **Análise Espacial**: Veja distâncias geográficas entre sessão e recomendações
+- **API REST**: Endpoints JSON para integração
+
+### Endpoints
+
+- `GET /` - Redireciona para lista de sessões
+- `GET /sessions` - Lista paginada de sessões
+- `GET /session/{session_id}` - Detalhes de uma sessão específica
+- `POST /recommend-from-session/{session_id}` - Gera recomendações para sessão
+- `GET /api/health` - Health check
+- `GET /api/recommend?session_ids=1,2,3&top_k=10` - API JSON de recomendações
+
+### Requisitos
+
+- FastAPI
+- Uvicorn
+- Folium (mapas interativos)
+- GeoPy (cálculos de distância)
+- Jinja2 (templates)
+
+Acesse `http://localhost:8000` após iniciar a API.
+
