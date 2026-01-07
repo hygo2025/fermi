@@ -65,7 +65,7 @@ async def startup_event():
         
         logger.info(f"Loading model: {latest_model}")
         
-                from src.utils.enviroment import get_config
+        from src.utils.enviroment import get_config
         config = get_config()
         
         analyzer = RecommendationAnalyzer(
