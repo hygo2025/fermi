@@ -21,7 +21,6 @@ from typing import List, Optional
 
 import pandas as pd
 import torch
-import yaml
 
 # Monkey-patch torch.load (PyTorch 2.6+ compatibility)
 _original_torch_load = torch.load
@@ -38,6 +37,7 @@ from recbole.utils import init_seed
 
 from src.models import RandomRecommender, POPRecommender, RPOPRecommender, SPOPRecommender
 from src.utils import log
+from src.utils.enviroment import get_config
 
 
 MODEL_REGISTRY = {
@@ -62,8 +62,8 @@ MODEL_GROUPS = {
 
 
 class BenchmarkRunner:
-    def __init__(self, project_config_path: str, output_dir: Optional[str] = None):
-        self.project_config = self._load_config(project_config_path)
+    def __init__(self, output_dir: Optional[str] = None):
+        self.project_config = get_config()
         self.timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         
         # Output directory
@@ -78,10 +78,7 @@ class BenchmarkRunner:
         # Setup logging
         self._setup_logging()
         
-    def _load_config(self, path: str) -> dict:
-        with open(path, 'r') as f:
-            return yaml.safe_load(f)
-    
+        
     def _setup_logging(self):
         log_dir = self.output_dir / 'logs'
         log_dir.mkdir(exist_ok=True)
@@ -98,6 +95,8 @@ class BenchmarkRunner:
     
     def _get_model_config(self, model_name: str, dataset_name: str) -> dict:
         """Carrega config do modelo e merge com config do projeto"""
+        import yaml
+        
         # Busca config específica do modelo
         config_base = Path('src/configs')
         
@@ -262,12 +261,6 @@ Grupos disponíveis:
         help='Nome do dataset (default: usa config do projeto)'
     )
     parser.add_argument(
-        '--config',
-        type=str,
-        default='config/project_config.yaml',
-        help='Path para config do projeto'
-    )
-    parser.add_argument(
         '--output',
         type=str,
         help='Diretório de output customizado'
@@ -286,14 +279,12 @@ Grupos disponíveis:
     
     # Load dataset from config if not specified
     if not args.dataset:
-        with open(args.config, 'r') as f:
-            config = yaml.safe_load(f)
-        dataset = config['dataset']
+        dataset = get_config('dataset')
     else:
         dataset = args.dataset
     
     # Run benchmark
-    runner = BenchmarkRunner(args.config, args.output)
+    runner = BenchmarkRunner(args.output)
     runner.run(models, dataset)
 
 

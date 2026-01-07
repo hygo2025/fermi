@@ -317,18 +317,15 @@ class RecBoleDataPipeline:
 
 def main():
     parser = argparse.ArgumentParser(description='Prepare RecBole dataset')
-    parser.add_argument('--config', type=str, default='config/project_config.yaml',
-                        help='Path to project config')
     parser.add_argument('--start-date', type=str, help='Override start date (YYYY-MM-DD)')
     parser.add_argument('--end-date', type=str, help='Override end date (YYYY-MM-DD)')
     parser.add_argument('--output', type=str, help='Override output path')
     
     args = parser.parse_args()
     
-    # Load config
-    import yaml
-    with open(args.config, 'r') as f:
-        project_config = yaml.safe_load(f)
+    # Load config from centralized function
+    from src.utils.enviroment import get_config
+    project_config = get_config()
     
     # Build pipeline config
     raw_data_config = project_config['raw_data']
@@ -336,11 +333,13 @@ def main():
     
     config = {
         'events_path': raw_data_config['events_path'],
+        'listings_path': raw_data_config.get('listings_path'),
         'output_path': args.output or raw_data_config['output_path'],
         'dataset_name': project_config['dataset'],
         'start_date': args.start_date or data_prep_config['start_date'],
         'end_date': args.end_date or data_prep_config['end_date'],
         'min_session_length': data_prep_config['min_session_length'],
+        'max_session_length': data_prep_config.get('max_session_length', 50),
         'min_item_freq': data_prep_config['min_item_freq']
     }
     

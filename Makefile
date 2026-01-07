@@ -1,10 +1,3 @@
-# =============================================================================
-# FERMI - SESSION-BASED RECOMMENDATION BENCHMARK
-# =============================================================================
-# Arquitetura: Python-First (Wrapper)
-# Descrição: Orquestração de pipelines de dados e execução de modelos RecBole.
-# =============================================================================
-
 .DEFAULT_GOAL := help
 .PHONY: help install data benchmark clean clean-all test lint format
 
@@ -36,9 +29,14 @@ install: ## Instala todas as dependências do projeto em modo editável
 # -----------------------------------------------------------------------------
 ##@ Pipeline de Dados
 # -----------------------------------------------------------------------------
+prepare-raw-data: ## Processa dados brutos (listings + events) - Etapa 0
+	@echo "[INFO] Processing raw data (listings + events)..."
+	python src/data_preparation/prepare_raw_data.py
+	@echo "[INFO] Raw data processing complete."
+
 data: ## Prepara o dataset para o RecBole (Global Temporal Leave-One-Out)
 	@echo "[INFO] Starting data preparation pipeline..."
-	python src/pipeline/recbole_data_pipeline.py --config config/project_config.yaml
+	python src/pipeline/recbole_data_pipeline.py
 	@echo "[INFO] Dataset preparation complete."
 
 data-custom: ## Prepara dados com intervalo customizado (Requer START_DATE e END_DATE)
@@ -47,7 +45,6 @@ data-custom: ## Prepara dados com intervalo customizado (Requer START_DATE e END
 		exit 1; \
 	fi
 	python src/pipeline/recbole_data_pipeline.py \
-		--config config/project_config.yaml \
 		--start-date $(START_DATE) \
 		--end-date $(END_DATE)
 
@@ -56,28 +53,29 @@ data-custom: ## Prepara dados com intervalo customizado (Requer START_DATE e END
 # -----------------------------------------------------------------------------
 benchmark: ## Executa modelos. Opcional: MODELS='...' DATASET='...'
 	@MODELS_ARG=$(or $(MODELS),all); \
-	DATASET_ARG=$(or $(DATASET),realestate); \
-	echo "[INFO] Starting benchmark execution (Models: $$MODELS_ARG | Dataset: $$DATASET_ARG)..."; \
-	python src/run_benchmark.py \
-		--models $$MODELS_ARG \
-		--dataset $$DATASET_ARG \
-		--config config/project_config.yaml
+	DATASET_ARG=$(or $(DATASET),); \
+	echo "[INFO] Starting benchmark execution (Models: $$MODELS_ARG)..."; \
+	if [ -n "$$DATASET_ARG" ]; then \
+		python src/run_benchmark.py --models $$MODELS_ARG --dataset $$DATASET_ARG; \
+	else \
+		python src/run_benchmark.py --models $$MODELS_ARG; \
+	fi
 
 benchmark-neurais: ## Executa apenas modelos baseados em Redes Neurais (GRU4Rec, NARM, etc.)
 	@echo "[INFO] Running neural models benchmark..."
-	python src/run_benchmark.py --models neurais --config config/project_config.yaml
+	python src/run_benchmark.py --models neurais
 
 benchmark-baselines: ## Executa apenas modelos Baseline (Random, POP, etc.)
 	@echo "[INFO] Running baselines benchmark..."
-	python src/run_benchmark.py --models baselines --config config/project_config.yaml
+	python src/run_benchmark.py --models baselines
 
 benchmark-factor: ## Executa apenas modelos de Fatoração (FPMC, FOSSIL)
 	@echo "[INFO] Running factorization models benchmark..."
-	python src/run_benchmark.py --models factorization --config config/project_config.yaml
+	python src/run_benchmark.py --models factorization
 
 benchmark-quick: ## Executa teste rápido (GRU4Rec) para validação de sanidade
 	@echo "[INFO] Running quick sanity check (GRU4Rec)..."
-	python src/run_benchmark.py --models GRU4Rec --config config/project_config.yaml
+	python src/run_benchmark.py --models GRU4Rec
 
 # -----------------------------------------------------------------------------
 ##@ Análise de Resultados
@@ -113,11 +111,5 @@ clean-all: clean ## Remove cache, logs, resultados e checkpoints salvos (Reset t
 # -----------------------------------------------------------------------------
 ##@ Desenvolvimento
 # -----------------------------------------------------------------------------
-test: ## Executa a suíte de testes unitários
-	pytest tests/ -v
-
-lint: ## Executa verificação de estilo (flake8)
-	flake8 src/ --max-line-length=100 --ignore=E501,W503
-
 format: ## Formata o código fonte (black)
 	black src/ --line-length=100

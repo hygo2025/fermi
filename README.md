@@ -33,7 +33,7 @@ make prepare-raw-data
 ```
 
 Requisitos:
-- Configurar arquivo `.env` com os caminhos dos dados brutos
+- Configurar `config/project_config.yaml` com os caminhos dos dados brutos (veja [CONFIGURATION.md](CONFIGURATION.md))
 - PySpark 3.x, Java 11+, 16GB+ RAM
 
 ### Etapa 1: Sliding Window
@@ -212,21 +212,18 @@ python src/run_experiments.py --models GRU4Rec --all-slices
 # 1. Instalar dependências
 pip install -e .
 
-# 2. Configurar variáveis de ambiente
-cp .env.example .env
-# Editar .env com os caminhos dos dados
+# 2. Configurar projeto
+# Editar config/project_config.yaml com os caminhos dos dados
+# Veja CONFIGURATION.md para detalhes
 
 # 3. Processar dados brutos
 make prepare-raw-data
 
-# 4. Criar sliding window splits
-make prepare-data
+# 4. Preparar dataset para RecBole
+make data
 
-# 5. Converter para formato RecBole
-make convert-recbole
-
-# 6. Executar todos os modelos
-make run-all
+# 5. Executar benchmark
+make benchmark MODELS=all
 ```
 
 Requisitos:

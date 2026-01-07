@@ -14,9 +14,27 @@ data_path: outputs/data/recbole  # RecBole procura: {data_path}/{dataset}/{datas
 
 # Raw data paths (para pipeline de preparação)
 raw_data:
+  # Raw source data (from .env migration)
+  listings_raw_path: /home/hygo2025/Documents/data/listings
+  events_raw_path: /home/hygo2025/Documents/data/events
+  
+  # Processed data paths
+  events_processed_path: /home/hygo2025/Documents/data/processed_data/events
+  listings_processed_path: /home/hygo2025/Documents/data/processed_data/listings
+  
+  # Mapping tables
+  listing_id_mapping_path: /home/hygo2025/Documents/data/processed_mapping/listing_id_mapping
+  user_id_mapping_path: /home/hygo2025/Documents/data/processed_mapping/user_id_mapping
+  session_id_mapping_path: /home/hygo2025/Documents/data/processed_mapping/session_id_mapping
+  user_sessions_path: /home/hygo2025/Documents/data/processed_mapping/user_sessions
+  
+  # Enriched events (for RecBole pipeline)
   events_path: /home/hygo2025/Documents/data/processed_data/enriched_events
   listings_path: /home/hygo2025/Documents/data/processed_data/listings
+  
+  # Output
   output_path: outputs/data/recbole
+  base_path: /home/hygo2025/Documents/data
   
 # Data preparation parameters
 data_preparation:
