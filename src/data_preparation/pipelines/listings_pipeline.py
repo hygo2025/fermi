@@ -2,7 +2,7 @@ import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession, Window
 from pyspark.sql.functions import col
 
-from src.utils.enviroment import listing_id_mapping_path, listings_raw_path, listings_processed_path
+from src.utils.enviroment import get_config
 from src.utils.spark_utils import read_csv_data
 from src.utils import log
 
@@ -43,8 +43,9 @@ def deduplicate_and_map_ids(df: DataFrame) -> tuple[DataFrame, DataFrame]:
 
 
 def save_results(df_final: DataFrame, mapping_table: DataFrame):
-    final_path = listings_processed_path()
-    mapping_path = listing_id_mapping_path()
+    config = get_config()
+    final_path = config['raw_data']['listings_processed_path']
+    mapping_path = config['raw_data']['listing_id_mapping_path']
 
     df_final_persisted = None
     mapping_table_persisted = None
@@ -66,7 +67,8 @@ def save_results(df_final: DataFrame, mapping_table: DataFrame):
 
 def run_listings_pipeline(spark: SparkSession):
     log("Iniciando pipeline de listings...")
-    raw_path = listings_raw_path() + "/*.csv.gz"
+    config = get_config()
+    raw_path = config['raw_data']['listings_raw_path'] + "/*.csv.gz"
     all_raw_listings = read_csv_data(spark, raw_path, multiline=True)
     # all_raw_listings = all_raw_listings.filter((col("state") == "Espírito Santo"))
     # all_raw_listings = all_raw_listings.filter(

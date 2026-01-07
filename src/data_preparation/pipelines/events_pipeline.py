@@ -2,12 +2,7 @@ import pyspark.sql.functions as F
 from pyspark.sql import SparkSession, DataFrame, Window
 from typing import List
 
-from src.utils.enviroment import (
-    events_raw_path,
-    listings_processed_path,
-    events_processed_path,
-    listing_id_mapping_path,
-)
+from src.utils.enviroment import get_config
 from src.utils.spark_utils import read_csv_data
 from src.utils import log
 
@@ -32,10 +27,11 @@ def clean_event_data(df: DataFrame) -> DataFrame:
 def process_raw_events(spark: SparkSession) -> DataFrame:
     log("\nProcessing raw events...")
 
-    sale_raw_path = events_raw_path() + "/*.csv.gz"
+    config = get_config()
+    sale_raw_path = config['raw_data']['events_raw_path'] + "/*.csv.gz"
     all_raw_events = read_csv_data(spark, sale_raw_path, multiline=False)
 
-    listing_map = spark.read.parquet(listing_id_mapping_path())
+    listing_map = spark.read.parquet(config['raw_data']['listing_id_mapping_path'])
     joined_df = all_raw_events.join(listing_map, on="anonymized_listing_id", how="inner")
 
     return clean_event_data(joined_df)
@@ -217,15 +213,18 @@ def save_events(spark: SparkSession, events: DataFrame) -> None:
     remaining_columns = [c for c in df.columns if c not in first_columns]
     df = df.select(*first_columns, *remaining_columns)
 
-    log(f"\nSalvando eventos com chaves numéricas em: {events_processed_path()}")
-    df.coalesce(8).write.mode("overwrite").partitionBy("dt").parquet(events_processed_path())
+    config = get_config()
+    events_path = config['raw_data']['events_processed_path']
+    log(f"\nSalvando eventos com chaves numéricas em: {events_path}")
+    df.coalesce(8).write.mode("overwrite").partitionBy("dt").parquet(events_path)
 
     log("Eventos salvos com sucesso.")
 
 
 def run_events_pipeline(spark: SparkSession):
     log("\nExecutando pipeline completo de eventos...")
-    listings = spark.read.option("mergeSchema", "true").parquet(listings_processed_path())
+    config = get_config()
+    listings = spark.read.option("mergeSchema", "true").parquet(config['raw_data']['listings_processed_path'])
 
     events = process_raw_events(spark=spark)
     user_sessions = resolve_user_identities(events=events)

@@ -27,28 +27,3 @@ def get_config(key_path: str = None) -> Any:
     for key in keys:
         value = value[key]
     return value
-
-# Legacy compatibility functions (for existing code)
-def listings_raw_path():
-    return get_config('raw_data.listings_raw_path')
-
-def events_raw_path():
-    return get_config('raw_data.events_raw_path')
-
-def events_processed_path():
-    return get_config('raw_data.events_processed_path')
-
-def listings_processed_path():
-    return get_config('raw_data.listings_processed_path')
-
-def user_sessions_path():
-    return get_config('raw_data.user_sessions_path')
-
-def listing_id_mapping_path():
-    return get_config('raw_data.listing_id_mapping_path')
-
-def user_id_mapping_path():
-    return get_config('raw_data.user_id_mapping_path')
-
-def session_id_mapping_path():
-    return get_config('raw_data.session_id_mapping_path')
