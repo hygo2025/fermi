@@ -25,6 +25,7 @@ from pyspark.sql import SparkSession, functions as F
 from pyspark.sql.window import Window
 
 from src.utils import log
+from src.utils.enviroment import get_config
 
 
 class RecBoleDataPipeline:
@@ -324,7 +325,6 @@ def main():
     args = parser.parse_args()
     
     # Load config from centralized function
-    from src.utils.enviroment import get_config
     project_config = get_config()
     
     # Build pipeline config

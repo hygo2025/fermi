@@ -15,6 +15,7 @@ FEATURES:
 import argparse
 import logging
 import sys
+import yaml
 from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
@@ -95,8 +96,6 @@ class BenchmarkRunner:
     
     def _get_model_config(self, model_name: str, dataset_name: str) -> dict:
         """Carrega config do modelo e merge com config do projeto"""
-        import yaml
-        
         # Busca config específica do modelo
         config_base = Path('src/configs')
         
