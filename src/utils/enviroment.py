@@ -1,7 +1,3 @@
-"""
-Configuration loader for FERMI project.
-Migrated from .env to project_config.yaml for consistency.
-"""
 import yaml
 from pathlib import Path
 from typing import Any
