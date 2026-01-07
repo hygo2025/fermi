@@ -8,7 +8,7 @@
 .DEFAULT_GOAL := help
 .PHONY: help install data benchmark clean clean-all test lint format
 
-# Cores para o terminal (opcional, para legibilidade do help)
+
 COLOR_RESET   = \033[0m
 COLOR_CYAN    = \033[36m
 COLOR_YELLOW  = \033[33m
@@ -38,7 +38,7 @@ install: ## Instala todas as dependências do projeto em modo editável
 # -----------------------------------------------------------------------------
 data: ## Prepara o dataset para o RecBole (Global Temporal Leave-One-Out)
 	@echo "[INFO] Starting data preparation pipeline..."
-	python src/pipeline/prepare_data.py --config config/project_config.yaml
+	python src/pipeline/recbole_data_pipeline.py --config config/project_config.yaml
 	@echo "[INFO] Dataset preparation complete."
 
 data-custom: ## Prepara dados com intervalo customizado (Requer START_DATE e END_DATE)
@@ -46,7 +46,7 @@ data-custom: ## Prepara dados com intervalo customizado (Requer START_DATE e END
 		echo "[ERROR] START_DATE and END_DATE arguments are required."; \
 		exit 1; \
 	fi
-	python src/pipeline/prepare_data.py \
+	python src/pipeline/recbole_data_pipeline.py \
 		--config config/project_config.yaml \
 		--start-date $(START_DATE) \
 		--end-date $(END_DATE)

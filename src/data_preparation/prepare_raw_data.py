@@ -22,17 +22,6 @@ def main():
         log("\nStep 2/3: Processing user events...")
         run_events_pipeline(spark=spark)
         
-        log("\nStep 3/3: Merging data...")
-        #run_merge_events_pipeline(spark=spark)
-        
-        log("\n" + "="*60)
-        log(" PREPARATION COMPLETE")
-        log("="*60)
-        log("\nNext steps:")
-        log("  1. make prepare-data      # Create sliding window")
-        log("  2. make convert-recbole   # Convert to RecBole format")
-        log("  3. make run-all           # Run experiments\n")
-        
     except Exception as e:
         log(f"\nERRO: {e}")
         import traceback

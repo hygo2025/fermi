@@ -70,7 +70,14 @@ class RecBoleDataPipeline:
         
         # Eventos que representam interesse real do usuário
         interaction_types = [
-            'ListingRendered',  # Visualização da página de detalhes
+            'ListingRendered',  # User viewed listing detail
+            # 'RankingRendered',       # User viewed listing in ranking
+            # 'GalleryClicked',       # User clicked on gallery/image
+            # 'RankingClicked',       # User clicked item in ranking
+            # 'LeadPanelClicked',     # User clicked contact panel
+            # 'LeadClicked',          # User initiated contact
+            # 'FavoriteClicked',      # User favorited item
+            # 'ShareClicked',         # User shared item
         ]
         
         df_filtered = df.filter(F.col('event_type').isin(interaction_types))
