@@ -11,9 +11,6 @@ eval_batch_size: 4096
 learning_rate: 0.001
 train_neg_sample_args: ~
 
-# Early Stopping
-stopping_step: 10
-
 # Model Parameters - FOSSIL (Hybrid)
 embedding_size: 256
 order: 3
@@ -39,10 +36,11 @@ USER_ID_FIELD: session_id
 load_col:
   inter: [session_id, item_id, timestamp]
 
-# Evaluation Protocol
+# Evaluation Protocol - TEMPORAL LEAVE-ONE-OUT (Paper Standard)
 eval_args:
-  split: {'LS': 'test_only'}  # Use pre-split train/test files (temporal split)
-  order: 'TO'  # Temporal order
+  split: {'LS': 'valid_and_test'}
+  order: 'TO'
+  group_by: 'user'
   mode: 'full'
 
 # Device

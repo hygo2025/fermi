@@ -39,10 +39,11 @@ USER_ID_FIELD: session_id
 load_col:
   inter: [session_id, item_id, timestamp]
 
-# Evaluation Protocol
+# Evaluation Protocol - TEMPORAL LEAVE-ONE-OUT (Paper Standard)
 eval_args:
-  split: {'LS': 'test_only'}
+  split: {'LS': 'valid_and_test'}
   order: 'TO'
+  group_by: 'user'
   mode: 'full'
 
 # Device

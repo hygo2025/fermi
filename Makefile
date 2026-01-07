@@ -1,285 +1,123 @@
-.PHONY: help install clean clean-results prepare-raw-data prepare-data prepare-simple-data convert-recbole convert-recbole-simple run-all aggregate-last run-neurais run-factorization run-baselines run-gru4rec run-narm run-stamp run-sasrec run-fpmc run-fossil run-random run-pop run-rpop run-spop run-gru4rec-parallel run-parallel tune-model analyze-model pipeline-complete
+# =============================================================================
+# FERMI - SESSION-BASED RECOMMENDATION BENCHMARK
+# =============================================================================
+# Arquitetura: Python-First (Wrapper)
+# Descrição: Orquestração de pipelines de dados e execução de modelos RecBole.
+# =============================================================================
 
-help:
-	@echo "Fermi - Session-Based Recommendation Benchmark"
-	@echo ""
-	@echo "Pipeline Completo:"
-	@echo "  make pipeline-complete    - [PIPELINE COMPLETO] Executar todo pipeline (prepare → run-all)"
-	@echo ""
-	@echo "Pipeline de Dados (em ordem):"
-	@echo "  make prepare-raw-data     - [ETAPA 1] Processar dados brutos (listings + events)"
-	@echo "  make prepare-data         - [ETAPA 2] Criar sliding window splits (PySpark)"
-	@echo "  make prepare-simple-data  - [ETAPA 2 ALT] Preparar dados sem sliding windows (train/test simples)"
-	@echo "  make convert-recbole      - [ETAPA 3] Converter para formato RecBole"
-	@echo "  make convert-recbole-simple - [ETAPA 3 ALT] Converter dados simples para RecBole"
-	@echo ""
-	@echo "Experimentos (Sequencial):"
-	@echo "  make run-all              - Executar todos modelos em todos slices (1 por vez)"
-	@echo ""
-	@echo "Experimentos (Paralelo):"
-	@echo "  make run-parallel         - Executar modelo em 2 slices paralelos (com checkpoints)"
-	@echo "  make run-gru4rec-parallel - Executar GRU4Rec em 2 slices paralelos"
-	@echo ""
-	@echo "Modelos por Categoria:"
-	@echo "  make run-neurais          - Executar todos modelos neurais (GRU4Rec, NARM, STAMP, SASRec)"
-	@echo "  make run-factorization    - Executar todos modelos de fatoração (FPMC, FOSSIL)"
-	@echo "  make run-baselines        - Executar todos baselines (Random, POP, RPOP, SPOP)"
-	@echo ""
-	@echo "Modelos Neurais:"
-	@echo "  make run-gru4rec          - Executar apenas GRU4Rec em todos slices"
-	@echo "  make run-narm             - Executar apenas NARM em todos slices"
-	@echo "  make run-stamp            - Executar apenas STAMP em todos slices"
-	@echo "  make run-sasrec           - Executar apenas SASRec em todos slices"
-	@echo ""
-	@echo "Modelos de Fatoração:"
-	@echo "  make run-fpmc             - Executar apenas FPMC em todos slices"
-	@echo "  make run-fossil           - Executar apenas FOSSIL em todos slices"
-	@echo ""
-	@echo "Baselines (Individuais):"
-	@echo "  make run-random           - Executar Random em todos slices"
-	@echo "  make run-pop              - Executar POP em todos slices"
-	@echo "  make run-rpop             - Executar RPOP em todos slices"
-	@echo "  make run-spop             - Executar SPOP em todos slices"
-	@echo ""
-	@echo "Analise:"
-	@echo "  make analyze-model        - Analisar recomendacoes (requer MODEL_PATH e opcionalmente SLICE)"
-	@echo ""
-	@echo "Tuning:"
-	@echo "  make tune-model           - Busca de hiperparametros (requer MODEL=<nome>)"
-	@echo ""
-	@echo "Resultados:"
-	@echo "  make aggregate-last       - Agregar último resultado"
-	@echo ""
-	@echo "Utilidades:"
-	@echo "  make install              - Instalar dependências"
-	@echo "  make clean                - Limpar cache e temp files"
-	@echo "  make clean-results        - Limpar resultados e logs"
+.DEFAULT_GOAL := help
+.PHONY: help install data benchmark clean clean-all test lint format
 
-install:
+# Cores para o terminal (opcional, para legibilidade do help)
+COLOR_RESET   = \033[0m
+COLOR_CYAN    = \033[36m
+COLOR_YELLOW  = \033[33m
+COLOR_GREEN   = \033[32m
+
+# -----------------------------------------------------------------------------
+# HELP SYSTEM
+# -----------------------------------------------------------------------------
+help: ## Exibe esta mensagem de ajuda
+	@echo ""
+	@echo "Fermi Benchmark - Comandos Disponíveis"
+	@echo "----------------------------------------------------------------"
+	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make $(COLOR_YELLOW)<target>$(COLOR_RESET)\n"} \
+	/^[a-zA-Z_-]+:.*?##/ { printf "  $(COLOR_CYAN)%-25s$(COLOR_RESET) %s\n", $$1, $$2 } \
+	/^##@/ { printf "\n$(COLOR_GREEN)%s$(COLOR_RESET)\n", substr($$0, 5) } ' $(MAKEFILE_LIST)
+	@echo ""
+
+# -----------------------------------------------------------------------------
+##@ Setup & Instalação
+# -----------------------------------------------------------------------------
+install: ## Instala todas as dependências do projeto em modo editável
+	@echo "[INFO] Installing dependencies..."
 	pip install -e .
 
-# Pipeline de dados
-prepare-raw-data:
-	@echo "[ETAPA 1/3] Processando dados brutos (listings + events)..."
-	@echo "Isso pode levar alguns minutos..."
-	export $(shell cat .env) && python src/data_preparation/prepare_raw_data.py
+# -----------------------------------------------------------------------------
+##@ Pipeline de Dados
+# -----------------------------------------------------------------------------
+data: ## Prepara o dataset para o RecBole (Global Temporal Leave-One-Out)
+	@echo "[INFO] Starting data preparation pipeline..."
+	python src/pipeline/prepare_data.py --config config/project_config.yaml
+	@echo "[INFO] Dataset preparation complete."
 
-prepare-data:
-	@echo "[ETAPA 2/3] Criando sliding window splits..."
-	python src/preprocessing/sliding_window_pipeline.py \
-		--input /home/hygo2025/Documents/data/processed_data/enriched_events \
-		--output outputs/data/sliding_window \
-		--start-date 2024-03-01 \
-		--n-days 30
-
-prepare-simple-data:
-	@echo "[ETAPA 2/3 - SIMPLES] Preparando dados sem sliding windows..."
-	python src/preprocessing/simple_data_pipeline.py \
-		--input /home/hygo2025/Documents/data/processed_data/enriched_events \
-		--output outputs/data/simple_data \
-		--start-date 2024-03-01 \
-		--n-days 30 \
-		--train-ratio 0.8
-
-convert-recbole:
-	@echo "[ETAPA 3/3] Convertendo para formato RecBole..."
-	python src/preprocessing/recbole_converter.py \
-		--input outputs/data/sliding_window \
-		--output outputs/data/recbole
-
-convert-recbole-simple:
-	@echo "[ETAPA 3/3] Convertendo dados simples para formato RecBole..."
-	python src/preprocessing/recbole_converter.py \
-		--input outputs/data/simple_data \
-		--output outputs/data/recbole_simple
-
-convert-recbole-simple:
-	@echo "[ETAPA 3/3] Convertendo para formato RecBole..."
-	python src/preprocessing/recbole_converter.py \
-		--input outputs/data/simple_data \
-		--output outputs/data/recbole_simple
-
-# Experimentos - Sequencial
-run-all:
-	@echo "Executando todos experimentos (slices em paralelo por modelo)..."
-	@chmod +x scripts/run_all_experiments.sh
-	@./scripts/run_all_experiments.sh
-
-# Experimentos - Paralelo (2 slices por vez)
-run-parallel:
-	@echo "Uso: make run-parallel MODEL=<modelo>"
-	@echo "Exemplo: make run-parallel MODEL=GRU4Rec"
-	@if [ -z "$(MODEL)" ]; then \
-		echo "ERRO: Especifique o modelo com MODEL=<nome>"; \
-		echo "Modelos disponíveis: GRU4Rec, NARM, STAMP, SASRec, FPMC, FOSSIL"; \
+data-custom: ## Prepara dados com intervalo customizado (Requer START_DATE e END_DATE)
+	@if [ -z "$(START_DATE)" ] || [ -z "$(END_DATE)" ]; then \
+		echo "[ERROR] START_DATE and END_DATE arguments are required."; \
 		exit 1; \
 	fi
-	@chmod +x scripts/run_parallel_gpu.sh
-	@./scripts/run_parallel_gpu.sh $(MODEL) yes
+	python src/pipeline/prepare_data.py \
+		--config config/project_config.yaml \
+		--start-date $(START_DATE) \
+		--end-date $(END_DATE)
 
-run-gru4rec-parallel:
-	@echo "Executando GRU4Rec em 2 slices paralelos (com checkpoints)..."
-	@chmod +x scripts/run_parallel_gpu.sh
-	@./scripts/run_parallel_gpu.sh GRU4Rec yes
+# -----------------------------------------------------------------------------
+##@ Execução de Benchmark
+# -----------------------------------------------------------------------------
+benchmark: ## Executa modelos. Opcional: MODELS='...' DATASET='...'
+	@MODELS_ARG=$(or $(MODELS),all); \
+	DATASET_ARG=$(or $(DATASET),realestate); \
+	echo "[INFO] Starting benchmark execution (Models: $$MODELS_ARG | Dataset: $$DATASET_ARG)..."; \
+	python src/run_benchmark.py \
+		--models $$MODELS_ARG \
+		--dataset $$DATASET_ARG \
+		--config config/project_config.yaml
 
-# Neurais
-run-gru4rec-quick:
-	@echo "Executando GRU4Rec em 1 slice (slice1)..."
-	python src/run_experiments.py --models GRU4Rec --slices 1 --save-checkpoints
+benchmark-neurais: ## Executa apenas modelos baseados em Redes Neurais (GRU4Rec, NARM, etc.)
+	@echo "[INFO] Running neural models benchmark..."
+	python src/run_benchmark.py --models neurais --config config/project_config.yaml
 
-run-gru4rec:
-	@echo "Executando GRU4Rec em todos os slices (sequencial)..."
-	python src/run_experiments.py --models GRU4Rec --all-slices --save-checkpoints
+benchmark-baselines: ## Executa apenas modelos Baseline (Random, POP, etc.)
+	@echo "[INFO] Running baselines benchmark..."
+	python src/run_benchmark.py --models baselines --config config/project_config.yaml
 
-run-narm:
-	@echo "Executando NARM em todos os slices (sequencial)..."
-	python src/run_experiments.py --models NARM --all-slices
+benchmark-factor: ## Executa apenas modelos de Fatoração (FPMC, FOSSIL)
+	@echo "[INFO] Running factorization models benchmark..."
+	python src/run_benchmark.py --models factorization --config config/project_config.yaml
 
-run-stamp:
-	@echo "Executando STAMP em todos os slices (sequencial)..."
-	python src/run_experiments.py --models STAMP --all-slices
+benchmark-quick: ## Executa teste rápido (GRU4Rec) para validação de sanidade
+	@echo "[INFO] Running quick sanity check (GRU4Rec)..."
+	python src/run_benchmark.py --models GRU4Rec --config config/project_config.yaml
 
-run-sasrec:
-	@echo "Executando SASRec em todos os slices (sequencial)..."
-	python src/run_experiments.py --models SASRec --all-slices
-
-# Baselines
-run-random:
-	@echo "Executando Random em todos os slices (sequencial)..."
-	python src/run_experiments.py --models Random --all-slices
-
-run-pop:
-	@echo "Executando POP em todos os slices (sequencial)..."
-	python src/run_experiments.py --models POP --all-slices
-
-run-rpop:
-	@echo "Executando RPOP em todos os slices (sequencial)..."
-	python src/run_experiments.py --models RPOP --all-slices
-
-run-spop:
-	@echo "Executando SPOP em todos os slices (sequencial)..."
-	python src/run_experiments.py --models SPOP --all-slices
-
-# Factorization Models
-run-fpmc:
-	@echo "Executando FPMC em todos os slices (sequencial)..."
-	python src/run_experiments.py --models FPMC --all-slices
-
-run-fossil:
-	@echo "Executando FOSSIL em todos os slices (sequencial)..."
-	python src/run_experiments.py --models FOSSIL --all-slices
-
-
-# Agregação manual do último resultado
-aggregate-last:
-	@echo "Agregando último resultado..."
+# -----------------------------------------------------------------------------
+##@ Análise de Resultados
+# -----------------------------------------------------------------------------
+aggregate: ## Agrega os resultados da execução mais recente em um CSV único
 	@LAST_DIR=$$(ls -td outputs/results/*/ 2>/dev/null | head -1); \
 	if [ -z "$$LAST_DIR" ]; then \
-		echo "ERROR: Nenhum resultado encontrado em outputs/results/"; \
+		echo "[ERROR] No results found in outputs/results/"; \
 		exit 1; \
 	fi; \
-	echo "Processando: $$LAST_DIR"; \
+	echo "[INFO] Processing results from: $$LAST_DIR"; \
 	python src/aggregate_results.py \
 		--input "$${LAST_DIR%/}" \
 		--output "$${LAST_DIR%/}/aggregated_results.csv"
 
-# Analise de recomendacoes
-# Uso: make analyze-model MODEL_PATH=outputs/saved/GRU4Rec.pth [NUM_SESSIONS=5] [TOP_K=10] [SLICE=slice2]
-# Hyperparameter Tuning
-tune-model:
-	@if [ -z "$(MODEL)" ]; then \
-		echo "ERROR: MODEL nao especificado"; \
-		echo "Uso: make tune-model MODEL=GRU4Rec"; \
-		echo "Modelos disponiveis: GRU4Rec, NARM, STAMP, SASRec"; \
-		exit 1; \
-	fi
-	@echo "Executando tuning para $(MODEL)..."
-	python src/hyperparameter_tuning.py \
-		--model $(MODEL) \
-		--dataset realestate_simple \
-		--data-path outputs/data/recbole_simple \
-		--output-path outputs/tuning \
-		--algo exhaustive \
-		--max-evals 20 \
-		--early-stop 10
+# -----------------------------------------------------------------------------
+##@ Manutenção e Limpeza
+# -----------------------------------------------------------------------------
+clean: ## Remove arquivos de cache do Python (__pycache__, .pyc)
+	@echo "[INFO] Cleaning Python cache..."
+	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	find . -type f -name "*.pyc" -delete 2>/dev/null || true
+	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
 
-analyze-model:
-	@if [ -z "$(MODEL_PATH)" ]; then \
-		echo "ERROR: MODEL_PATH nao especificado"; \
-		echo "Uso: make analyze-model MODEL_PATH=outputs/saved/GRU4Rec.pth"; \
-		exit 1; \
-	fi
-	@if [ ! -f "$(MODEL_PATH)" ]; then \
-		echo "ERROR: Modelo nao encontrado: $(MODEL_PATH)"; \
-		exit 1; \
-	fi
-	@SLICE=$(or $(SLICE),slice1); \
-	OUTPUT_DIR="outputs/analysis/$$(basename $(MODEL_PATH) .pth)"; \
-	echo "Analisando modelo: $(MODEL_PATH)"; \
-	echo "Slice: $$SLICE"; \
-	echo "Output: $$OUTPUT_DIR"; \
-	python src/exploration/analyze_recommendations.py \
-		--model_path $(MODEL_PATH) \
-		--features_path /home/hygo2025/Documents/data/processed_data/listings/part-00000-147c4e9e-f355-4a0f-92b2-9701e8657b41-c000.snappy.parquet \
-		--test_data_path outputs/data/recbole/realestate_$$SLICE/realestate_$$SLICE.test.inter \
-		--num_sessions $(or $(NUM_SESSIONS),5) \
-		--top_k $(or $(TOP_K),10) \
-		--output_dir $$OUTPUT_DIR
-
-clean-results:
+clean-all: clean ## Remove cache, logs, resultados e checkpoints salvos (Reset total)
+	@echo "[INFO] Cleaning all artifacts (results, logs, checkpoints)..."
 	rm -rf outputs/results/* 2>/dev/null || true
 	rm -rf outputs/logs/* 2>/dev/null || true
 	rm -rf outputs/saved/* 2>/dev/null || true
 	rm -rf log_tensorboard/* 2>/dev/null || true
 
-clean:
-	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
-	find . -type f -name "*.pyc" -delete 2>/dev/null || true
-	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
+# -----------------------------------------------------------------------------
+##@ Desenvolvimento
+# -----------------------------------------------------------------------------
+test: ## Executa a suíte de testes unitários
+	pytest tests/ -v
 
+lint: ## Executa verificação de estilo (flake8)
+	flake8 src/ --max-line-length=100 --ignore=E501,W503
 
-# Grouped model execution
-run-neurais:
-	@echo "Executando todos modelos neurais em todos os slices..."
-	@./scripts/run_all_experiments.sh GRU4Rec NARM STAMP SASRec
-
-run-baselines:
-	@echo "Executando todos baselines em todos os slices (sequencial)..."
-	python src/run_experiments.py --models Random POP RPOP SPOP --all-slices
-
-run-factorization:
-	@echo "Executando todos modelos de fatoracao em todos os slices..."
-	@./scripts/run_all_experiments.sh FPMC FOSSIL
-
-# Pipeline completo - executar tudo em sequencia
-pipeline-complete:
-	@echo "========================================"
-	@echo "PIPELINE COMPLETO - Fermi Benchmark"
-	@echo "========================================"
-	@echo ""
-	@echo "Este comando executará em sequência:"
-	@echo "  1. Processamento de dados brutos"
-	@echo "  2. Criação de sliding window splits"
-	@echo "  3. Conversão para formato RecBole"
-	@echo "  4. Execução de todos os modelos"
-	@echo ""
-	@echo "Tempo estimado: 40-60 horas (com early stopping)"
-	@echo ""
-	@read -p "Deseja continuar? (y/N): " confirm && [ "$$confirm" = "y" ] || exit 1
-	@echo ""
-	@echo "[1/4] Processando dados brutos..."
-	@$(MAKE) prepare-raw-data
-	@echo ""
-	@echo "[2/4] Criando sliding window splits..."
-	@$(MAKE) prepare-data
-	@echo ""
-	@echo "[3/4] Convertendo para RecBole..."
-	@$(MAKE) convert-recbole
-	@echo ""
-	@echo "[4/4] Executando todos os modelos..."
-	@$(MAKE) run-all
-	@echo ""
-	@echo "========================================"
-	@echo "PIPELINE COMPLETO - CONCLUÍDO!"
-	@echo "========================================"
-	@echo "Resultados disponíveis em: outputs/results/"
+format: ## Formata o código fonte (black)
+	black src/ --line-length=100
