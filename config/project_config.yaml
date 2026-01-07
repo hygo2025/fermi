@@ -7,7 +7,7 @@
 # DATA CONFIGURATION
 # -----------------------------------------------------------------------------
 dataset: realestate
-data_path: outputs/data/recbole  # RecBole procura: {data_path}/{dataset}/{dataset}.inter
+data_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole  # RecBole procura: {data_path}/{dataset}/{dataset}.inter
 
 # Raw data paths (para pipeline de preparação)
 raw_data:
@@ -29,7 +29,7 @@ raw_data:
   listings_path: /home/hygo2025/Documents/data/processed_data/listings
   
   # Output
-  output_path: outputs/data/recbole
+  output_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole
   base_path: /home/hygo2025/Documents/data
   
 # Data preparation parameters

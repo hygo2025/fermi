@@ -1,2 +1,0 @@
-algumas premissas: sem emojis, sem excesso de docstring, comandos devem ir para o makefile, documentacoes devem ir para o readme (somente o necessario nada alem), o tom nao deve ser percebido que foi feito por ia, ajuste
-   baseado nessas premissas

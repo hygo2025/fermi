@@ -29,12 +29,12 @@ class RecBoleDataPipeline:
         )
         
         count = df.count()
-        log(f"    {count:,} eventos carregados")
+        log(f"    {count:_} eventos carregados")
         
         # Filtra business_type = SALE (importante para o domínio)
         df = df.filter(F.col('business_type') == 'SALE')
         count_sale = df.count()
-        log(f"    {count_sale:,} eventos após filtrar business_type=SALE")
+        log(f"    {count_sale:_} eventos após filtrar business_type=SALE")
         
         return df
     
@@ -58,7 +58,7 @@ class RecBoleDataPipeline:
         
         total_before = df.count()
         total_after = df_filtered.count()
-        log(f"    {total_after:,} eventos de interação ({total_after/total_before*100:.2f}%)")
+        log(f"    {total_after:_} eventos de interação ({total_after/total_before*100:.2f}%)")
         
         return df_filtered
     
@@ -81,7 +81,7 @@ class RecBoleDataPipeline:
         listings = listings.filter(F.col('city').isin(target_cities))
         listings_after = listings.count()
         
-        log(f"    {listings_before:,} listings → {listings_after:,} nas cidades alvo")
+        log(f"    {listings_before:_} listings → {listings_after:_} nas cidades alvo")
         
         # Join com eventos (left_semi = mantém apenas eventos de listings válidos)
         events_before = df.count()
@@ -92,7 +92,7 @@ class RecBoleDataPipeline:
         )
         events_after = df.count()
         
-        log(f"    {events_before:,} eventos → {events_after:,} após filtro geográfico")
+        log(f"    {events_before:_} eventos → {events_after:_} após filtro geográfico")
         
         return df
     
@@ -125,7 +125,7 @@ class RecBoleDataPipeline:
         df = df.withColumn('position', F.row_number().over(window_spec))
         
         unique_sessions = df.select('user_id').distinct().count()
-        log(f"    {unique_sessions:,} sessões únicas criadas")
+        log(f"    {unique_sessions:_} sessões únicas criadas")
         
         return df
     
@@ -156,8 +156,8 @@ class RecBoleDataPipeline:
         events_before = df.count()
         events_after = df_filtered.count()
         
-        log(f"    Sessões: {sessions_before:,} → {sessions_after:,}")
-        log(f"    Eventos: {events_before:,} → {events_after:,}")
+        log(f"    Sessões: {sessions_before:_} → {sessions_after:_}")
+        log(f"    Eventos: {events_before:_} → {events_after:_}")
         
         return df_filtered
     
@@ -187,8 +187,8 @@ class RecBoleDataPipeline:
         events_before = df.count()
         events_after = df_filtered.count()
         
-        log(f"    Itens: {items_before:,} → {items_after:,}")
-        log(f"    Eventos: {events_before:,} → {events_after:,}")
+        log(f"    Itens: {items_before:_} → {items_after:_}")
+        log(f"    Eventos: {events_before:_} → {events_after:_}")
         
         return df_filtered
     
@@ -221,7 +221,7 @@ class RecBoleDataPipeline:
                 f.write(f"{row['user_id']}\t{row['item_id']}\t{row['timestamp']}")
         
         size_mb = output_path.stat().st_size / (1024 * 1024)
-        log(f"    Arquivo salvo: {len(pdf):,} interações ({size_mb:.1f} MB)")
+        log(f"    Arquivo salvo: {len(pdf):_} interações ({size_mb:.1f} MB)")
         
         return pdf
     
@@ -263,9 +263,9 @@ class RecBoleDataPipeline:
         n_items = df.select('item_id').distinct().count()
         
         log(" ESTATÍSTICAS FINAIS:")
-        log(f"    {count:,} interações")
-        log(f"    {n_users:,} sessões")
-        log(f"    {n_items:,} itens únicos")
+        log(f"    {count:_} interações")
+        log(f"    {n_users:_} sessões")
+        log(f"    {n_items:_} itens únicos")
         
         # 8. Salva arquivo atômico .inter
         dataset_name = self.config.get('dataset_name', 'realestate')
