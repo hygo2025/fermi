@@ -1,5 +1,5 @@
 model: SPOP
-dataset: realestate_slice1
+dataset: realestate
 data_path: recbole_data/
 
 # Training (1 epoch to build global popularity)

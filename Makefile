@@ -78,6 +78,23 @@ benchmark-quick: ## Executa teste rápido (GRU4Rec) para validação de sanidade
 	python src/run_benchmark.py --models GRU4Rec
 
 # -----------------------------------------------------------------------------
+##@ Hyperparameter Tuning
+# -----------------------------------------------------------------------------
+tune: ## Executa hyperparameter tuning (requer MODEL=...)
+	@if [ -z "$(MODEL)" ]; then \
+		echo "[ERROR] MODEL argument is required (ex.: MODEL=GRU4Rec)"; \
+		echo "[INFO] Example: make tune MODEL=GRU4Rec MAX_EVALS=20 ALGO=bayes"; \
+		exit 1; \
+	fi
+	@DATASET_ARG=$(if $(DATASET),--dataset $(DATASET),); \
+	ALGO_ARG=$(if $(ALGO),--algo $(ALGO),); \
+	MAX_EVALS_ARG=$(if $(MAX_EVALS),--max-evals $(MAX_EVALS),); \
+	EARLY_STOP_ARG=$(if $(EARLY_STOP),--early-stop $(EARLY_STOP),); \
+	OUTPUT_ARG=$(if $(OUTPUT),--output $(OUTPUT),); \
+	 echo "[INFO] Running tuning for $(MODEL) $$MAX_EVALS_ARG $$ALGO_ARG"; \
+	 python src/hyperparameter_tuning.py --model $(MODEL) $$DATASET_ARG $$ALGO_ARG $$MAX_EVALS_ARG $$EARLY_STOP_ARG $$OUTPUT_ARG
+
+# -----------------------------------------------------------------------------
 ##@ Análise de Resultados
 # -----------------------------------------------------------------------------
 aggregate: ## Agrega os resultados da execução mais recente em um CSV único

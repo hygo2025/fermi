@@ -1,5 +1,5 @@
 model: Random
-dataset: realestate_slice1
+dataset: realestate
 data_path: recbole_data/
 
 # Training (minimal - baselines don't really train)

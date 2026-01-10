@@ -1,7 +1,7 @@
 model: NARM
 
 # Dataset (will be overridden by runner for each slice)
-dataset: realestate_slice1
+dataset: realestate
 data_path: recbole_data/
 
 # Training - HIGH QUALITY

@@ -53,6 +53,7 @@ outputs/results/**/*.log
 outputs/results/**/*.json
 outputs/results/**/*.png
 outputs/results/**/*.md
+outputs/results/**/*.pth
 log/
 
 premissas.txt
