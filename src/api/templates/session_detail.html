@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Session {{ session_id }} - Kepler</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            background: #1a1a1a;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #e0e0e0;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #2d2d2d;
+            border: 1px solid #404040;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #e0e0e0;
+            margin-bottom: 10px;
+            font-size: 2em;
+            font-weight: normal;
+            border-bottom: 2px solid #555;
+            padding-bottom: 10px;
+        }
+        
+        .back-link {
+            display: inline-block;
+            color: #a0c0ff;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .session-info {
+            background: #252525;
+            border: 1px solid #404040;
+            padding: 15px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-label {
+            color: #888;
+            font-size: 0.85em;
+            margin-bottom: 4px;
+        }
+        
+        .info-value {
+            color: #e0e0e0;
+            font-size: 1em;
+        }
+        
+        h2 {
+            color: #c0c0c0;
+            margin-bottom: 15px;
+            font-size: 1.3em;
+            font-weight: normal;
+        }
+        
+        .map-container {
+            width: 100%;
+            height: 500px;
+            margin-bottom: 30px;
+            border: 1px solid #404040;
+        }
+        
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .listings-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 30px;
+        }
+        
+        .listings-table th {
+            background: #252525;
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #404040;
+            color: #c0c0c0;
+            font-weight: normal;
+            font-size: 0.9em;
+        }
+        
+        .listings-table td {
+            padding: 10px;
+            border: 1px solid #404040;
+            font-size: 0.9em;
+        }
+        
+        .listings-table tr:hover {
+            background: #353535;
+        }
+        
+        .price {
+            color: #90ee90;
+        }
+        
+        .event-badge {
+            background: #404040;
+            padding: 3px 8px;
+            border-radius: 3px;
+            font-size: 0.8em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/sessions" class="back-link">← Back to Sessions</a>
+        
+        <h1>Session Details</h1>
+        
+        <div class="session-info">
+            <div class="info-item">
+                <span class="info-label">Session ID</span>
+                <span class="info-value">{{ session_id }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">User ID</span>
+                <span class="info-value">{{ user_id }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Total Events</span>
+                <span class="info-value">{{ event_count }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">First Event</span>
+                <span class="info-value">{{ first_event }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Last Event</span>
+                <span class="info-value">{{ last_event }}</span>
+            </div>
+        </div>
+        
+        <h2>Session Map</h2>
+        <div class="map-container">
+            {{ map_html|safe }}
+        </div>
+        <div style="margin-bottom: 230px;"></div>
+        <h2>Viewed Listings</h2>
+        
+        <div style="margin-bottom: 20px;">
+            <form action="/recommend-from-session/{{ session_id }}" method="post" style="display: inline;">
+                <label style="color: #c0c0c0; margin-right: 10px;">
+                    Top K: 
+                    <input type="number" name="top_k" value="10" min="5" max="50" 
+                           style="width: 60px; padding: 5px; background: #1a1a1a; color: #e0e0e0; border: 1px solid #404040;">
+                </label>
+                <button type="submit" style="padding: 8px 20px; background: #4a4a4a; color: #e0e0e0; border: 1px solid #555; cursor: pointer; font-family: 'Georgia', serif;">
+                    Generate Recommendations for this Session
+                </button>
+            </form>
+        </div>
+        
+        <table class="listings-table">
+            <thead>
+                <tr>
+                    <th>Pos</th>
+                    <th>Time</th>
+                    <th>Event</th>
+                    <th>Item ID</th>
+                    <th>Location</th>
+                    <th>Price</th>
+                    <th>Beds</th>
+                    <th>Baths</th>
+                    <th>Area (m²)</th>
+                    <th>Type</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for listing in viewed_listings %}
+                <tr>
+                    <td>{{ listing.position }}</td>
+                    <td>{{ listing.timestamp }}</td>
+                    <td><span class="event-badge">{{ listing.event_type }}</span></td>
+                    <td>{{ listing.item_id }}</td>
+                    <td>{{ listing.city }}, {{ listing.neighborhood }}</td>
+                    <td class="price">R$ {{ "{:,.0f}".format(listing.price) }}</td>
+                    <td>{{ listing.bedrooms|int }}</td>
+                    <td>{{ listing.bathrooms|int }}</td>
+                    <td>{{ "{:.0f}".format(listing.area) if listing.area else "N/A" }}</td>
+                    <td>{{ listing.business_type }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</body>
+</html>

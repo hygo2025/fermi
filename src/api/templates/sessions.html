@@ -1,0 +1,287 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sessions - Kepler</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            background: #1a1a1a;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #e0e0e0;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: #2d2d2d;
+            border: 1px solid #404040;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #e0e0e0;
+            margin-bottom: 10px;
+            font-size: 2em;
+            font-weight: normal;
+            border-bottom: 2px solid #555;
+            padding-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #b0b0b0;
+            margin-bottom: 30px;
+            font-size: 1em;
+        }
+        
+        .back-link {
+            display: inline-block;
+            color: #a0c0ff;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .sessions-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .sessions-table th {
+            background: #252525;
+            padding: 12px;
+            text-align: left;
+            border: 1px solid #404040;
+            color: #c0c0c0;
+            font-weight: normal;
+        }
+        
+        .sessions-table td {
+            padding: 10px 12px;
+            border: 1px solid #404040;
+        }
+        
+        .sessions-table tr:hover {
+            background: #353535;
+        }
+        
+        .session-link {
+            color: #a0c0ff;
+            text-decoration: none;
+        }
+        
+        .session-link:hover {
+            text-decoration: underline;
+        }
+        
+        .info-box {
+            background: #252525;
+            border: 1px solid #404040;
+            padding: 12px;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        
+        .search-form {
+            background: #252525;
+            border: 1px solid #404040;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .search-form input[type="text"] {
+            width: 70%;
+            padding: 8px;
+            border: 1px solid #404040;
+            font-size: 14px;
+            font-family: 'Georgia', serif;
+            background: #1a1a1a;
+            color: #e0e0e0;
+            margin-right: 10px;
+        }
+        
+        .search-form button {
+            padding: 8px 20px;
+            background: #404040;
+            color: #e0e0e0;
+            border: 1px solid #555;
+            font-size: 14px;
+            cursor: pointer;
+            font-family: 'Georgia', serif;
+        }
+        
+        .search-form button:hover {
+            background: #4a4a4a;
+        }
+        
+        .pagination {
+            margin-top: 30px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .page-link {
+            padding: 8px 15px;
+            background: #3a3a3a;
+            color: #e0e0e0;
+            text-decoration: none;
+            border: 1px solid #555;
+            border-radius: 3px;
+            transition: background 0.2s;
+        }
+        
+        .page-link:hover:not(.disabled) {
+            background: #4a4a4a;
+        }
+        
+        .page-link.disabled {
+            background: #2a2a2a;
+            color: #555;
+            cursor: not-allowed;
+        }
+        
+        .page-info {
+            padding: 8px 15px;
+            color: #c0c0c0;
+            font-weight: bold;
+        }
+        
+        .sortable {
+            cursor: pointer;
+            user-select: none;
+            position: relative;
+            padding-right: 20px;
+        }
+        
+        .sortable:hover {
+            background: #2a2a2a;
+        }
+        
+        .sortable::after {
+            content: '⇅';
+            position: absolute;
+            right: 8px;
+            opacity: 0.3;
+        }
+        
+        .sortable.active::after {
+            opacity: 1;
+        }
+        
+        .sortable.asc::after {
+            content: '↑';
+        }
+        
+        .sortable.desc::after {
+            content: '↓';
+        }
+    </style>
+    <script>
+        function sortBy(column) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const currentSort = urlParams.get('sort_by');
+            const currentOrder = urlParams.get('sort_order') || 'desc';
+            
+            let newOrder = 'asc';
+            if (currentSort === column && currentOrder === 'asc') {
+                newOrder = 'desc';
+            }
+            
+            urlParams.set('sort_by', column);
+            urlParams.set('sort_order', newOrder);
+            urlParams.set('page', '1'); // Reset to first page
+            
+            window.location.search = urlParams.toString();
+        }
+    </script>
+</head>
+<body>
+    <div class="container">
+        <a href="/" class="back-link">← Back to Home</a>
+        
+        <h1>Sessions</h1>
+        <p class="subtitle">Browse user sessions and their viewed listings</p>
+        
+        <div class="info-box">
+            Total Sessions: {{ "{:,}".format(total_sessions) }} | 
+            Showing: {{ ((page - 1) * per_page) + 1 }} - {% if page * per_page < total_sessions %}{{ page * per_page }}{% else %}{{ total_sessions }}{% endif %}
+        </div>
+        
+        <div class="search-form">
+            <form action="/session-search" method="get">
+                <input 
+                    type="text" 
+                    name="session_id" 
+                    placeholder="Enter Session ID (e.g., S_3370812)" 
+                    required
+                >
+                <button type="submit">View Session</button>
+            </form>
+        </div>
+        
+        <table class="sessions-table">
+            <thead>
+                <tr>
+                    <th class="sortable {% if sort_by == 'session_id' %}active {{ sort_order }}{% endif %}" 
+                        onclick="sortBy('session_id')">Session ID</th>
+                    <th class="sortable {% if sort_by == 'event_count' %}active {{ sort_order }}{% endif %}" 
+                        onclick="sortBy('event_count')">Events</th>
+                    <th class="sortable {% if sort_by == 'first_event' %}active {{ sort_order }}{% endif %}" 
+                        onclick="sortBy('first_event')">First Event</th>
+                    <th class="sortable {% if sort_by == 'last_event' %}active {{ sort_order }}{% endif %}" 
+                        onclick="sortBy('last_event')">Last Event</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for session in sessions %}
+                <tr>
+                    <td>
+                        <a href="/session/{{ session.session_id }}" class="session-link">
+                            {{ session.session_id }}
+                        </a>
+                    </td>
+                    <td>{{ session.event_count }}</td>
+                    <td>{{ session.first_event }}</td>
+                    <td>{{ session.last_event }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="pagination">
+            {% if has_prev %}
+                <a href="/sessions?page=1&sort_by={{ sort_by }}&sort_order={{ sort_order }}" class="page-link">First</a>
+                <a href="/sessions?page={{ page - 1 }}&sort_by={{ sort_by }}&sort_order={{ sort_order }}" class="page-link">Previous</a>
+            {% else %}
+                <span class="page-link disabled">First</span>
+                <span class="page-link disabled">Previous</span>
+            {% endif %}
+            
+            <span class="page-info">Page {{ page }} of {{ total_pages }}</span>
+            
+            {% if has_next %}
+                <a href="/sessions?page={{ page + 1 }}&sort_by={{ sort_by }}&sort_order={{ sort_order }}" class="page-link">Next</a>
+                <a href="/sessions?page={{ total_pages }}&sort_by={{ sort_by }}&sort_order={{ sort_order }}" class="page-link">Last</a>
+            {% else %}
+                <span class="page-link disabled">Next</span>
+                <span class="page-link disabled">Last</span>
+            {% endif %}
+        </div>
+    </div>
+</body>
+</html>

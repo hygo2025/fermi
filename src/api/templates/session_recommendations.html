@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recommendations for {{ session_id }} - Kepler</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Georgia', serif;
+            background: #1a1a1a;
+            min-height: 100vh;
+            padding: 40px 20px;
+            color: #e0e0e0;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: #2d2d2d;
+            border: 1px solid #404040;
+            padding: 40px;
+        }
+        
+        h1 {
+            color: #e0e0e0;
+            margin-bottom: 10px;
+            font-size: 2em;
+            font-weight: normal;
+            border-bottom: 2px solid #555;
+            padding-bottom: 10px;
+        }
+        
+        .subtitle {
+            color: #b0b0b0;
+            margin-bottom: 30px;
+            font-size: 1em;
+        }
+        
+        .back-link {
+            display: inline-block;
+            color: #a0c0ff;
+            text-decoration: none;
+            margin-bottom: 20px;
+            font-size: 0.9em;
+        }
+        
+        .back-link:hover {
+            text-decoration: underline;
+        }
+        
+        .info-box {
+            background: #252525;
+            border: 1px solid #404040;
+            padding: 15px;
+            margin-bottom: 30px;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .info-item {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .info-label {
+            color: #888;
+            font-size: 0.85em;
+            margin-bottom: 4px;
+        }
+        
+        .info-value {
+            color: #e0e0e0;
+            font-size: 1em;
+        }
+        
+        h2 {
+            color: #c0c0c0;
+            margin: 30px 0 15px 0;
+            font-size: 1.3em;
+            font-weight: normal;
+        }
+        
+        .map-container {
+            width: 100%;
+            height: 600px;
+            margin-bottom: 30px;
+            border: 1px solid #404040;
+        }
+        
+        .map-container iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+        
+        .section {
+            margin-bottom: 40px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+        
+        th {
+            background: #252525;
+            padding: 10px;
+            text-align: left;
+            border: 1px solid #404040;
+            color: #c0c0c0;
+            font-weight: normal;
+            font-size: 0.9em;
+        }
+        
+        td {
+            padding: 10px;
+            border: 1px solid #404040;
+            font-size: 0.9em;
+        }
+        
+        tr:hover {
+            background: #353535;
+        }
+        
+        .rank {
+            color: #e24a4a;
+            font-weight: bold;
+        }
+        
+        .score {
+            color: #90ee90;
+        }
+        
+        .price {
+            color: #90ee90;
+        }
+        
+        .legend {
+            background: #252525;
+            border: 1px solid #404040;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .legend h3 {
+            color: #c0c0c0;
+            margin-bottom: 15px;
+            font-size: 1.1em;
+            font-weight: normal;
+        }
+        
+        .legend-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .legend-marker {
+            width: 24px;
+            height: 24px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 11px;
+            flex-shrink: 0;
+        }
+        
+        .legend-marker.blue {
+            background: #3498DB;
+            border: 2px solid #2E86C1;
+        }
+        
+        .legend-marker.green {
+            background: #2ECC71;
+            border: 2px solid #27AE60;
+        }
+        
+        .legend-marker.yellow {
+            background: #F39C12;
+            border: 2px solid #E67E22;
+        }
+        
+        .legend-marker.red {
+            background: #E74C3C;
+            border: 2px solid #C0392B;
+        }
+        
+        .legend-text {
+            color: #b0b0b0;
+            font-size: 0.9em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <a href="/session/{{ session_id }}" class="back-link">← Back to Session Details</a>
+        
+        <h1>Recommendations for Session</h1>
+        <p class="subtitle">Based on {{ session_count }} viewed items</p>
+        
+        <div class="info-box">
+            <div class="info-item">
+                <span class="info-label">Session ID</span>
+                <span class="info-value">{{ session_id }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Viewed Items</span>
+                <span class="info-value">{{ session_count }}</span>
+            </div>
+            <div class="info-item">
+                <span class="info-label">Recommendations</span>
+                <span class="info-value">{{ top_k }}</span>
+            </div>
+        </div>
+        
+        <h2>Interactive Map</h2>
+        
+        <div class="legend">
+            <h3>Map Legend</h3>
+            <div class="legend-grid">
+                <div class="legend-item">
+                    <div class="legend-marker blue">1</div>
+                    <div class="legend-text">Viewed Items (position in session)</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-marker green">1</div>
+                    <div class="legend-text">Top 3 Recommendations</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-marker yellow">4</div>
+                    <div class="legend-text">Recommendations Rank 4-6</div>
+                </div>
+                <div class="legend-item">
+                    <div class="legend-marker red">7</div>
+                    <div class="legend-text">Other Recommendations (Rank 7+)</div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="map-container">
+            {{ map_html|safe }}
+        </div>
+
+        <div style="margin-bottom: 230px;"></div>
+        <div class="section">
+            <h2>Viewed Items in Session</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Position</th>
+                        <th>Item ID</th>
+                        <th>City</th>
+                        <th>Neighborhood</th>
+                        <th>Price</th>
+                        <th>Beds</th>
+                        <th>Baths</th>
+                        <th>Suites</th>
+                        <th>Parking</th>
+                        <th>Usable Area (m²)</th>
+                        <th>Total Area (m²)</th>
+                        <th>Type</th>
+                        <th>Usage</th>
+                        <th>Business</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for item in session_details %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ item.id }}</td>
+                        <td>{{ item.city }}</td>
+                        <td>{{ item.neighborhood }}</td>
+                        <td class="price">R$ {{ "{:,.0f}".format(item.price) }}</td>
+                        <td>{{ item.bedrooms|int }}</td>
+                        <td>{{ item.bathrooms|int }}</td>
+                        <td>{{ item.suites|int if item.suites else 0 }}</td>
+                        <td>{{ item.parking|int if item.parking else 0 }}</td>
+                        <td>{{ "{:.0f}".format(item.usable_area) if item.usable_area else "N/A" }}</td>
+                        <td>{{ "{:.0f}".format(item.total_area) if item.total_area else "N/A" }}</td>
+                        <td>{{ item.type }}</td>
+                        <td>{{ item.usage }}</td>
+                        <td>{{ item.business }}</td>
+                        <td>{{ item.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h2>Recommended Items</h2>
+            
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Score</th>
+                        <th>Item ID</th>
+                        <th>City</th>
+                        <th>Neighborhood</th>
+                        <th>Price</th>
+                        <th>Beds</th>
+                        <th>Baths</th>
+                        <th>Suites</th>
+                        <th>Parking</th>
+                        <th>Usable Area (m²)</th>
+                        <th>Total Area (m²)</th>
+                        <th>Type</th>
+                        <th>Usage</th>
+                        <th>Business</th>
+                        <th>Distance (km)</th>
+                        <th>Status</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rec in recommendations %}
+                    <tr>
+                        <td class="rank">#{{ rec.rank }}</td>
+                        <td class="score">{{ rec.score }}</td>
+                        <td>{{ rec.id }}</td>
+                        <td>{{ rec.city }}</td>
+                        <td>{{ rec.neighborhood }}</td>
+                        <td class="price">R$ {{ "{:,.0f}".format(rec.price) }}</td>
+                        <td>{{ rec.bedrooms|int }}</td>
+                        <td>{{ rec.bathrooms|int }}</td>
+                        <td>{{ rec.suites|int if rec.suites else 0 }}</td>
+                        <td>{{ rec.parking|int if rec.parking else 0 }}</td>
+                        <td>{{ "{:.0f}".format(rec.usable_area) if rec.usable_area else "N/A" }}</td>
+                        <td>{{ "{:.0f}".format(rec.total_area) if rec.total_area else "N/A" }}</td>
+                        <td>{{ rec.type }}</td>
+                        <td>{{ rec.usage }}</td>
+                        <td>{{ rec.business }}</td>
+                        <td>{{ rec.distance_km }} km</td>
+                        <td>{{ rec.status }}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>

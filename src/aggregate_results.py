@@ -2,6 +2,7 @@ import argparse
 from pathlib import Path
 from datetime import datetime
 
+from src.utils import log
 import matplotlib.pyplot as plt
 import numpy as np
 import pandas as pd
@@ -52,11 +53,11 @@ class ResultsAggregator:
         initial_count = len(df)
         df = df.drop_duplicates(subset=['model', 'slice'], keep='last')
         if len(df) < initial_count:
-            print(f"WARNING: Removed {initial_count - len(df)} duplicate entries")
+            log(f"WARNING: Removed {initial_count - len(df)} duplicate entries")
         
-        print(f"Loaded {len(df)} results from {input_file}")
-        print(f"Models: {sorted(df['model'].unique())}")
-        print(f"Slices: {sorted(df['slice'].unique())}")
+        log(f"Loaded {len(df)} results from {input_file}")
+        log(f"Models: {sorted(df['model'].unique())}")
+        log(f"Slices: {sorted(df['slice'].unique())}")
         
         return df
     
@@ -65,7 +66,7 @@ class ResultsAggregator:
         
         # Find metric columns
         metric_cols = [col for col in df.columns if '@' in col]
-        print(f"\nMetrics found: {metric_cols}")
+        log(f"Metrics found: {metric_cols}")
         
         aggregated = []
         for model in sorted(df['model'].unique()):
@@ -114,7 +115,7 @@ class ResultsAggregator:
         available_metrics = [m for m in metrics if f'{m}_mean' in df.columns]
         
         if not available_metrics:
-            print("No metrics found for plotting")
+            log("No metrics found for plotting")
             return
         
         n_metrics = len(available_metrics)
@@ -150,7 +151,7 @@ class ResultsAggregator:
         plt.tight_layout()
         output_file = self.output_dir / 'metrics_comparison.png'
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
-        print(f"Saved plot: {output_file}")
+        log(f"Saved plot: {output_file}")
         plt.close()
     
     def plot_metrics_heatmap(self, df: pd.DataFrame):
@@ -160,7 +161,7 @@ class ResultsAggregator:
         mean_cols = [col for col in df.columns if col.endswith('_mean')]
         
         if not mean_cols:
-            print("No mean metrics for heatmap")
+            log("No mean metrics for heatmap")
             return
         
         # Create matrix
@@ -186,7 +187,7 @@ class ResultsAggregator:
         plt.tight_layout()
         output_file = self.output_dir / 'performance_heatmap.png'
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
-        print(f"Saved heatmap: {output_file}")
+        log(f"Saved heatmap: {output_file}")
         plt.close()
     
     def plot_slice_consistency(self, raw_df: pd.DataFrame):
@@ -194,7 +195,7 @@ class ResultsAggregator:
         
         metric = 'Recall@10'
         if metric not in raw_df.columns:
-            print(f"Metric {metric} not found for slice analysis")
+            log(f"Metric {metric} not found for slice analysis")
             return
         
         # Pivot data
@@ -217,7 +218,7 @@ class ResultsAggregator:
         plt.tight_layout()
         output_file = self.output_dir / 'slice_consistency.png'
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
-        print(f"Saved slice consistency plot: {output_file}")
+        log(f"Saved slice consistency plot: {output_file}")
         plt.close()
     
     def organize_model_files(self):
@@ -225,7 +226,7 @@ class ResultsAggregator:
         import shutil
         import json
         
-        print("\nOrganizing model-specific files...")
+        log("Organizing model-specific files...")
         
         # Get all models from results
         raw_results = self.input_path / 'raw_results.csv'
@@ -260,7 +261,7 @@ class ResultsAggregator:
                         dest = model_dir / model_file.name
                         shutil.copy2(model_file, dest)
         
-        print(f"Organized files for {len(models)} models into separate folders")
+        log(f"Organized files for {len(models)} models into separate folders")
     
     def plot_loss_curves(self):
         """Gráficos de training loss curves"""
@@ -268,7 +269,7 @@ class ResultsAggregator:
         losses_dir = self.input_path / 'losses'
         
         if not losses_dir.exists():
-            print("No loss data found. Skipping loss curves...")
+            log("No loss data found. Skipping loss curves...")
             return
         
         import json
@@ -278,7 +279,7 @@ class ResultsAggregator:
         loss_files = list(losses_dir.glob('*_loss.json'))
         
         if not loss_files:
-            print("No loss files found")
+            log("No loss files found")
             return
         
         # Group by model
@@ -342,7 +343,7 @@ class ResultsAggregator:
             plt.tight_layout()
             output_file = model_dir / 'loss_curves.png'
             plt.savefig(output_file, dpi=300, bbox_inches='tight')
-            print(f"Saved loss curves: {output_file}")
+            log(f"Saved loss curves: {output_file}")
             plt.close()
         
         # Create summary plot - average loss across slices
@@ -384,7 +385,7 @@ class ResultsAggregator:
         plt.tight_layout()
         output_file = self.output_dir / 'loss_curves_average.png'
         plt.savefig(output_file, dpi=300, bbox_inches='tight')
-        print(f"Saved average loss curves: {output_file}")
+        log(f"Saved average loss curves: {output_file}")
         plt.close()
     
     def create_summary_tables(self, agg_df: pd.DataFrame):
@@ -393,7 +394,7 @@ class ResultsAggregator:
         # 1. CSV completo
         csv_file = self.output_dir / 'aggregated_results.csv'
         agg_df.to_csv(csv_file, index=False)
-        print(f"Saved CSV: {csv_file}")
+        log(f"Saved CSV: {csv_file}")
         
         # 2. Markdown table (for GitHub/docs)
         md_file = self.output_dir / 'results_table.md'
@@ -404,10 +405,10 @@ class ResultsAggregator:
         md_df = agg_df[['Model'] + key_metrics]
         
         with open(md_file, 'w') as f:
-            f.write("# Experiment Results\n\n")
+            f.write("# Experiment Results")
             f.write(md_df.to_markdown(index=False))
-            f.write("\n\n*Values shown as mean ± std across 5 temporal slices*\n")
-        print(f"Saved Markdown table: {md_file}")
+            f.write("*Values shown as mean ± std across 5 temporal slices*")
+        log(f"Saved Markdown table: {md_file}")
     
     def create_execution_readme(self, raw_df: pd.DataFrame, agg_df: pd.DataFrame):
         """Cria README com informações detalhadas da execução"""
@@ -455,7 +456,7 @@ class ResultsAggregator:
 
 """
         for metric, info in best_models.items():
-            content += f"- **{metric}:** {info['model']} (`{info['value']}`)\n"
+            content += f"- **{metric}:** {info['model']} (`{info['value']}`)"
         
         content += f"""
 
@@ -465,32 +466,32 @@ class ResultsAggregator:
         for model in models_list:
             stats = stats_per_model[model]
             model_type = "[Neural]" if model in ['GRU4Rec', 'NARM', 'STAMP', 'SASRec'] else "[Baseline]"
-            content += f"### {model_type} {model}\n"
-            content += f"- Experiments: {stats['n_experiments']}\n"
-            content += f"- Slices: {stats['slices']}\n"
+            content += f"### {model_type} {model}"
+            content += f"- Experiments: {stats['n_experiments']}"
+            content += f"- Slices: {stats['slices']}"
             
             # Get model performance summary
             model_perf = agg_df[agg_df['Model'] == model].iloc[0]
-            content += f"- **Recall@10:** {model_perf['Recall@10']}\n"
-            content += f"- **MRR@10:** {model_perf['MRR@10']}\n"
-            content += f"- **NDCG@10:** {model_perf['NDCG@10']}\n"
-            content += f"- **Hit@10:** {model_perf['Hit@10']}\n\n"
+            content += f"- **Recall@10:** {model_perf['Recall@10']}"
+            content += f"- **MRR@10:** {model_perf['MRR@10']}"
+            content += f"- **NDCG@10:** {model_perf['NDCG@10']}"
+            content += f"- **Hit@10:** {model_perf['Hit@10']}"
         
         content += f"""## Temporal Slices
 
 """
         for slice_id in slices_list:
             slice_data = raw_df[raw_df['slice'] == slice_id]
-            content += f"### Slice {slice_id}\n"
-            content += f"- Models evaluated: {len(slice_data)}\n"
+            content += f"### Slice {slice_id}"
+            content += f"- Models evaluated: {len(slice_data)}"
             
             # Best model in this slice
             best_model_slice = slice_data.loc[slice_data['Recall@10'].idxmax()]
-            content += f"- Best model: **{best_model_slice['model']}** (Recall@10: {best_model_slice['Recall@10']:.4f})\n"
+            content += f"- Best model: **{best_model_slice['model']}** (Recall@10: {best_model_slice['Recall@10']:.4f})"
             
             # Statistics for this slice
-            content += f"- Mean Recall@10: {slice_data['Recall@10'].mean():.4f} ± {slice_data['Recall@10'].std():.4f}\n"
-            content += f"- Mean MRR@10: {slice_data['MRR@10'].mean():.4f} ± {slice_data['MRR@10'].std():.4f}\n\n"
+            content += f"- Mean Recall@10: {slice_data['Recall@10'].mean():.4f} ± {slice_data['Recall@10'].std():.4f}"
+            content += f"- Mean MRR@10: {slice_data['MRR@10'].mean():.4f} ± {slice_data['MRR@10'].std():.4f}"
         
         content += f"""## Top 3 Models (by Recall@10)
 
@@ -498,9 +499,9 @@ class ResultsAggregator:
         # Add top 3 models with all metrics
         top3 = agg_df.nlargest(3, 'Recall@10_mean')
         for rank, (idx, row) in enumerate(top3.iterrows(), start=1):
-            content += f"### {rank}. {row['Model']}\n\n"
-            content += "| Metric | @5 | @10 | @20 |\n"
-            content += "|--------|-----|-----|-----|\n"
+            content += f"### {rank}. {row['Model']}"
+            content += "| Metric | @5 | @10 | @20 |"
+            content += "|--------|-----|-----|-----|"
             
             for metric_base in ['Recall', 'MRR', 'NDCG', 'Hit']:
                 values = []
@@ -510,8 +511,8 @@ class ResultsAggregator:
                         values.append(row[col])
                     else:
                         values.append('N/A')
-                content += f"| **{metric_base}** | {values[0]} | {values[1]} | {values[2]} |\n"
-            content += "\n"
+                content += f"| **{metric_base}** | {values[0]} | {values[1]} | {values[2]} |"
+            content += ""
         
         content += f"""## Generated Files
 
@@ -554,7 +555,7 @@ Higher values are better for all metrics.
                 std_val = raw_df[metric].std()
                 min_val = raw_df[metric].min()
                 max_val = raw_df[metric].max()
-                content += f"- **{metric}:** {mean_val:.4f} ± {std_val:.4f} (range: {min_val:.4f} - {max_val:.4f})\n"
+                content += f"- **{metric}:** {mean_val:.4f} ± {std_val:.4f} (range: {min_val:.4f} - {max_val:.4f})"
         
         content += f"""
 
@@ -566,19 +567,19 @@ Higher values are better for all metrics.
         
         if neural_models:
             neural_data = raw_df[raw_df['model'].isin(neural_models)]
-            content += f"\n**Neural Models ({len([m for m in neural_models if m in models_list])} models):**\n"
+            content += f"**Neural Models ({len([m for m in neural_models if m in models_list])} models):**"
             for metric in ['Recall@10', 'MRR@10', 'NDCG@10']:
                 if metric in neural_data.columns:
                     mean_val = neural_data[metric].mean()
-                    content += f"- {metric}: {mean_val:.4f}\n"
+                    content += f"- {metric}: {mean_val:.4f}"
         
         if baseline_models:
             baseline_data = raw_df[raw_df['model'].isin(baseline_models)]
-            content += f"\n**Baseline Models ({len(baseline_models)} models):**\n"
+            content += f"**Baseline Models ({len(baseline_models)} models):**"
             for metric in ['Recall@10', 'MRR@10', 'NDCG@10']:
                 if metric in baseline_data.columns:
                     mean_val = baseline_data[metric].mean()
-                    content += f"- {metric}: {mean_val:.4f}\n"
+                    content += f"- {metric}: {mean_val:.4f}"
         
         content += f"""
 
@@ -596,10 +597,10 @@ Higher values are better for all metrics.
                 # Variance within models (across slices)
                 within_variance = raw_df.groupby('model')[metric].var().mean()
                 
-                content += f"\n**{metric}:**\n"
-                content += f"- Between-model variance: {model_variance:.6f}\n"
-                content += f"- Within-model variance: {within_variance:.6f}\n"
-                content += f"- Ratio: {model_variance/within_variance:.2f}x\n"
+                content += f"**{metric}:**"
+                content += f"- Between-model variance: {model_variance:.6f}"
+                content += f"- Within-model variance: {within_variance:.6f}"
+                content += f"- Ratio: {model_variance/within_variance:.2f}x"
         
         content += f"""
 
@@ -612,21 +613,21 @@ Higher values are better for all metrics.
         with open(readme_file, 'w') as f:
             f.write(content)
         
-        print(f"Saved execution README: {readme_file}")
+        log(f"Saved execution README: {readme_file}")
     
     def run(self):
         """Executa pipeline completo de agregação e visualização"""
         
-        print("="*80)
-        print("Results Aggregation & Visualization Pipeline")
-        print("="*80)
-        print()
+        log("="*80)
+        log("Results Aggregation & Visualization Pipeline")
+        log("="*80)
+        log()
         
         # Load data
         raw_df = self.load_results()
         
         # Aggregate
-        print("\nAggregating metrics...")
+        log("Aggregating metrics...")
         agg_df = self.aggregate_metrics(raw_df)
         
         # Sort by best Recall@10
@@ -634,44 +635,44 @@ Higher values are better for all metrics.
             agg_df = agg_df.sort_values('Recall@10_mean', ascending=False)
         
         # Display in terminal
-        print("\n" + "="*80)
-        print("AGGREGATED RESULTS (mean ± std)")
-        print("="*80)
+        log("" + "="*80)
+        log("AGGREGATED RESULTS (mean ± std)")
+        log("="*80)
         display_cols = ['Model'] + [col for col in agg_df.columns 
                                     if '@' in col and not col.endswith('_mean') 
                                     and not col.endswith('_std')]
-        print(agg_df[display_cols].to_string(index=False))
-        print()
+        log(agg_df[display_cols].to_string(index=False))
+        log()
         
         # Organize model-specific files into folders
         self.organize_model_files()
         
         # Create tables
-        print("\nGenerating tables...")
+        log("Generating tables...")
         self.create_summary_tables(agg_df)
         self.create_execution_readme(raw_df, agg_df)
         
         # Create plots
-        print("\nGenerating plots...")
+        log("Generating plots...")
         self.plot_metrics_comparison(agg_df)
         self.plot_metrics_heatmap(agg_df)
         self.plot_slice_consistency(raw_df)
         self.plot_loss_curves()  # Training loss curves
         
-        print("\n" + "="*80)
-        print(f"All outputs saved to: {self.output_dir}")
-        print("="*80)
-        print("\nGenerated files:")
+        log("" + "="*80)
+        log(f"All outputs saved to: {self.output_dir}")
+        log("="*80)
+        log("Generated files:")
         for f in sorted(self.output_dir.glob('*')):
             if f.is_file():
-                print(f"  - {f.name}")
+                log(f"  - {f.name}")
             else:
-                print(f"  - {f.name}/ (model-specific files)")
-        print("\nModel-specific folders contain:")
-        print("  - Loss curves (loss_curves.png)")
-        print("  - Loss data (*.json)")
-        print("  - Execution logs (*.log)")
-        print("  - Model checkpoints (if saved)")
+                log(f"  - {f.name}/ (model-specific files)")
+        log("Model-specific folders contain:")
+        log("  - Loss curves (loss_curves.png)")
+        log("  - Loss data (*.json)")
+        log("  - Execution logs (*.log)")
+        log("  - Model checkpoints (if saved)")
 
 
 def aggregate_results(input_path: str, output_path: str):
