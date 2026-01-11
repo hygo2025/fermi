@@ -1,6 +1,7 @@
 .DEFAULT_GOAL := help
-.PHONY: help install data benchmark clean clean-all test lint format
+.PHONY: help install data benchmark clean clean-all test lint format tune tune-all tune-smoke
 
+TUNABLE_MODELS := GRU4Rec NARM STAMP SASRec FPMC FOSSIL
 
 COLOR_RESET   = \033[0m
 COLOR_CYAN    = \033[36m
@@ -86,13 +87,46 @@ tune: ## Executa hyperparameter tuning (requer MODEL=...)
 		echo "[INFO] Example: make tune MODEL=GRU4Rec MAX_EVALS=20 ALGO=bayes"; \
 		exit 1; \
 	fi
-	@DATASET_ARG=$(if $(DATASET),--dataset $(DATASET),); \
-	ALGO_ARG=$(if $(ALGO),--algo $(ALGO),); \
-	MAX_EVALS_ARG=$(if $(MAX_EVALS),--max-evals $(MAX_EVALS),); \
-	EARLY_STOP_ARG=$(if $(EARLY_STOP),--early-stop $(EARLY_STOP),); \
-	OUTPUT_ARG=$(if $(OUTPUT),--output $(OUTPUT),); \
-	 echo "[INFO] Running tuning for $(MODEL) $$MAX_EVALS_ARG $$ALGO_ARG"; \
-	 python src/hyperparameter_tuning.py --model $(MODEL) $$DATASET_ARG $$ALGO_ARG $$MAX_EVALS_ARG $$EARLY_STOP_ARG $$OUTPUT_ARG
+	@DATASET_ARG="$(if $(DATASET),--dataset $(DATASET),)"; \
+	ALGO_ARG="$(if $(ALGO),--algo $(ALGO),)"; \
+	MAX_EVALS_ARG="$(if $(MAX_EVALS),--max-evals $(MAX_EVALS),)"; \
+	EARLY_STOP_ARG="$(if $(EARLY_STOP),--early-stop $(EARLY_STOP),)"; \
+	COOLDOWN_ARG="$(if $(COOLDOWN),--cooldown $(COOLDOWN),)"; \
+	OUTPUT_ARG="$(if $(OUTPUT),--output $(OUTPUT),)"; \
+	 echo "[INFO] Running tuning for $(MODEL) $$MAX_EVALS_ARG $$ALGO_ARG $$COOLDOWN_ARG"; \
+	 python src/hyperparameter_tuning.py --model $(MODEL) $$DATASET_ARG $$ALGO_ARG $$MAX_EVALS_ARG $$EARLY_STOP_ARG $$COOLDOWN_ARG $$OUTPUT_ARG
+
+# -----------------------------------------------------------------------------
+##@ Hyperparameter Tuning - Lote Completo
+# -----------------------------------------------------------------------------
+tune-all: ## Executa tuning sequencial para todos os modelos tunáveis
+	@DATASET_ARG="$(if $(DATASET),--dataset $(DATASET),)"; \
+	ALGO_ARG="$(if $(ALGO),--algo $(ALGO),)"; \
+	MAX_EVALS_ARG="$(if $(MAX_EVALS),--max-evals $(MAX_EVALS),)"; \
+	EARLY_STOP_ARG="$(if $(EARLY_STOP),--early-stop $(EARLY_STOP),)"; \
+	COOLDOWN_ARG="$(if $(COOLDOWN),--cooldown $(COOLDOWN),)"; \
+	OUTPUT_ARG="$(if $(OUTPUT),--output $(OUTPUT),)"; \
+	for model in $(TUNABLE_MODELS); do \
+		echo "[INFO] >>> Tuning $$model $$MAX_EVALS_ARG $$ALGO_ARG $$COOLDOWN_ARG"; \
+		python src/hyperparameter_tuning.py --model $$model $$DATASET_ARG $$ALGO_ARG $$MAX_EVALS_ARG $$EARLY_STOP_ARG $$COOLDOWN_ARG $$OUTPUT_ARG || exit 1; \
+	done
+
+# -----------------------------------------------------------------------------
+##@ Hyperparameter Tuning - Smoke Test
+# -----------------------------------------------------------------------------
+tune-smoke: ## Executa um trial rápido (smoke test) para cada modelo tunável
+	@DATASET_ARG="$(if $(DATASET),--dataset $(DATASET),)"; \
+	ALGO_ARG="$(if $(ALGO),--algo $(ALGO),)"; \
+	MAX_EVALS_ARG="$(if $(MAX_EVALS),--max-evals $(MAX_EVALS),--max-evals 1)"; \
+	EARLY_STOP_ARG="$(if $(EARLY_STOP),--early-stop $(EARLY_STOP),--early-stop 1)"; \
+	COOLDOWN_ARG="$(if $(COOLDOWN),--cooldown $(COOLDOWN),)"; \
+	OUTPUT_ARG="$(if $(OUTPUT),--output $(OUTPUT),)"; \
+	MODEL_COUNT=$$(printf "%s\n" "$(TUNABLE_MODELS)" | wc -w | awk '{print $$1}'); \
+	echo "[INFO] Executando $$MODEL_COUNT smoke tests (modelos: $(TUNABLE_MODELS))"; \
+	for model in $(TUNABLE_MODELS); do \
+		echo "[INFO] >>> Smoke tuning $$model $$MAX_EVALS_ARG $$ALGO_ARG $$COOLDOWN_ARG"; \
+		python src/hyperparameter_tuning.py --model $$model $$DATASET_ARG $$ALGO_ARG $$MAX_EVALS_ARG $$EARLY_STOP_ARG $$COOLDOWN_ARG $$OUTPUT_ARG || exit 1; \
+	done
 
 # -----------------------------------------------------------------------------
 ##@ Análise de Resultados

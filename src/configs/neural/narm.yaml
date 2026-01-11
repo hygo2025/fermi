@@ -5,14 +5,14 @@ dataset: realestate
 data_path: recbole_data/
 
 # Training - HIGH QUALITY
-epochs: 50
+epochs: 250
 train_batch_size: 4096
 eval_batch_size: 4096
 learning_rate: 0.001
 train_neg_sample_args: ~
 
 # Early Stopping
-stopping_step: 10
+stopping_step: 25
 
 # Model Parameters - HIGH QUALITY (RNN + Attention)
 embedding_size: 256

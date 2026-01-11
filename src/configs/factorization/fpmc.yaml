@@ -5,7 +5,7 @@ dataset: realestate
 data_path: recbole_data/
 
 # Training - HIGH QUALITY
-epochs: 50
+epochs: 250
 train_batch_size: 4096
 eval_batch_size: 4096
 learning_rate: 0.001
@@ -14,7 +14,7 @@ train_neg_sample_args:
   sample_num: 1
 
 # Early Stopping
-stopping_step: 10
+stopping_step: 25
 
 # Model Parameters - FPMC (Factorization)
 embedding_size: 256
@@ -52,7 +52,6 @@ benchmark: false
 
 # Optimization
 weight_decay: 0.0001
-stopping_step: 10
 require_pow: false
 
 # Output

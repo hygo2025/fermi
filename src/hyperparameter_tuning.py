@@ -13,15 +13,18 @@ from __future__ import annotations
 import argparse
 import logging
 import tempfile
+import time
+from collections.abc import Mapping
 from datetime import datetime
+from functools import partial
 from pathlib import Path
-from typing import Dict, Optional
+from typing import Any, Dict, Optional
 
 import numpy as np
 import torch
 import yaml
 from hyperopt import hp
-from recbole.quick_start import objective_function
+from recbole.quick_start import objective_function as recbole_objective_function
 from recbole.trainer import HyperTuning
 
 from src.utils.enviroment import get_config
@@ -33,6 +36,12 @@ def _patched_torch_load(*args, **kwargs):
     return _original_torch_load(*args, **kwargs)
 
 torch.load = _patched_torch_load
+
+def throttled_objective_function(config_dict, config_file_list, cooldown_seconds: int):
+    result = recbole_objective_function(config_dict, config_file_list)
+    if cooldown_seconds > 0:
+        time.sleep(cooldown_seconds)
+    return result
 
 MODEL_CONFIG_DIRS = ["neural", "factorization", "baselines"]
 DEFAULT_SPACE = {
@@ -47,10 +56,11 @@ class RecBoleHyperparameterTuner:
         self,
         model_name: str,
         dataset: str | None = None,
-        algo: str = "random",
+        algo: str = "ray",
         max_evals: int = 20,
         early_stop: int = 10,
         output_dir: str | None = None,
+        cooldown_seconds: int = 60,
     ) -> None:
         self.logger = logging.getLogger(self.__class__.__name__)
         self.model_name = model_name
@@ -60,6 +70,7 @@ class RecBoleHyperparameterTuner:
         self.early_stop = early_stop
         self.project_config = get_config()
         self.timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        self.cooldown_seconds = cooldown_seconds
 
         base_results_dir = Path(
             self.project_config.get("output", {}).get("results_dir", "outputs/results")
@@ -101,7 +112,7 @@ class RecBoleHyperparameterTuner:
         data_path = Path(self.project_config["data_path"]).resolve()
         config["data_path"] = str(data_path)
         config["checkpoint_dir"] = str((self.output_dir / "checkpoints").resolve())
-        config["show_progress"] = False
+        config["show_progress"] = True
         config["log_wandb"] = False
 
         return config
@@ -158,6 +169,23 @@ class RecBoleHyperparameterTuner:
             self.fixed_config_path.unlink()
             self.fixed_config_path = None
 
+    @staticmethod
+    def _to_serializable(value: Any) -> Any:
+        if isinstance(value, np.generic):
+            return value.item()
+        if isinstance(value, np.ndarray):
+            return value.tolist()
+        if isinstance(value, Mapping):
+            return {
+                key: RecBoleHyperparameterTuner._to_serializable(val)
+                for key, val in value.items()
+            }
+        if isinstance(value, list):
+            return [RecBoleHyperparameterTuner._to_serializable(item) for item in value]
+        if isinstance(value, tuple):
+            return tuple(RecBoleHyperparameterTuner._to_serializable(item) for item in value)
+        return value
+
     def run(self) -> Dict:
         self.logger.info(
             "Starting tuning | algo=%s | trials=%s | early_stop=%s",
@@ -167,8 +195,12 @@ class RecBoleHyperparameterTuner:
         )
         fixed_config_file = self._write_fixed_config()
         try:
+            objective_fn = partial(
+                throttled_objective_function,
+                cooldown_seconds=self.cooldown_seconds,
+            )
             tuner = HyperTuning(
-                objective_function=objective_function,
+                objective_function=objective_fn,
                 space=self.search_space,
                 fixed_config_file_list=[str(fixed_config_file)],
                 algo=self.algo,
@@ -176,7 +208,19 @@ class RecBoleHyperparameterTuner:
                 early_stop=self.early_stop,
             )
 
-            best_result, best_params = tuner.run()
+            tuner.run()
+
+            if tuner.best_params is None:
+                raise RuntimeError("HyperTuning finished without producing best parameters.")
+
+            raw_best_params = tuner.best_params
+            best_params_key = tuner.params2str(raw_best_params)
+            best_result_raw = tuner.params2result.get(best_params_key)
+            if best_result_raw is None:
+                raise RuntimeError("Unable to retrieve best result for the selected parameters.")
+
+            best_params = self._to_serializable(raw_best_params)
+            best_result = self._to_serializable(best_result_raw)
 
             export_prefix = self.output_dir / f"{self.model_name.lower()}_{self.timestamp}"
             tuner.export_result(str(export_prefix))
@@ -227,6 +271,12 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument("--max-evals", type=int, default=20, help="Número máximo de trials")
     parser.add_argument("--early-stop", type=int, default=10, help="Paciencia para early stop")
     parser.add_argument(
+        "--cooldown",
+        type=int,
+        default=60,
+        help="Pausa em segundos após cada trial para controle térmico (use 0 para desabilitar)",
+    )
+    parser.add_argument(
         "--output",
         help="Diretório customizado para salvar resultados (default: outputs/results/tuning/<ts>)",
     )
@@ -246,6 +296,7 @@ def main() -> None:
         max_evals=args.max_evals,
         early_stop=args.early_stop,
         output_dir=args.output,
+        cooldown_seconds=args.cooldown,
     )
     tuner.run()
 

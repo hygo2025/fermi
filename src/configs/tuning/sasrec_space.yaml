@@ -6,7 +6,7 @@ learning_rate:
 
 hidden_size:
   type: choice
-  values: [128, 256, 512]
+  values: [128, 256]
 
 n_layers:
   type: choice
