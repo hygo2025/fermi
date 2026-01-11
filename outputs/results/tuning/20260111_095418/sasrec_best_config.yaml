@@ -1,0 +1,82 @@
+model: SASRec
+dataset: realestate
+data_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole
+epochs: 50
+train_batch_size: 2048
+eval_batch_size: 4096
+learning_rate: 0.0002661522423321552
+train_neg_sample_args: null
+stopping_step: 10
+n_layers: 3
+n_heads: 2
+hidden_size: 128
+inner_size: 512
+hidden_dropout_prob: 0.3000206946852415
+attn_dropout_prob: 0.4046018225503143
+hidden_act: gelu
+layer_norm_eps: 1e-12
+loss_type: CE
+clip_grad_norm:
+  max_norm: 5.0
+metrics:
+- Recall
+- MRR
+- NDCG
+- Hit
+topk:
+- 5
+- 10
+- 20
+valid_metric: MRR@10
+MAX_ITEM_LIST_LENGTH: 50
+SESSION_ID_FIELD: user_id
+ITEM_ID_FIELD: item_id
+TIME_FIELD: timestamp
+USER_ID_FIELD: user_id
+load_col:
+  inter:
+  - user_id
+  - item_id
+  - timestamp
+eval_args:
+  split:
+    LS: valid_and_test
+  order: TO
+  group_by: user
+  mode: full
+device: cuda
+gpu_id: 0
+seed: 42
+save_dataset: false
+save_dataloaders: false
+checkpoint_dir: /home/hygo2025/Development/projects/fermi/outputs/results/tuning/20260111_095418/checkpoints
+log_wandb: false
+tensorboard: true
+show_progress: true
+raw_data:
+  listings_raw_path: /home/hygo2025/Documents/data/listings
+  events_raw_path: /home/hygo2025/Documents/data/events
+  events_processed_path: /home/hygo2025/Documents/data/processed_data/events
+  listings_processed_path: /home/hygo2025/Documents/data/processed_data/listings
+  sessions_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole/sessions_for_api.parquet
+  listing_id_mapping_path: /home/hygo2025/Documents/data/processed_mapping/listing_id_mapping
+  user_id_mapping_path: /home/hygo2025/Documents/data/processed_mapping/user_id_mapping
+  session_id_mapping_path: /home/hygo2025/Documents/data/processed_mapping/session_id_mapping
+  user_sessions_path: /home/hygo2025/Documents/data/processed_mapping/user_sessions
+  events_path: /home/hygo2025/Documents/data/processed_data/events
+  listings_path: /home/hygo2025/Documents/data/processed_data/listings
+  output_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole
+  base_path: /home/hygo2025/Documents/data
+data_preparation:
+  start_date: '2024-05-01'
+  end_date: '2024-05-30'
+  min_session_length: 2
+  max_session_length: 50
+  min_item_freq: 5
+valid_metric_bigger: true
+state: INFO
+reproducibility: true
+output:
+  results_dir: outputs/results
+  logs_dir: outputs/logs
+  tensorboard_dir: log_tensorboard

@@ -1,0 +1,43 @@
+model: SASRec
+dataset: realestate
+algo: bayes
+max_evals: 150
+early_stop: 10
+best_result:
+  model: SASRec
+  best_valid_score: 0.2029
+  valid_score_bigger: true
+  best_valid_result:
+    recall@5: 0.2833
+    recall@10: 0.3649
+    recall@20: 0.458
+    mrr@5: 0.192
+    mrr@10: 0.2029
+    mrr@20: 0.2093
+    ndcg@5: 0.2147
+    ndcg@10: 0.241
+    ndcg@20: 0.2645
+    hit@5: 0.2833
+    hit@10: 0.3649
+    hit@20: 0.458
+  test_result:
+    recall@5: 0.3201
+    recall@10: 0.399
+    recall@20: 0.4866
+    mrr@5: 0.2257
+    mrr@10: 0.2362
+    mrr@20: 0.2422
+    ndcg@5: 0.2491
+    ndcg@10: 0.2746
+    ndcg@20: 0.2967
+    hit@5: 0.3201
+    hit@10: 0.399
+    hit@20: 0.4866
+best_params:
+  attn_dropout_prob: 0.4046018225503143
+  hidden_dropout_prob: 0.3000206946852415
+  hidden_size: 128
+  inner_size: 512
+  learning_rate: 0.0002661522423321552
+  n_heads: 2
+  n_layers: 3

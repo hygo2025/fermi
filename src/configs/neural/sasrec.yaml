@@ -6,8 +6,8 @@ data_path: recbole_data/
 
 # Training - HIGH QUALITY
 epochs: 250
-train_batch_size: 4096
-eval_batch_size: 4096
+train_batch_size: 2048
+eval_batch_size: 2048
 learning_rate: 0.001
 train_neg_sample_args: ~
 
@@ -64,3 +64,5 @@ checkpoint_dir: outputs/saved
 
 # Logging
 log_wandb: false
+tensorboard: true
+show_progress: true

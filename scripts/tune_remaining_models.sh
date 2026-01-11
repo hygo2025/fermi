@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Remaining models after overnight run
-REMAINING_MODELS=("SASRec" "FPMC" "FOSSIL")
+REMAINING_MODELS=("FPMC" "FOSSIL")
 
 MAX_EVALS=${MAX_EVALS:-150}
 ALGO=${ALGO:-bayes}

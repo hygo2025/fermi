@@ -60,3 +60,5 @@ checkpoint_dir: outputs/saved
 
 # Logging
 log_wandb: false
+tensorboard: true
+show_progress: true
