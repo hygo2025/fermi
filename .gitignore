@@ -57,3 +57,6 @@ outputs/results/**/*.pth
 log/
 
 premissas.txt
+**/*.pth
+results_primeiro_tunning
+results_primeiro_tunning/*

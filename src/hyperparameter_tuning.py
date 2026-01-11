@@ -38,6 +38,8 @@ def _patched_torch_load(*args, **kwargs):
 torch.load = _patched_torch_load
 
 def throttled_objective_function(config_dict, config_file_list, cooldown_seconds: int):
+    config_dict = dict(config_dict)
+    config_dict["neg_sampling"] = config_dict.get("neg_sampling") or {"uniform": 1}
     result = recbole_objective_function(config_dict, config_file_list)
     if cooldown_seconds > 0:
         time.sleep(cooldown_seconds)
@@ -106,7 +108,7 @@ class RecBoleHyperparameterTuner:
         with open(self.model_config_path, "r", encoding="utf-8") as fp:
             model_config = yaml.safe_load(fp)
 
-        config = {**model_config, **self.project_config}
+        config = {**self.project_config, **model_config}
         config["model"] = self.model_name
         config["dataset"] = self.dataset
         data_path = Path(self.project_config["data_path"]).resolve()
@@ -114,6 +116,8 @@ class RecBoleHyperparameterTuner:
         config["checkpoint_dir"] = str((self.output_dir / "checkpoints").resolve())
         config["show_progress"] = True
         config["log_wandb"] = False
+        if not config.get("neg_sampling"):
+            config["neg_sampling"] = {"uniform": 1}
 
         return config
 

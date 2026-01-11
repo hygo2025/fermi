@@ -12,7 +12,7 @@ learning_rate: 0.001
 train_neg_sample_args: ~
 
 # Early Stopping
-stopping_step: 25
+stopping_step: 20
 
 # Model Parameters - HIGH QUALITY
 embedding_size: 64
@@ -60,5 +60,3 @@ checkpoint_dir: outputs/saved
 
 # Logging
 log_wandb: false
-tensorboard: true
-show_progress: true

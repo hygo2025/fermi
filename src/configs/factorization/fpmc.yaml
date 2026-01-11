@@ -33,12 +33,12 @@ valid_metric: Recall@10
 
 # Session Settings
 MAX_ITEM_LIST_LENGTH: 50
-SESSION_ID_FIELD: session_id
+SESSION_ID_FIELD: user_id
 ITEM_ID_FIELD: item_id
 TIME_FIELD: timestamp
-USER_ID_FIELD: session_id
+USER_ID_FIELD: user_id
 load_col:
-  inter: [session_id, item_id, timestamp]
+  inter: [user_id, item_id, timestamp]
 
 # Evaluation Protocol - TEMPORAL LEAVE-ONE-OUT (Paper Standard)
 eval_args:
