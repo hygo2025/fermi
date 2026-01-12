@@ -1,17 +1,3 @@
-"""
-FERMI - Benchmark Orchestrator
-===============================
-Orquestrador central Python-first para execução de experimentos.
-Substitui scripts Shell e Makefile complexo.
-
-FEATURES:
-    - CLI profissional com argparse
-    - Execução de múltiplos modelos com error handling
-    - Logging estruturado
-    - Salva resultados incrementais
-    - Suporta grupos de modelos (neurais, baselines, all)
-"""
-
 import argparse
 import logging
 import sys

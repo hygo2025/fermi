@@ -3,8 +3,8 @@ model: SASRec
 data_path: recbole_data/
 
 # Training
-train_batch_size: 1024
-eval_batch_size: 1024
+train_batch_size: 2048
+eval_batch_size: 2048
 
 # Model Parameters
 n_layers: 3

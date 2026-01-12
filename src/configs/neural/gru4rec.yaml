@@ -3,15 +3,24 @@ model: GRU4Rec
 data_path: recbole_data/
 
 # Training
-train_batch_size: 1024
-eval_batch_size: 1024
+#train_batch_size: 1024
+#eval_batch_size: 1024
 
 # Model Parameters
-embedding_size: 64
-hidden_size: 128
-num_layers: 2
-dropout_prob: 0.3
+#embedding_size: 64
+#hidden_size: 128
+#num_layers: 2
+#dropout_prob: 0.3
 loss_type: 'CE'
+
+# tunning
+train_batch_size: 2048
+eval_batch_size: 4096
+learning_rate: 0.004409297653092199
+embedding_size: 128
+hidden_size: 64
+num_layers: 1
+dropout_prob: 0.38294527381336696
 
 # Gradient Clipping
 clip_grad_norm:
