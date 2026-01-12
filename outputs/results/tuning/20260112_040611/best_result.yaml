@@ -1,0 +1,41 @@
+model: STAMP
+dataset: realestate
+algo: bayes
+max_evals: 200
+early_stop: 10
+best_result:
+  model: STAMP
+  best_valid_score: 0.1772
+  valid_score_bigger: true
+  best_valid_result:
+    recall@5: 0.2397
+    recall@10: 0.3007
+    recall@20: 0.3712
+    mrr@5: 0.1691
+    mrr@10: 0.1772
+    mrr@20: 0.182
+    ndcg@5: 0.1866
+    ndcg@10: 0.2063
+    ndcg@20: 0.224
+    hit@5: 0.2397
+    hit@10: 0.3007
+    hit@20: 0.3712
+  test_result:
+    recall@5: 0.2682
+    recall@10: 0.3257
+    recall@20: 0.3898
+    mrr@5: 0.1971
+    mrr@10: 0.2047
+    mrr@20: 0.2091
+    ndcg@5: 0.2148
+    ndcg@10: 0.2333
+    ndcg@20: 0.2495
+    hit@5: 0.2682
+    hit@10: 0.3257
+    hit@20: 0.3898
+best_params:
+  dropout_prob: 0.438340319867861
+  embedding_size: 128
+  hidden_size: 512
+  learning_rate: 0.0016441500040002496
+  train_batch_size: 1024

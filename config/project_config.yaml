@@ -9,7 +9,6 @@
 dataset: realestate
 data_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole  # RecBole procura: {data_path}/{dataset}/{dataset}.inter
 
-# Raw data paths (para pipeline de preparação)
 raw_data:
   listings_raw_path: /home/hygo2025/Documents/data/listings
   events_raw_path: /home/hygo2025/Documents/data/events
@@ -25,7 +24,7 @@ raw_data:
   session_id_mapping_path: /home/hygo2025/Documents/data/processed_mapping/session_id_mapping
   user_sessions_path: /home/hygo2025/Documents/data/processed_mapping/user_sessions
   
-  # Enriched events (for RecBole pipeline)
+  # Events
   events_path: /home/hygo2025/Documents/data/processed_data/events
   listings_path: /home/hygo2025/Documents/data/processed_data/listings
   
@@ -71,7 +70,7 @@ eval_args:
   mode: full            # Full ranking: avalia contra todo o catálogo
 
 # -----------------------------------------------------------------------------
-# METRICS (Academic Standard)
+# METRICS
 # -----------------------------------------------------------------------------
 metrics: [Recall, MRR, NDCG, Hit]
 topk: [5, 10, 20]
@@ -86,8 +85,8 @@ MAX_ITEM_LIST_LENGTH: 50  # Comprimento máximo da sequência (crucial para mode
 # TRAINING DEFAULTS (podem ser sobrescritos por configs específicas)
 # -----------------------------------------------------------------------------
 epochs: 250
-train_batch_size: 2048
-eval_batch_size: 4096
+train_batch_size: 1024
+eval_batch_size: 1024
 learning_rate: 0.001
 train_neg_sample_args: ~  # Disable negative sampling (full ranking)
 
@@ -116,6 +115,7 @@ show_progress: true
 
 # Weights & Biases (desabilitado por padrão)
 log_wandb: false
+tensorboard: true
 
 # -----------------------------------------------------------------------------
 # OUTPUT PATHS

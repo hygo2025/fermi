@@ -1,0 +1,198 @@
+dropout_probs:(0.1, 0.1), embedding_size:256, hidden_size:128, learning_rate:0.004376682096205701, n_layers:3, train_batch_size:2048
+Valid result:
+recall@5 : 0.2295    recall@10 : 0.3013    recall@20 : 0.3855    mrr@5 : 0.1499    mrr@10 : 0.1594    mrr@20 : 0.1653    ndcg@5 : 0.1696    ndcg@10 : 0.1928    ndcg@20 : 0.2141    hit@5 : 0.2295    hit@10 : 0.3013    hit@20 : 0.3855
+Test result:
+recall@5 : 0.2449    recall@10 : 0.3156    recall@20 : 0.398    mrr@5 : 0.1627    mrr@10 : 0.1721    mrr@20 : 0.1778    ndcg@5 : 0.1831    ndcg@10 : 0.2059    ndcg@20 : 0.2267    hit@5 : 0.2449    hit@10 : 0.3156    hit@20 : 0.398
+
+dropout_probs:(0.5, 0.3), embedding_size:128, hidden_size:128, learning_rate:0.00030194935625384053, n_layers:2, train_batch_size:1024
+Valid result:
+recall@5 : 0.2472    recall@10 : 0.3154    recall@20 : 0.3971    mrr@5 : 0.1659    mrr@10 : 0.175    mrr@20 : 0.1806    ndcg@5 : 0.1861    ndcg@10 : 0.2081    ndcg@20 : 0.2287    hit@5 : 0.2472    hit@10 : 0.3154    hit@20 : 0.3971
+Test result:
+recall@5 : 0.2529    recall@10 : 0.3243    recall@20 : 0.4036    mrr@5 : 0.1692    mrr@10 : 0.1787    mrr@20 : 0.1842    ndcg@5 : 0.19    ndcg@10 : 0.213    ndcg@20 : 0.233    hit@5 : 0.2529    hit@10 : 0.3243    hit@20 : 0.4036
+
+dropout_probs:(0.1, 0.1), embedding_size:128, hidden_size:256, learning_rate:0.0038240029790753147, n_layers:1, train_batch_size:2048
+Valid result:
+recall@5 : 0.2559    recall@10 : 0.3325    recall@20 : 0.4217    mrr@5 : 0.1675    mrr@10 : 0.1777    mrr@20 : 0.1838    ndcg@5 : 0.1894    ndcg@10 : 0.2141    ndcg@20 : 0.2366    hit@5 : 0.2559    hit@10 : 0.3325    hit@20 : 0.4217
+Test result:
+recall@5 : 0.2807    recall@10 : 0.359    recall@20 : 0.4463    mrr@5 : 0.1891    mrr@10 : 0.1995    mrr@20 : 0.2055    ndcg@5 : 0.2118    ndcg@10 : 0.2371    ndcg@20 : 0.2591    hit@5 : 0.2807    hit@10 : 0.359    hit@20 : 0.4463
+
+dropout_probs:(0.3, 0.3), embedding_size:256, hidden_size:256, learning_rate:0.00410488918940171, n_layers:3, train_batch_size:4096
+Valid result:
+recall@5 : 0.2319    recall@10 : 0.302    recall@20 : 0.3823    mrr@5 : 0.1549    mrr@10 : 0.1642    mrr@20 : 0.1697    ndcg@5 : 0.174    ndcg@10 : 0.1966    ndcg@20 : 0.2169    hit@5 : 0.2319    hit@10 : 0.302    hit@20 : 0.3823
+Test result:
+recall@5 : 0.2406    recall@10 : 0.3102    recall@20 : 0.3893    mrr@5 : 0.1615    mrr@10 : 0.1707    mrr@20 : 0.1762    ndcg@5 : 0.1811    ndcg@10 : 0.2036    ndcg@20 : 0.2235    hit@5 : 0.2406    hit@10 : 0.3102    hit@20 : 0.3893
+
+dropout_probs:(0.3, 0.3), embedding_size:512, hidden_size:128, learning_rate:0.0001524770400278618, n_layers:2, train_batch_size:1024
+Valid result:
+recall@5 : 0.2391    recall@10 : 0.3079    recall@20 : 0.3865    mrr@5 : 0.1592    mrr@10 : 0.1683    mrr@20 : 0.1737    ndcg@5 : 0.179    ndcg@10 : 0.2012    ndcg@20 : 0.221    hit@5 : 0.2391    hit@10 : 0.3079    hit@20 : 0.3865
+Test result:
+recall@5 : 0.2422    recall@10 : 0.3126    recall@20 : 0.391    mrr@5 : 0.1608    mrr@10 : 0.1702    mrr@20 : 0.1756    ndcg@5 : 0.181    ndcg@10 : 0.2037    ndcg@20 : 0.2235    hit@5 : 0.2422    hit@10 : 0.3126    hit@20 : 0.391
+
+dropout_probs:(0.1, 0.1), embedding_size:512, hidden_size:256, learning_rate:0.0008122091171372922, n_layers:2, train_batch_size:2048
+Valid result:
+recall@5 : 0.2409    recall@10 : 0.3115    recall@20 : 0.3904    mrr@5 : 0.1595    mrr@10 : 0.1688    mrr@20 : 0.1743    ndcg@5 : 0.1796    ndcg@10 : 0.2024    ndcg@20 : 0.2224    hit@5 : 0.2409    hit@10 : 0.3115    hit@20 : 0.3904
+Test result:
+recall@5 : 0.2489    recall@10 : 0.3206    recall@20 : 0.4025    mrr@5 : 0.1661    mrr@10 : 0.1756    mrr@20 : 0.1813    ndcg@5 : 0.1867    ndcg@10 : 0.2098    ndcg@20 : 0.2304    hit@5 : 0.2489    hit@10 : 0.3206    hit@20 : 0.4025
+
+dropout_probs:(0.1, 0.1), embedding_size:128, hidden_size:256, learning_rate:0.00896046737543128, n_layers:1, train_batch_size:2048
+Valid result:
+recall@5 : 0.2491    recall@10 : 0.3241    recall@20 : 0.4122    mrr@5 : 0.1637    mrr@10 : 0.1737    mrr@20 : 0.1798    ndcg@5 : 0.1849    ndcg@10 : 0.2091    ndcg@20 : 0.2314    hit@5 : 0.2491    hit@10 : 0.3241    hit@20 : 0.4122
+Test result:
+recall@5 : 0.2742    recall@10 : 0.3483    recall@20 : 0.4347    mrr@5 : 0.185    mrr@10 : 0.1949    mrr@20 : 0.2009    ndcg@5 : 0.2071    ndcg@10 : 0.2311    ndcg@20 : 0.253    hit@5 : 0.2742    hit@10 : 0.3483    hit@20 : 0.4347
+
+dropout_probs:(0.3, 0.3), embedding_size:256, hidden_size:256, learning_rate:0.00020066038787029515, n_layers:2, train_batch_size:4096
+Valid result:
+recall@5 : 0.2358    recall@10 : 0.3037    recall@20 : 0.382    mrr@5 : 0.1591    mrr@10 : 0.1681    mrr@20 : 0.1735    ndcg@5 : 0.1781    ndcg@10 : 0.2    ndcg@20 : 0.2198    hit@5 : 0.2358    hit@10 : 0.3037    hit@20 : 0.382
+Test result:
+recall@5 : 0.2379    recall@10 : 0.3042    recall@20 : 0.3809    mrr@5 : 0.1584    mrr@10 : 0.1672    mrr@20 : 0.1725    ndcg@5 : 0.1781    ndcg@10 : 0.1995    ndcg@20 : 0.2188    hit@5 : 0.2379    hit@10 : 0.3042    hit@20 : 0.3809
+
+dropout_probs:(0.3, 0.3), embedding_size:256, hidden_size:256, learning_rate:0.004919685247134747, n_layers:2, train_batch_size:4096
+Valid result:
+recall@5 : 0.2474    recall@10 : 0.322    recall@20 : 0.4042    mrr@5 : 0.164    mrr@10 : 0.1739    mrr@20 : 0.1796    ndcg@5 : 0.1847    ndcg@10 : 0.2088    ndcg@20 : 0.2295    hit@5 : 0.2474    hit@10 : 0.322    hit@20 : 0.4042
+Test result:
+recall@5 : 0.2631    recall@10 : 0.3373    recall@20 : 0.4198    mrr@5 : 0.1772    mrr@10 : 0.1871    mrr@20 : 0.1928    ndcg@5 : 0.1985    ndcg@10 : 0.2225    ndcg@20 : 0.2433    hit@5 : 0.2631    hit@10 : 0.3373    hit@20 : 0.4198
+
+dropout_probs:(0.5, 0.3), embedding_size:512, hidden_size:512, learning_rate:0.0001876424416839778, n_layers:1, train_batch_size:2048
+Valid result:
+recall@5 : 0.2539    recall@10 : 0.3279    recall@20 : 0.4122    mrr@5 : 0.1681    mrr@10 : 0.1779    mrr@20 : 0.1837    ndcg@5 : 0.1894    ndcg@10 : 0.2133    ndcg@20 : 0.2345    hit@5 : 0.2539    hit@10 : 0.3279    hit@20 : 0.4122
+Test result:
+recall@5 : 0.2615    recall@10 : 0.3361    recall@20 : 0.4185    mrr@5 : 0.1746    mrr@10 : 0.1846    mrr@20 : 0.1902    ndcg@5 : 0.1962    ndcg@10 : 0.2203    ndcg@20 : 0.2411    hit@5 : 0.2615    hit@10 : 0.3361    hit@20 : 0.4185
+
+dropout_probs:(0.3, 0.3), embedding_size:256, hidden_size:256, learning_rate:0.0024038419692623035, n_layers:1, train_batch_size:2048
+Valid result:
+recall@5 : 0.2609    recall@10 : 0.3394    recall@20 : 0.4262    mrr@5 : 0.1703    mrr@10 : 0.1807    mrr@20 : 0.1867    ndcg@5 : 0.1927    ndcg@10 : 0.2181    ndcg@20 : 0.24    hit@5 : 0.2609    hit@10 : 0.3394    hit@20 : 0.4262
+Test result:
+recall@5 : 0.2824    recall@10 : 0.3607    recall@20 : 0.446    mrr@5 : 0.1887    mrr@10 : 0.1991    mrr@20 : 0.2051    ndcg@5 : 0.212    ndcg@10 : 0.2373    ndcg@20 : 0.2588    hit@5 : 0.2824    hit@10 : 0.3607    hit@20 : 0.446
+
+dropout_probs:(0.5, 0.3), embedding_size:128, hidden_size:128, learning_rate:0.00032186570236133745, n_layers:2, train_batch_size:4096
+Valid result:
+recall@5 : 0.2442    recall@10 : 0.3144    recall@20 : 0.3931    mrr@5 : 0.1647    mrr@10 : 0.1741    mrr@20 : 0.1795    ndcg@5 : 0.1844    ndcg@10 : 0.2071    ndcg@20 : 0.227    hit@5 : 0.2442    hit@10 : 0.3144    hit@20 : 0.3931
+Test result:
+recall@5 : 0.2488    recall@10 : 0.3172    recall@20 : 0.3961    mrr@5 : 0.1672    mrr@10 : 0.1764    mrr@20 : 0.1818    ndcg@5 : 0.1875    ndcg@10 : 0.2096    ndcg@20 : 0.2295    hit@5 : 0.2488    hit@10 : 0.3172    hit@20 : 0.3961
+
+dropout_probs:(0.3, 0.3), embedding_size:128, hidden_size:512, learning_rate:0.00012821191568318128, n_layers:2, train_batch_size:2048
+Valid result:
+recall@5 : 0.2408    recall@10 : 0.3094    recall@20 : 0.3874    mrr@5 : 0.1621    mrr@10 : 0.1713    mrr@20 : 0.1767    ndcg@5 : 0.1816    ndcg@10 : 0.2038    ndcg@20 : 0.2235    hit@5 : 0.2408    hit@10 : 0.3094    hit@20 : 0.3874
+Test result:
+recall@5 : 0.2474    recall@10 : 0.3157    recall@20 : 0.3938    mrr@5 : 0.1664    mrr@10 : 0.1754    mrr@20 : 0.1808    ndcg@5 : 0.1864    ndcg@10 : 0.2085    ndcg@20 : 0.2282    hit@5 : 0.2474    hit@10 : 0.3157    hit@20 : 0.3938
+
+dropout_probs:(0.5, 0.3), embedding_size:256, hidden_size:256, learning_rate:0.0005685532304730863, n_layers:2, train_batch_size:4096
+Valid result:
+recall@5 : 0.247    recall@10 : 0.317    recall@20 : 0.3999    mrr@5 : 0.1662    mrr@10 : 0.1755    mrr@20 : 0.1812    ndcg@5 : 0.1862    ndcg@10 : 0.2088    ndcg@20 : 0.2298    hit@5 : 0.247    hit@10 : 0.317    hit@20 : 0.3999
+Test result:
+recall@5 : 0.2542    recall@10 : 0.3255    recall@20 : 0.4056    mrr@5 : 0.1708    mrr@10 : 0.1802    mrr@20 : 0.1858    ndcg@5 : 0.1915    ndcg@10 : 0.2145    ndcg@20 : 0.2347    hit@5 : 0.2542    hit@10 : 0.3255    hit@20 : 0.4056
+
+dropout_probs:(0.3, 0.3), embedding_size:128, hidden_size:512, learning_rate:0.0008779364111312136, n_layers:1, train_batch_size:4096
+Valid result:
+recall@5 : 0.2536    recall@10 : 0.3289    recall@20 : 0.4112    mrr@5 : 0.169    mrr@10 : 0.179    mrr@20 : 0.1847    ndcg@5 : 0.19    ndcg@10 : 0.2143    ndcg@20 : 0.235    hit@5 : 0.2536    hit@10 : 0.3289    hit@20 : 0.4112
+Test result:
+recall@5 : 0.2645    recall@10 : 0.3376    recall@20 : 0.4207    mrr@5 : 0.1766    mrr@10 : 0.1863    mrr@20 : 0.192    ndcg@5 : 0.1984    ndcg@10 : 0.222    ndcg@20 : 0.243    hit@5 : 0.2645    hit@10 : 0.3376    hit@20 : 0.4207
+
+dropout_probs:(0.1, 0.1), embedding_size:512, hidden_size:512, learning_rate:0.0012013480050011508, n_layers:3, train_batch_size:1024
+Valid result:
+recall@5 : 0.2275    recall@10 : 0.2967    recall@20 : 0.3797    mrr@5 : 0.1488    mrr@10 : 0.158    mrr@20 : 0.1637    ndcg@5 : 0.1684    ndcg@10 : 0.1906    ndcg@20 : 0.2116    hit@5 : 0.2275    hit@10 : 0.2967    hit@20 : 0.3797
+Test result:
+recall@5 : 0.2367    recall@10 : 0.3068    recall@20 : 0.3875    mrr@5 : 0.1575    mrr@10 : 0.1669    mrr@20 : 0.1724    ndcg@5 : 0.1772    ndcg@10 : 0.1998    ndcg@20 : 0.2202    hit@5 : 0.2367    hit@10 : 0.3068    hit@20 : 0.3875
+
+dropout_probs:(0.3, 0.3), embedding_size:256, hidden_size:512, learning_rate:0.0018281651659557174, n_layers:3, train_batch_size:2048
+Valid result:
+recall@5 : 0.2309    recall@10 : 0.3006    recall@20 : 0.3824    mrr@5 : 0.1524    mrr@10 : 0.1617    mrr@20 : 0.1673    ndcg@5 : 0.1719    ndcg@10 : 0.1944    ndcg@20 : 0.215    hit@5 : 0.2309    hit@10 : 0.3006    hit@20 : 0.3824
+Test result:
+recall@5 : 0.2392    recall@10 : 0.3106    recall@20 : 0.3924    mrr@5 : 0.1606    mrr@10 : 0.1701    mrr@20 : 0.1757    ndcg@5 : 0.1801    ndcg@10 : 0.2031    ndcg@20 : 0.2238    hit@5 : 0.2392    hit@10 : 0.3106    hit@20 : 0.3924
+
+dropout_probs:(0.3, 0.3), embedding_size:256, hidden_size:512, learning_rate:0.0001012496024247134, n_layers:1, train_batch_size:1024
+Valid result:
+recall@5 : 0.2481    recall@10 : 0.3205    recall@20 : 0.4004    mrr@5 : 0.1652    mrr@10 : 0.1748    mrr@20 : 0.1803    ndcg@5 : 0.1858    ndcg@10 : 0.2091    ndcg@20 : 0.2293    hit@5 : 0.2481    hit@10 : 0.3205    hit@20 : 0.4004
+Test result:
+recall@5 : 0.2538    recall@10 : 0.3245    recall@20 : 0.4042    mrr@5 : 0.1691    mrr@10 : 0.1784    mrr@20 : 0.1839    ndcg@5 : 0.1901    ndcg@10 : 0.2129    ndcg@20 : 0.233    hit@5 : 0.2538    hit@10 : 0.3245    hit@20 : 0.4042
+
+dropout_probs:(0.5, 0.3), embedding_size:256, hidden_size:512, learning_rate:0.0014198804858077732, n_layers:2, train_batch_size:2048
+Valid result:
+recall@5 : 0.2487    recall@10 : 0.3223    recall@20 : 0.4071    mrr@5 : 0.1652    mrr@10 : 0.175    mrr@20 : 0.1809    ndcg@5 : 0.186    ndcg@10 : 0.2097    ndcg@20 : 0.2311    hit@5 : 0.2487    hit@10 : 0.3223    hit@20 : 0.4071
+Test result:
+recall@5 : 0.2638    recall@10 : 0.3381    recall@20 : 0.4224    mrr@5 : 0.1777    mrr@10 : 0.1875    mrr@20 : 0.1934    ndcg@5 : 0.1991    ndcg@10 : 0.223    ndcg@20 : 0.2443    hit@5 : 0.2638    hit@10 : 0.3381    hit@20 : 0.4224
+
+dropout_probs:(0.5, 0.3), embedding_size:512, hidden_size:256, learning_rate:0.00015046039379324353, n_layers:3, train_batch_size:1024
+Valid result:
+recall@5 : 0.2252    recall@10 : 0.2903    recall@20 : 0.3655    mrr@5 : 0.1518    mrr@10 : 0.1605    mrr@20 : 0.1656    ndcg@5 : 0.17    ndcg@10 : 0.191    ndcg@20 : 0.21    hit@5 : 0.2252    hit@10 : 0.2903    hit@20 : 0.3655
+Test result:
+recall@5 : 0.2206    recall@10 : 0.2867    recall@20 : 0.3623    mrr@5 : 0.1455    mrr@10 : 0.1543    mrr@20 : 0.1595    ndcg@5 : 0.1641    ndcg@10 : 0.1855    ndcg@20 : 0.2045    hit@5 : 0.2206    hit@10 : 0.2867    hit@20 : 0.3623
+
+dropout_probs:(0.3, 0.3), embedding_size:128, hidden_size:512, learning_rate:0.0024491955092853564, n_layers:1, train_batch_size:4096
+Valid result:
+recall@5 : 0.2616    recall@10 : 0.3379    recall@20 : 0.4262    mrr@5 : 0.1723    mrr@10 : 0.1825    mrr@20 : 0.1886    ndcg@5 : 0.1945    ndcg@10 : 0.2191    ndcg@20 : 0.2414    hit@5 : 0.2616    hit@10 : 0.3379    hit@20 : 0.4262
+Test result:
+recall@5 : 0.2793    recall@10 : 0.3564    recall@20 : 0.4421    mrr@5 : 0.188    mrr@10 : 0.1983    mrr@20 : 0.2042    ndcg@5 : 0.2106    ndcg@10 : 0.2356    ndcg@20 : 0.2572    hit@5 : 0.2793    hit@10 : 0.3564    hit@20 : 0.4421
+
+dropout_probs:(0.3, 0.3), embedding_size:128, hidden_size:512, learning_rate:0.0022293203999361948, n_layers:1, train_batch_size:4096
+Valid result:
+recall@5 : 0.2592    recall@10 : 0.3352    recall@20 : 0.423    mrr@5 : 0.1718    mrr@10 : 0.1819    mrr@20 : 0.1879    ndcg@5 : 0.1935    ndcg@10 : 0.218    ndcg@20 : 0.2401    hit@5 : 0.2592    hit@10 : 0.3352    hit@20 : 0.423
+Test result:
+recall@5 : 0.2776    recall@10 : 0.3537    recall@20 : 0.4404    mrr@5 : 0.1857    mrr@10 : 0.1957    mrr@20 : 0.2018    ndcg@5 : 0.2085    ndcg@10 : 0.233    ndcg@20 : 0.2549    hit@5 : 0.2776    hit@10 : 0.3537    hit@20 : 0.4404
+
+dropout_probs:(0.3, 0.3), embedding_size:128, hidden_size:512, learning_rate:0.0024681467480706883, n_layers:1, train_batch_size:4096
+Valid result:
+recall@5 : 0.2622    recall@10 : 0.3401    recall@20 : 0.4276    mrr@5 : 0.1724    mrr@10 : 0.1828    mrr@20 : 0.1888    ndcg@5 : 0.1947    ndcg@10 : 0.2198    ndcg@20 : 0.2419    hit@5 : 0.2622    hit@10 : 0.3401    hit@20 : 0.4276
+Test result:
+recall@5 : 0.2801    recall@10 : 0.3566    recall@20 : 0.443    mrr@5 : 0.1884    mrr@10 : 0.1986    mrr@20 : 0.2046    ndcg@5 : 0.2112    ndcg@10 : 0.2359    ndcg@20 : 0.2577    hit@5 : 0.2801    hit@10 : 0.3566    hit@20 : 0.443
+
+dropout_probs:(0.3, 0.3), embedding_size:128, hidden_size:512, learning_rate:0.0080048007479654, n_layers:1, train_batch_size:4096
+Valid result:
+recall@5 : 0.2526    recall@10 : 0.3281    recall@20 : 0.4159    mrr@5 : 0.1675    mrr@10 : 0.1775    mrr@20 : 0.1835    ndcg@5 : 0.1886    ndcg@10 : 0.213    ndcg@20 : 0.2351    hit@5 : 0.2526    hit@10 : 0.3281    hit@20 : 0.4159
+Test result:
+recall@5 : 0.2767    recall@10 : 0.3512    recall@20 : 0.4362    mrr@5 : 0.1867    mrr@10 : 0.1967    mrr@20 : 0.2025    ndcg@5 : 0.209    ndcg@10 : 0.2331    ndcg@20 : 0.2546    hit@5 : 0.2767    hit@10 : 0.3512    hit@20 : 0.4362
+
+dropout_probs:(0.3, 0.3), embedding_size:128, hidden_size:512, learning_rate:0.006735699235615839, n_layers:1, train_batch_size:4096
+Valid result:
+recall@5 : 0.254    recall@10 : 0.3315    recall@20 : 0.4212    mrr@5 : 0.1676    mrr@10 : 0.1779    mrr@20 : 0.1841    ndcg@5 : 0.189    ndcg@10 : 0.214    ndcg@20 : 0.2367    hit@5 : 0.254    hit@10 : 0.3315    hit@20 : 0.4212
+Test result:
+recall@5 : 0.2812    recall@10 : 0.357    recall@20 : 0.4453    mrr@5 : 0.1901    mrr@10 : 0.2001    mrr@20 : 0.2062    ndcg@5 : 0.2127    ndcg@10 : 0.2371    ndcg@20 : 0.2594    hit@5 : 0.2812    hit@10 : 0.357    hit@20 : 0.4453
+
+dropout_probs:(0.3, 0.3), embedding_size:128, hidden_size:512, learning_rate:0.0024748004652716555, n_layers:1, train_batch_size:4096
+Valid result:
+recall@5 : 0.2623    recall@10 : 0.3391    recall@20 : 0.4285    mrr@5 : 0.1723    mrr@10 : 0.1825    mrr@20 : 0.1887    ndcg@5 : 0.1946    ndcg@10 : 0.2194    ndcg@20 : 0.242    hit@5 : 0.2623    hit@10 : 0.3391    hit@20 : 0.4285
+Test result:
+recall@5 : 0.28    recall@10 : 0.3569    recall@20 : 0.4432    mrr@5 : 0.1881    mrr@10 : 0.1984    mrr@20 : 0.2043    ndcg@5 : 0.2109    ndcg@10 : 0.2357    ndcg@20 : 0.2576    hit@5 : 0.28    hit@10 : 0.3569    hit@20 : 0.4432
+
+dropout_probs:(0.3, 0.3), embedding_size:128, hidden_size:512, learning_rate:0.002926725930481005, n_layers:1, train_batch_size:4096
+Valid result:
+recall@5 : 0.2616    recall@10 : 0.3381    recall@20 : 0.4254    mrr@5 : 0.1724    mrr@10 : 0.1826    mrr@20 : 0.1886    ndcg@5 : 0.1945    ndcg@10 : 0.2193    ndcg@20 : 0.2413    hit@5 : 0.2616    hit@10 : 0.3381    hit@20 : 0.4254
+Test result:
+recall@5 : 0.2793    recall@10 : 0.3562    recall@20 : 0.4411    mrr@5 : 0.1879    mrr@10 : 0.1982    mrr@20 : 0.204    ndcg@5 : 0.2106    ndcg@10 : 0.2354    ndcg@20 : 0.2568    hit@5 : 0.2793    hit@10 : 0.3562    hit@20 : 0.4411
+
+dropout_probs:(0.3, 0.3), embedding_size:128, hidden_size:512, learning_rate:0.0032593044155180893, n_layers:1, train_batch_size:4096
+Valid result:
+recall@5 : 0.2606    recall@10 : 0.3387    recall@20 : 0.4285    mrr@5 : 0.1711    mrr@10 : 0.1815    mrr@20 : 0.1877    ndcg@5 : 0.1933    ndcg@10 : 0.2185    ndcg@20 : 0.2412    hit@5 : 0.2606    hit@10 : 0.3387    hit@20 : 0.4285
+Test result:
+recall@5 : 0.2876    recall@10 : 0.3663    recall@20 : 0.4522    mrr@5 : 0.1931    mrr@10 : 0.2036    mrr@20 : 0.2095    ndcg@5 : 0.2166    ndcg@10 : 0.242    ndcg@20 : 0.2637    hit@5 : 0.2876    hit@10 : 0.3663    hit@20 : 0.4522
+
+dropout_probs:(0.1, 0.1), embedding_size:128, hidden_size:128, learning_rate:0.005628594781423556, n_layers:1, train_batch_size:4096
+Valid result:
+recall@5 : 0.255    recall@10 : 0.3328    recall@20 : 0.418    mrr@5 : 0.1678    mrr@10 : 0.1781    mrr@20 : 0.184    ndcg@5 : 0.1894    ndcg@10 : 0.2145    ndcg@20 : 0.236    hit@5 : 0.255    hit@10 : 0.3328    hit@20 : 0.418
+Test result:
+recall@5 : 0.2762    recall@10 : 0.3522    recall@20 : 0.4365    mrr@5 : 0.1845    mrr@10 : 0.1947    mrr@20 : 0.2005    ndcg@5 : 0.2073    ndcg@10 : 0.2319    ndcg@20 : 0.2532    hit@5 : 0.2762    hit@10 : 0.3522    hit@20 : 0.4365
+
+dropout_probs:(0.3, 0.3), embedding_size:128, hidden_size:512, learning_rate:0.0006034667090308555, n_layers:1, train_batch_size:4096
+Valid result:
+recall@5 : 0.2524    recall@10 : 0.3248    recall@20 : 0.4077    mrr@5 : 0.1683    mrr@10 : 0.1779    mrr@20 : 0.1837    ndcg@5 : 0.1892    ndcg@10 : 0.2126    ndcg@20 : 0.2335    hit@5 : 0.2524    hit@10 : 0.3248    hit@20 : 0.4077
+Test result:
+recall@5 : 0.2606    recall@10 : 0.3325    recall@20 : 0.416    mrr@5 : 0.1737    mrr@10 : 0.1833    mrr@20 : 0.189    ndcg@5 : 0.1953    ndcg@10 : 0.2185    ndcg@20 : 0.2396    hit@5 : 0.2606    hit@10 : 0.3325    hit@20 : 0.416
+
+dropout_probs:(0.3, 0.3), embedding_size:128, hidden_size:128, learning_rate:0.001778455852291818, n_layers:1, train_batch_size:4096
+Valid result:
+recall@5 : 0.258    recall@10 : 0.3329    recall@20 : 0.4153    mrr@5 : 0.171    mrr@10 : 0.1809    mrr@20 : 0.1866    ndcg@5 : 0.1926    ndcg@10 : 0.2167    ndcg@20 : 0.2375    hit@5 : 0.258    hit@10 : 0.3329    hit@20 : 0.4153
+Test result:
+recall@5 : 0.273    recall@10 : 0.3472    recall@20 : 0.4299    mrr@5 : 0.1837    mrr@10 : 0.1936    mrr@20 : 0.1993    ndcg@5 : 0.2059    ndcg@10 : 0.2299    ndcg@20 : 0.2508    hit@5 : 0.273    hit@10 : 0.3472    hit@20 : 0.4299
+
+dropout_probs:(0.1, 0.1), embedding_size:128, hidden_size:512, learning_rate:0.002923741891138366, n_layers:3, train_batch_size:4096
+Valid result:
+recall@5 : 0.2261    recall@10 : 0.2933    recall@20 : 0.3705    mrr@5 : 0.1499    mrr@10 : 0.1588    mrr@20 : 0.1642    ndcg@5 : 0.1688    ndcg@10 : 0.1905    ndcg@20 : 0.21    hit@5 : 0.2261    hit@10 : 0.2933    hit@20 : 0.3705
+Test result:
+recall@5 : 0.2314    recall@10 : 0.2986    recall@20 : 0.3776    mrr@5 : 0.1538    mrr@10 : 0.1627    mrr@20 : 0.1681    ndcg@5 : 0.173    ndcg@10 : 0.1947    ndcg@20 : 0.2146    hit@5 : 0.2314    hit@10 : 0.2986    hit@20 : 0.3776
+
+dropout_probs:(0.3, 0.3), embedding_size:128, hidden_size:128, learning_rate:0.0038820542820112492, n_layers:1, train_batch_size:1024
+Valid result:
+recall@5 : 0.2604    recall@10 : 0.3367    recall@20 : 0.4234    mrr@5 : 0.172    mrr@10 : 0.1821    mrr@20 : 0.1881    ndcg@5 : 0.194    ndcg@10 : 0.2185    ndcg@20 : 0.2404    hit@5 : 0.2604    hit@10 : 0.3367    hit@20 : 0.4234
+Test result:
+recall@5 : 0.2842    recall@10 : 0.3614    recall@20 : 0.4473    mrr@5 : 0.1927    mrr@10 : 0.2029    mrr@20 : 0.2089    ndcg@5 : 0.2154    ndcg@10 : 0.2403    ndcg@20 : 0.262    hit@5 : 0.2842    hit@10 : 0.3614    hit@20 : 0.4473
+

@@ -1,0 +1,43 @@
+model: GRU4Rec
+dataset: realestate
+algo: bayes
+max_evals: 200
+early_stop: 10
+best_result:
+  model: GRU4Rec
+  best_valid_score: 0.1705
+  valid_score_bigger: true
+  best_valid_result:
+    recall@5: 0.2439
+    recall@10: 0.3162
+    recall@20: 0.3988
+    mrr@5: 0.1609
+    mrr@10: 0.1705
+    mrr@20: 0.1762
+    ndcg@5: 0.1815
+    ndcg@10: 0.2048
+    ndcg@20: 0.2256
+    hit@5: 0.2439
+    hit@10: 0.3162
+    hit@20: 0.3988
+  test_result:
+    recall@5: 0.2647
+    recall@10: 0.3383
+    recall@20: 0.42
+    mrr@5: 0.1788
+    mrr@10: 0.1885
+    mrr@20: 0.1942
+    ndcg@5: 0.2001
+    ndcg@10: 0.2238
+    ndcg@20: 0.2444
+    hit@5: 0.2647
+    hit@10: 0.3383
+    hit@20: 0.42
+best_params:
+  dropout_prob: 0.009122179776121675
+  embedding_size: 64
+  hidden_size: 512
+  learning_rate: 0.005972480276821283
+  loss_type: CE
+  num_layers: 1
+  train_batch_size: 2048

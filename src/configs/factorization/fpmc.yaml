@@ -1,66 +1,20 @@
 model: FPMC
 
-# Dataset (will be overridden by runner for each slice)
-dataset: realestate
 data_path: recbole_data/
 
-# Training - HIGH QUALITY
-epochs: 250
-train_batch_size: 2048
-eval_batch_size: 2048
-learning_rate: 0.001
+# Training
+train_batch_size: 1024
+eval_batch_size: 1024
 neg_sampling:
   uniform: 1
 train_neg_sample_args:
   distribution: uniform
   sample_num: 1
 
-# Early Stopping
-stopping_step: 25
-
 # Model Parameters - FPMC (Factorization)
 embedding_size: 256
 reg_weight: 0.0001
 
 # Gradient Clipping
-clip_grad_norm: 
+clip_grad_norm:
   max_norm: 5.0
-
-# Evaluation
-metrics: ['Recall', 'MRR', 'NDCG', 'Hit']
-topk: [5, 10, 20]
-valid_metric: Recall@10
-
-# Session Settings
-MAX_ITEM_LIST_LENGTH: 50
-SESSION_ID_FIELD: user_id
-ITEM_ID_FIELD: item_id
-TIME_FIELD: timestamp
-USER_ID_FIELD: user_id
-load_col:
-  inter: [user_id, item_id, timestamp]
-
-# Evaluation Protocol - TEMPORAL LEAVE-ONE-OUT (Paper Standard)
-eval_args:
-  split: {'LS': 'valid_and_test'}
-  order: 'TO'
-  group_by: 'user'
-  mode: 'full'
-
-# Device
-device: cuda
-gpu_id: 0
-benchmark: false
-
-# Optimization
-weight_decay: 0.0001
-require_pow: false
-
-# Output
-save_dataloaders: false
-checkpoint_dir: outputs/saved
-
-# Logging
-log_wandb: false
-tensorboard: true
-show_progress: true
