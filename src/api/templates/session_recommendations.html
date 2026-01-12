@@ -150,6 +150,21 @@
             margin-bottom: 30px;
         }
         
+        .layer-toggle {
+            background: #404040;
+            border: 1px solid #565656;
+            color: #e0e0e0;
+            padding: 8px 12px;
+            font-size: 0.85em;
+            cursor: pointer;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .layer-toggle:hover {
+            background: #4f4f4f;
+        }
+ 
         .legend h3 {
             color: #c0c0c0;
             margin-bottom: 15px;
@@ -251,6 +266,12 @@
                     <div class="legend-marker red">7</div>
                     <div class="legend-text">Other Recommendations (Rank 7+)</div>
                 </div>
+            </div>
+            <div class="legend-grid" style="margin-top:15px;">
+                <button class="layer-toggle" data-target="Sessão" data-action="select">Selecionar sessões</button>
+                <button class="layer-toggle" data-target="Sessão" data-action="clear">Ocultar sessões</button>
+                <button class="layer-toggle" data-target="Recomendação" data-action="select">Selecionar recomendações</button>
+                <button class="layer-toggle" data-target="Recomendação" data-action="clear">Ocultar recomendações</button>
             </div>
         </div>
         
@@ -357,5 +378,74 @@
             </table>
         </div>
     </div>
+    <script>
+        (function() {
+            let mapDoc = null;
+
+            function resolveMapDoc() {
+                if (mapDoc) {
+                    return true;
+                }
+                const iframe = document.querySelector('.map-container iframe');
+                if (iframe && (iframe.contentDocument || iframe.contentWindow.document)) {
+                    mapDoc = iframe.contentDocument || iframe.contentWindow.document;
+                    return true;
+                }
+                if (document.querySelector('.leaflet-control-layers-overlays')) {
+                    mapDoc = document;
+                    return true;
+                }
+                return false;
+            }
+
+            function setLayers(prefix, shouldCheck) {
+                if (!resolveMapDoc()) return;
+                const inputs = mapDoc.querySelectorAll('.leaflet-control-layers-overlays input');
+                inputs.forEach((input) => {
+                    const label = input.closest('label');
+                    if (!label) return;
+                    const text = (label.textContent || '').trim();
+                    if (text.startsWith(prefix)) {
+                        if (shouldCheck && !input.checked) {
+                            input.click();
+                        } else if (!shouldCheck && input.checked) {
+                            input.click();
+                        }
+                    }
+                });
+            }
+
+            function bindButtons() {
+                document.querySelectorAll('.layer-toggle').forEach((btn) => {
+                    btn.addEventListener('click', () => {
+                        const target = btn.getAttribute('data-target');
+                        const action = btn.getAttribute('data-action');
+                        setLayers(target, action === 'select');
+                    });
+                });
+            }
+
+            function waitForLayerControl(attempts) {
+                resolveMapDoc();
+                if (mapDoc && mapDoc.querySelector('.leaflet-control-layers-overlays input')) {
+                    bindButtons();
+                    return;
+                }
+                if (attempts <= 0) return;
+                setTimeout(() => waitForLayerControl(attempts - 1), 500);
+            }
+
+            document.addEventListener('DOMContentLoaded', () => {
+                const iframe = document.querySelector('.map-container iframe');
+                if (iframe) {
+                    iframe.addEventListener('load', () => {
+                        mapDoc = iframe.contentDocument || iframe.contentWindow.document;
+                        waitForLayerControl(10);
+                    });
+                }
+                waitForLayerControl(20);
+            });
+        })();
+    </script>
 </body>
 </html>
