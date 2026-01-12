@@ -172,6 +172,9 @@ def create_numeric_keys(events: DataFrame) -> DataFrame:
 
 def save_events(spark: SparkSession, events: DataFrame) -> None:
     log("Iniciando salvamento dos eventos...")
+    config = get_config()
+    events_path = config['raw_data']['events_processed_path']
+    listing_id_mapping_path = config['raw_data']['listing_id_mapping_path']
 
     events = events.withColumn(
         "unique_user_id",
@@ -184,7 +187,7 @@ def save_events(spark: SparkSession, events: DataFrame) -> None:
     # Traz o mapeamento numérico de listings
     listing_map = (
         spark.read
-        .parquet(listing_id_mapping_path())
+        .parquet(listing_id_mapping_path)
         .select(
             F.col("anonymized_listing_id").alias("listing_id"),
             "listing_id_numeric"
@@ -213,8 +216,6 @@ def save_events(spark: SparkSession, events: DataFrame) -> None:
     remaining_columns = [c for c in df.columns if c not in first_columns]
     df = df.select(*first_columns, *remaining_columns)
 
-    config = get_config()
-    events_path = config['raw_data']['events_processed_path']
     log(f"Salvando eventos com chaves numéricas em: {events_path}")
     df.coalesce(8).write.mode("overwrite").partitionBy("dt").parquet(events_path)
 

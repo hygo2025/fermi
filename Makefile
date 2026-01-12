@@ -52,14 +52,19 @@ data-custom: ## Prepara dados com intervalo customizado (Requer START_DATE e END
 # -----------------------------------------------------------------------------
 ##@ Execução de Benchmark
 # -----------------------------------------------------------------------------
-benchmark: ## Executa modelos. Opcional: MODELS='...' DATASET='...'
-	@MODELS_ARG=$(or $(MODELS),all); \
-	DATASET_ARG=$(or $(DATASET),); \
-	echo "[INFO] Starting benchmark execution (Models: $$MODELS_ARG)..."; \
-	if [ -n "$$DATASET_ARG" ]; then \
-		python src/run_benchmark.py --models $$MODELS_ARG --dataset $$DATASET_ARG; \
+benchmark: ## Executa modelos. Opcional: MODEL=... ou MODELS='...' DATASET='...'
+	@if [ -n "$(MODEL)" ]; then \
+		echo "[INFO] Running benchmark for $(MODEL)"; \
+		python src/run_benchmark.py --model $(MODEL); \
 	else \
-		python src/run_benchmark.py --models $$MODELS_ARG; \
+		@MODELS_ARG=$(or $(MODELS),all); \
+		DATASET_ARG=$(or $(DATASET),); \
+		echo "[INFO] Starting benchmark execution (Models: $$MODELS_ARG)..."; \
+		if [ -n "$$DATASET_ARG" ]; then \
+			python src/run_benchmark.py --models $$MODELS_ARG --dataset $$DATASET_ARG; \
+		else \
+			python src/run_benchmark.py --models $$MODELS_ARG; \
+		fi; \
 	fi
 
 benchmark-neurais: ## Executa apenas modelos baseados em Redes Neurais (GRU4Rec, NARM, etc.)
@@ -179,6 +184,7 @@ clean-all: clean ## Remove cache, logs, resultados e checkpoints salvos (Reset t
 	rm -rf outputs/logs/* 2>/dev/null || true
 	rm -rf outputs/saved/* 2>/dev/null || true
 	rm -rf log_tensorboard/* 2>/dev/null || true
+	rm -rf log/* 2>/dev/null || true
 
 # -----------------------------------------------------------------------------
 ##@ Desenvolvimento
