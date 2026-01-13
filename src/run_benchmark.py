@@ -22,7 +22,7 @@ torch.load = _patched_torch_load
 
 from recbole.config import Config
 from recbole.data import create_dataset, data_preparation
-from recbole.model.sequential_recommender import GRU4Rec, NARM, STAMP, SASRec, FPMC, FOSSIL
+from recbole.model.sequential_recommender import GRU4Rec, NARM, STAMP, SASRec, FPMC, FOSSIL, BERT4Rec, SRGNN, Caser, GCSAN
 from recbole.trainer import Trainer
 from recbole.utils import init_seed
 
@@ -35,6 +35,10 @@ MODEL_REGISTRY = {
     'NARM': NARM,
     'STAMP': STAMP,
     'SASRec': SASRec,
+    'BERT4Rec': BERT4Rec,
+    'SRGNN': SRGNN,
+    'Caser': Caser,
+    'GCSAN': GCSAN,
     'FPMC': FPMC,
     'FOSSIL': FOSSIL,
     'Random': RandomRecommender,
@@ -44,7 +48,7 @@ MODEL_REGISTRY = {
 }
 
 MODEL_GROUPS = {
-    'neurais': ['GRU4Rec', 'NARM', 'STAMP', 'SASRec'],
+    'neurais': ['GRU4Rec', 'NARM', 'STAMP', 'SASRec', 'BERT4Rec', 'SRGNN', 'Caser', 'GCSAN'],
     'baselines': ['Random', 'POP', 'RPOP', 'SPOP'],
     'factorization': ['FPMC', 'FOSSIL'],
     'all': list(MODEL_REGISTRY.keys())

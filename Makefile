@@ -1,7 +1,7 @@
 .DEFAULT_GOAL := help
 .PHONY: help install data benchmark clean clean-all test lint format tune tune-all tune-smoke
 
-TUNABLE_MODELS := GRU4Rec NARM STAMP SASRec FPMC FOSSIL
+TUNABLE_MODELS := GRU4Rec NARM STAMP SASRec FPMC FOSSIL BERT4Rec SRGNN Caser GCSAN
 
 COLOR_RESET   = \033[0m
 COLOR_CYAN    = \033[36m
@@ -133,19 +133,6 @@ tune-smoke: ## Executa um trial rápido (smoke test) para cada modelo tunável
 		python src/hyperparameter_tuning.py --model $$model $$DATASET_ARG $$ALGO_ARG $$MAX_EVALS_ARG $$EARLY_STOP_ARG $$COOLDOWN_ARG $$OUTPUT_ARG || exit 1; \
 	done
 
-# -----------------------------------------------------------------------------
-##@ Análise de Resultados
-# -----------------------------------------------------------------------------
-aggregate: ## Agrega os resultados da execução mais recente em um CSV único
-	@LAST_DIR=$$(ls -td outputs/results/*/ 2>/dev/null | head -1); \
-	if [ -z "$$LAST_DIR" ]; then \
-		echo "[ERROR] No results found in outputs/results/"; \
-		exit 1; \
-	fi; \
-	echo "[INFO] Processing results from: $$LAST_DIR"; \
-	python src/aggregate_results.py \
-		--input "$${LAST_DIR%/}" \
-		--output "$${LAST_DIR%/}/aggregated_results.csv"
 
 # -----------------------------------------------------------------------------
 ##@ API Server

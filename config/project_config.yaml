@@ -7,7 +7,7 @@
 # DATA CONFIGURATION
 # -----------------------------------------------------------------------------
 dataset: realestate
-data_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole  # RecBole procura: {data_path}/{dataset}/{dataset}.inter
+data_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole
 
 raw_data:
   listings_raw_path: /home/hygo2025/Documents/data/listings
@@ -43,7 +43,6 @@ data_preparation:
 # -----------------------------------------------------------------------------
 # RECBOLE FIELD MAPPINGS (CRITICAL)
 # -----------------------------------------------------------------------------
-# RecBole espera campos padronizados. Mapeamos nossos campos reais.
 USER_ID_FIELD: user_id       # RecBole agrupa por este campo (será session_id)
 ITEM_ID_FIELD: item_id
 TIME_FIELD: timestamp
@@ -54,13 +53,12 @@ load_col:
   inter: [user_id, item_id, timestamp]
 
 # -----------------------------------------------------------------------------
-# EVALUATION PROTOCOL - TEMPORAL LEAVE-ONE-OUT (PAPER STANDARD)
+# EVALUATION PROTOCOL - TEMPORAL LEAVE-ONE-OUT
 # -----------------------------------------------------------------------------
 # Estratégia: 
 #   - Treina com histórico da sessão
 #   - Valida com penúltimo item
 #   - Testa com último item
-# Referência: Session-Based Recommendation papers (RecSys, SIGIR, WWW)
 # -----------------------------------------------------------------------------
 eval_args:
   split:
@@ -79,10 +77,10 @@ valid_metric: MRR@10  # Métrica para early stopping
 # -----------------------------------------------------------------------------
 # SESSION CONFIGURATION
 # -----------------------------------------------------------------------------
-MAX_ITEM_LIST_LENGTH: 50  # Comprimento máximo da sequência (crucial para modelos sequenciais)
+MAX_ITEM_LIST_LENGTH: 50
 
 # -----------------------------------------------------------------------------
-# TRAINING DEFAULTS (podem ser sobrescritos por configs específicas)
+# TRAINING DEFAULTS
 # -----------------------------------------------------------------------------
 epochs: 250
 train_batch_size: 1024
@@ -91,7 +89,7 @@ learning_rate: 0.001
 train_neg_sample_args: ~  # Disable negative sampling (full ranking)
 
 # Early stopping
-stopping_step: 50
+stopping_step: 15
 valid_metric_bigger: true
 
 # -----------------------------------------------------------------------------
@@ -100,7 +98,7 @@ valid_metric_bigger: true
 device: cuda
 gpu_id: 0
 seed: 42
-state: INFO  # Logging level: INFO, DEBUG, WARNING, ERROR
+state: INFO
 
 # Reproducibility
 reproducibility: true
@@ -113,7 +111,7 @@ save_dataset: false
 save_dataloaders: false
 show_progress: true
 
-# Weights & Biases (desabilitado por padrão)
+# Logs
 log_wandb: false
 tensorboard: true
 

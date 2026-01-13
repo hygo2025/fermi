@@ -1,13 +1,3 @@
-"""Hyperparameter tuning helper built on RecBole HyperTuning.
-
-This script wraps the workflow documented in
-https://recbole.io/docs/user_guide/usage/parameter_tuning.html and adapts it to
-Fermi's configuration structure. It automatically:
-
-1. Carrega as configs base do projeto + modelo
-2. Lê o search space em `src/configs/tuning/<modelo>_space.yaml`
-3. Roda o HyperTuning (HyperOpt) e exporta os melhores parâmetros
-"""
 from __future__ import annotations
 
 import argparse

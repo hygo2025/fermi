@@ -1,0 +1,21 @@
+model: Caser
+
+data_path: recbole_data/
+
+# Training
+train_batch_size: 1024
+eval_batch_size: 1024
+epochs: 250
+learning_rate: 0.001
+
+# Model Parameters
+embedding_size: 64      # Caser costuma usar embeddings menores
+n_v: 4                  # Número de filtros verticais
+n_h: 8                  # Número de filtros horizontais
+dropout_prob: 0.4       # CNNs precisam de dropout alto
+reg_weight: 1e-4        # Regularização L2
+loss_type: 'CE'
+
+# Clipping
+clip_grad_norm:
+  max_norm: 5.0
