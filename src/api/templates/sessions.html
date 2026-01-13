@@ -237,13 +237,15 @@
         <table class="sessions-table">
             <thead>
                 <tr>
-                    <th class="sortable {% if sort_by == 'session_id' %}active {{ sort_order }}{% endif %}" 
+                    <th class="sortable {% if sort_by == 'session_id' %}active {{ sort_order }}{% endif %}"
                         onclick="sortBy('session_id')">Session ID</th>
-                    <th class="sortable {% if sort_by == 'event_count' %}active {{ sort_order }}{% endif %}" 
+                    <th>State</th>
+                    <th>City</th>
+                    <th class="sortable {% if sort_by == 'event_count' %}active {{ sort_order }}{% endif %}"
                         onclick="sortBy('event_count')">Events</th>
-                    <th class="sortable {% if sort_by == 'first_event' %}active {{ sort_order }}{% endif %}" 
+                    <th class="sortable {% if sort_by == 'first_event' %}active {{ sort_order }}{% endif %}"
                         onclick="sortBy('first_event')">First Event</th>
-                    <th class="sortable {% if sort_by == 'last_event' %}active {{ sort_order }}{% endif %}" 
+                    <th class="sortable {% if sort_by == 'last_event' %}active {{ sort_order }}{% endif %}"
                         onclick="sortBy('last_event')">Last Event</th>
                 </tr>
             </thead>
@@ -255,6 +257,8 @@
                             {{ session.session_id }}
                         </a>
                     </td>
+                    {% if session.state is defined %}<td>{{ session.state or 'N/A' }}</td>{% else %}<td>N/A</td>{% endif %}
+                    {% if session.city is defined %}<td>{{ session.city or 'N/A' }}</td>{% else %}<td>N/A</td>{% endif %}
                     <td>{{ session.event_count }}</td>
                     <td>{{ session.first_event }}</td>
                     <td>{{ session.last_event }}</td>

@@ -21,6 +21,7 @@ embedding_size: 128
 hidden_size: 64
 num_layers: 1
 dropout_prob: 0.38294527381336696
+stopping_step: 10
 
 # Gradient Clipping
 clip_grad_norm:

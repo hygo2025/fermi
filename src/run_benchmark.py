@@ -97,7 +97,7 @@ class BenchmarkRunner:
             raise FileNotFoundError(f"Config não encontrado para modelo: {model_name}")
 
         # Merge com project config (projeto override modelo)
-        config_dict = {**model_config, **self.project_config}
+        config_dict = {**self.project_config, **model_config}
         config_dict['dataset'] = dataset_name
         config_dict['data_path'] = self.project_config['data_path']
 
