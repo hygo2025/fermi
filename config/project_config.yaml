@@ -82,14 +82,14 @@ MAX_ITEM_LIST_LENGTH: 50
 # -----------------------------------------------------------------------------
 # TRAINING DEFAULTS
 # -----------------------------------------------------------------------------
-epochs: 250
+epochs: 50
 train_batch_size: 1024
 eval_batch_size: 1024
 learning_rate: 0.001
 train_neg_sample_args: ~  # Disable negative sampling (full ranking)
 
 # Early stopping
-stopping_step: 15
+stopping_step: 5
 valid_metric_bigger: true
 
 # -----------------------------------------------------------------------------

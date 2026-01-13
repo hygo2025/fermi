@@ -79,42 +79,28 @@ benchmark-factor: ## Executa apenas modelos de Fatoração (FPMC, FOSSIL)
 	@echo "[INFO] Running factorization models benchmark..."
 	python src/run_benchmark.py --models factorization
 
-benchmark-quick: ## Executa teste rápido (GRU4Rec) para validação de sanidade
-	@echo "[INFO] Running quick sanity check (GRU4Rec)..."
-	python src/run_benchmark.py --models GRU4Rec
+
 
 # -----------------------------------------------------------------------------
 ##@ Hyperparameter Tuning
 # -----------------------------------------------------------------------------
-tune: ## Executa hyperparameter tuning (requer MODEL=...)
-	@if [ -z "$(MODEL)" ]; then \
-		echo "[ERROR] MODEL argument is required (ex.: MODEL=GRU4Rec)"; \
-		echo "[INFO] Example: make tune MODEL=GRU4Rec MAX_EVALS=20 ALGO=bayes"; \
-		exit 1; \
+tune: ## Executa hyperparameter tuning. MODEL=... para um modelo, vazio para todos
+	@if [ -n "$(MODEL)" ]; then \
+		DATASET_ARG="$(if $(DATASET),--dataset $(DATASET),)"; \
+		ALGO_ARG="$(if $(ALGO),--algo $(ALGO),)"; \
+		MAX_EVALS_ARG="$(if $(MAX_EVALS),--max-evals $(MAX_EVALS),)"; \
+		EARLY_STOP_ARG="$(if $(EARLY_STOP),--early-stop $(EARLY_STOP),)"; \
+		COOLDOWN_ARG="$(if $(COOLDOWN),--cooldown $(COOLDOWN),)"; \
+		OUTPUT_ARG="$(if $(OUTPUT),--output $(OUTPUT),)"; \
+		echo "[INFO] Running tuning for $(MODEL) $$MAX_EVALS_ARG $$ALGO_ARG $$COOLDOWN_ARG"; \
+		python src/hyperparameter_tuning.py --model $(MODEL) $$DATASET_ARG $$ALGO_ARG $$MAX_EVALS_ARG $$EARLY_STOP_ARG $$COOLDOWN_ARG $$OUTPUT_ARG; \
+	else \
+		echo "[INFO] No MODEL specified, running tune_remaining_models.sh for all models"; \
+		echo "[INFO] MAX_EVALS=$(or $(MAX_EVALS),150), ALGO=$(or $(ALGO),bayes), COOLDOWN=$(or $(COOLDOWN),60)"; \
+		MAX_EVALS=$(or $(MAX_EVALS),150) ALGO=$(or $(ALGO),bayes) COOLDOWN=$(or $(COOLDOWN),60) DATASET=$(DATASET) ./scripts/tune_remaining_models.sh; \
 	fi
-	@DATASET_ARG="$(if $(DATASET),--dataset $(DATASET),)"; \
-	ALGO_ARG="$(if $(ALGO),--algo $(ALGO),)"; \
-	MAX_EVALS_ARG="$(if $(MAX_EVALS),--max-evals $(MAX_EVALS),)"; \
-	EARLY_STOP_ARG="$(if $(EARLY_STOP),--early-stop $(EARLY_STOP),)"; \
-	COOLDOWN_ARG="$(if $(COOLDOWN),--cooldown $(COOLDOWN),)"; \
-	OUTPUT_ARG="$(if $(OUTPUT),--output $(OUTPUT),)"; \
-	 echo "[INFO] Running tuning for $(MODEL) $$MAX_EVALS_ARG $$ALGO_ARG $$COOLDOWN_ARG"; \
-	 python src/hyperparameter_tuning.py --model $(MODEL) $$DATASET_ARG $$ALGO_ARG $$MAX_EVALS_ARG $$EARLY_STOP_ARG $$COOLDOWN_ARG $$OUTPUT_ARG
 
-# -----------------------------------------------------------------------------
-##@ Hyperparameter Tuning - Lote Completo
-# -----------------------------------------------------------------------------
-tune-all: ## Executa tuning sequencial para todos os modelos tunáveis
-	@DATASET_ARG="$(if $(DATASET),--dataset $(DATASET),)"; \
-	ALGO_ARG="$(if $(ALGO),--algo $(ALGO),)"; \
-	MAX_EVALS_ARG="$(if $(MAX_EVALS),--max-evals $(MAX_EVALS),)"; \
-	EARLY_STOP_ARG="$(if $(EARLY_STOP),--early-stop $(EARLY_STOP),)"; \
-	COOLDOWN_ARG="$(if $(COOLDOWN),--cooldown $(COOLDOWN),)"; \
-	OUTPUT_ARG="$(if $(OUTPUT),--output $(OUTPUT),)"; \
-	for model in $(TUNABLE_MODELS); do \
-		echo "[INFO] >>> Tuning $$model $$MAX_EVALS_ARG $$ALGO_ARG $$COOLDOWN_ARG"; \
-		python src/hyperparameter_tuning.py --model $$model $$DATASET_ARG $$ALGO_ARG $$MAX_EVALS_ARG $$EARLY_STOP_ARG $$COOLDOWN_ARG $$OUTPUT_ARG || exit 1; \
-	done
+tune-all: tune ## Alias para 'make tune' (roda todos os modelos)
 
 # -----------------------------------------------------------------------------
 ##@ Hyperparameter Tuning - Smoke Test
