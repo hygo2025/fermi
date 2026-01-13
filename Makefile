@@ -1,8 +1,6 @@
 .DEFAULT_GOAL := help
 .PHONY: help install data benchmark clean clean-all test lint format tune tune-all tune-smoke
 
-TUNABLE_MODELS := GRU4Rec NARM STAMP SASRec FPMC FOSSIL BERT4Rec SRGNN Caser GCSAN
-
 COLOR_RESET   = \033[0m
 COLOR_CYAN    = \033[36m
 COLOR_YELLOW  = \033[33m
@@ -52,33 +50,22 @@ data-custom: ## Prepara dados com intervalo customizado (Requer START_DATE e END
 # -----------------------------------------------------------------------------
 ##@ Execução de Benchmark
 # -----------------------------------------------------------------------------
-benchmark: ## Executa modelos. Opcional: MODEL=... ou MODELS='...' DATASET='...'
-	@if [ -n "$(MODEL)" ]; then \
-		echo "[INFO] Running benchmark for $(MODEL)"; \
-		python src/run_benchmark.py --model $(MODEL); \
-	else \
-		@MODELS_ARG=$(or $(MODELS),all); \
-		DATASET_ARG=$(or $(DATASET),); \
-		echo "[INFO] Starting benchmark execution (Models: $$MODELS_ARG)..."; \
-		if [ -n "$$DATASET_ARG" ]; then \
-			python src/run_benchmark.py --models $$MODELS_ARG --dataset $$DATASET_ARG; \
-		else \
-			python src/run_benchmark.py --models $$MODELS_ARG; \
-		fi; \
-	fi
+benchmark: ## Executa benchmark. Opcional: MODEL=... MODELS='...'
+	@TARGET="$(or $(MODEL),$(or $(MODELS),all))"; \
+	echo "[INFO] Running benchmark for: $$TARGET"; \
+	./scripts/run_benchmark.sh "$$TARGET"
 
-benchmark-neurais: ## Executa apenas modelos baseados em Redes Neurais (GRU4Rec, NARM, etc.)
-	@echo "[INFO] Running neural models benchmark..."
-	python src/run_benchmark.py --models neurais
+benchmark-neurais: ## Executa apenas modelos baseados em Redes Neurais
+	@./scripts/run_benchmark.sh neurais
 
-benchmark-baselines: ## Executa apenas modelos Baseline (Random, POP, etc.)
-	@echo "[INFO] Running baselines benchmark..."
-	python src/run_benchmark.py --models baselines
+benchmark-baselines: ## Executa apenas modelos Baseline
+	@./scripts/run_benchmark.sh baselines
 
-benchmark-factor: ## Executa apenas modelos de Fatoração (FPMC, FOSSIL)
-	@echo "[INFO] Running factorization models benchmark..."
-	python src/run_benchmark.py --models factorization
+benchmark-factor: ## Executa apenas modelos de Fatoração
+	@./scripts/run_benchmark.sh factorization
 
+benchmark-quick: ## Executa teste rápido (GRU4Rec) para validação
+	@./scripts/run_benchmark.sh GRU4Rec
 
 
 # -----------------------------------------------------------------------------
@@ -101,24 +88,6 @@ tune: ## Executa hyperparameter tuning. MODEL=... para um modelo, vazio para tod
 	fi
 
 tune-all: tune ## Alias para 'make tune' (roda todos os modelos)
-
-# -----------------------------------------------------------------------------
-##@ Hyperparameter Tuning - Smoke Test
-# -----------------------------------------------------------------------------
-tune-smoke: ## Executa um trial rápido (smoke test) para cada modelo tunável
-	@DATASET_ARG="$(if $(DATASET),--dataset $(DATASET),)"; \
-	ALGO_ARG="$(if $(ALGO),--algo $(ALGO),)"; \
-	MAX_EVALS_ARG="$(if $(MAX_EVALS),--max-evals $(MAX_EVALS),--max-evals 1)"; \
-	EARLY_STOP_ARG="$(if $(EARLY_STOP),--early-stop $(EARLY_STOP),--early-stop 1)"; \
-	COOLDOWN_ARG="$(if $(COOLDOWN),--cooldown $(COOLDOWN),)"; \
-	OUTPUT_ARG="$(if $(OUTPUT),--output $(OUTPUT),)"; \
-	MODEL_COUNT=$$(printf "%s\n" "$(TUNABLE_MODELS)" | wc -w | awk '{print $$1}'); \
-	echo "[INFO] Executando $$MODEL_COUNT smoke tests (modelos: $(TUNABLE_MODELS))"; \
-	for model in $(TUNABLE_MODELS); do \
-		echo "[INFO] >>> Smoke tuning $$model $$MAX_EVALS_ARG $$ALGO_ARG $$COOLDOWN_ARG"; \
-		python src/hyperparameter_tuning.py --model $$model $$DATASET_ARG $$ALGO_ARG $$MAX_EVALS_ARG $$EARLY_STOP_ARG $$COOLDOWN_ARG $$OUTPUT_ARG || exit 1; \
-	done
-
 
 # -----------------------------------------------------------------------------
 ##@ API Server
