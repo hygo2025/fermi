@@ -88,21 +88,10 @@ class BenchmarkRunner:
         config_dict['dataset'] = dataset_name
         config_dict['data_path'] = self.project_config['data_path']
         
-        # Override checkpoint_dir e tensorboard_dir para incluir nome do modelo
+        # Override checkpoint_dir para incluir nome do modelo
         model_output_dir = self.output_dir / model_name
         model_output_dir.mkdir(parents=True, exist_ok=True)
         config_dict['checkpoint_dir'] = str(model_output_dir / 'checkpoints')
-        
-        # Tensorboard log separado por modelo com nome correto
-        tensorboard_base = Path(self.project_config.get('output', {}).get('tensorboard_dir', 'log_tensorboard'))
-        config_dict['tensorboard_dir'] = str(tensorboard_base)
-        
-        # Force model name no config para aparecer no tensorboard
-        config_dict['model'] = model_name
-        
-        # Desabilita timestamp no nome do tensorboard (usa só o nome do modelo)
-        config_dict['state'] = 'INFO'
-        config_dict['show_progress'] = True
 
         return config_dict
 
@@ -115,11 +104,6 @@ class BenchmarkRunner:
         try:
             # Load config
             config_dict = self._get_model_config(model_name, dataset_name)
-            
-            # Cria diretório do tensorboard com nome do modelo ANTES do RecBole
-            tb_dir = Path(config_dict['tensorboard_dir']) / model_name
-            tb_dir.mkdir(parents=True, exist_ok=True)
-            config_dict['tensorboard_dir'] = str(tb_dir)
 
             # Para custom models, usa template e override
             if model_name in CUSTOM_MODELS:

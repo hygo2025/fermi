@@ -6,8 +6,8 @@ set -euo pipefail
 
 # Lista de modelos a executar (igual ao tune_remaining_models.sh)
 MODELS=(
-    "POP"
     "Random"
+    "POP"
     "RPOP"
     "SPOP"
     "FOSSIL"
