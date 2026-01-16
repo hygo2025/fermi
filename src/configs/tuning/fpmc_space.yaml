@@ -13,6 +13,6 @@ reg_weight:
   min: 0.0000001
   max: 0.01
 
-train_batch_size:
-  type: choice
-  values: [2048, 4096, 8192]
+#train_batch_size:
+#  type: choice
+#  values: [2048, 4096, 8192]

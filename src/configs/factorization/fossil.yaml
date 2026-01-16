@@ -1,15 +1,9 @@
 model: FOSSIL
 
-data_path: recbole_data/
-
-# Training
-train_batch_size: 1024
-eval_batch_size: 1024
-
 # Model Parameters
-embedding_size: 256
-order: 3
-alpha: 0.5
+embedding_size: 128      # Similar ao FPMC, mantemos menor que os Transformers
+order: 3                 # Olha para os últimos 3 itens (Markov Order)
+alpha: 0.5               # Peso do termo de similaridade
 reg_weight: 0.0001
 loss_type: 'CE'
 

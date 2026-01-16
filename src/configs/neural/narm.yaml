@@ -1,21 +1,12 @@
 model: NARM
 
-dataset: realestate
-data_path: recbole_data/
-
-# Training - HIGH QUALITY
-epochs: 250
-train_batch_size: 1024
-eval_batch_size: 1024
-learning_rate: 0.001
-
 # Model Parameters
 embedding_size: 256
-hidden_size: 256
-n_layers: 2
-dropout_probs: [0.3, 0.3]
+hidden_size: 256         # Obrigatório ser igual ao embedding_size no NARM
+n_layers: 1
+dropout_probs: [0.25, 0.5] # [Hidden Dropout, Attention Dropout]
 loss_type: 'CE'
 
 # Gradient Clipping
-clip_grad_norm: 
+clip_grad_norm:
   max_norm: 5.0

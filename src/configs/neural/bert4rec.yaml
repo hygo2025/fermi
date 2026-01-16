@@ -1,25 +1,17 @@
 model: BERT4Rec
 
-data_path: recbole_data/
-
-# Training
-train_batch_size: 1024   # Se der erro de memória (OOM), reduza para 512
-eval_batch_size: 1024
-epochs: 250
-learning_rate: 0.001
-
 # Model Parameters
-n_layers: 2              # 2 camadas é suficiente para sessões (NLP usa 12, aqui seria exagero)
-n_heads: 4
+n_layers: 2              # BERT é pesado, 2 camadas bastam para sequências curtas (<50)
+n_heads: 4               # Mais cabeças para capturar contextos bidirecionais
 hidden_size: 256
-inner_size: 1024         # Tamanho da camada Feed-Forward interna
+inner_size: 1024
 hidden_dropout_prob: 0.3
 attn_dropout_prob: 0.3
 hidden_act: 'gelu'
 layer_norm_eps: 1e-12
 
 # BERT Specific
-mask_ratio: 0.2          # Mascara 20% dos itens da sessão para o modelo tentar adivinhar
+mask_ratio: 0.2          # Mascara 20% dos itens (Cloze task)
 loss_type: 'CE'
 
 # Gradient Clipping

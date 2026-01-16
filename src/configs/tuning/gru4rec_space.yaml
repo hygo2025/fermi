@@ -21,9 +21,9 @@ dropout_prob:
   min: 0.0
   max: 0.5
 
-train_batch_size:
-  type: choice
-  values: [512, 1024, 2048, 4096]
+#train_batch_size:
+#  type: choice
+#  values: [512, 1024, 2048, 4096]
 
 loss_type:
   type: choice

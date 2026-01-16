@@ -1,26 +1,13 @@
 model: SRGNN
 
-# Herda o data_path e dataset do project_config.yaml, mas reforçamos o caminho base
-data_path: recbole_data/
-
-# Training
-train_batch_size: 1024
-eval_batch_size: 1024
-epochs: 250
-learning_rate: 0.001
-
 # Model Parameters
 embedding_size: 256
 hidden_size: 256
-step: 1                 # Profundidade do grafo. 1 significa que ele olha as conexões diretas.
-loss_type: 'CE'         # Cross Entropy
+step: 1                  # Profundidade 1 pega vizinhos diretos (90% do sinal)
+loss_type: 'CE'
 
-# SR-GNN Specific
-# O SR-GNN usa Gated Graph Neural Networks (GGNN).
-# Esses parâmetros controlam o fluxo de informação no grafo.
 weight_decay: 0.0
-dropout_prob: 0.3       # Importante para evitar overfitting em grafos
+dropout_prob: 0.3
 
-# Gradient Clipping (Crucial para GNNs não explodirem o gradiente)
 clip_grad_norm:
   max_norm: 5.0

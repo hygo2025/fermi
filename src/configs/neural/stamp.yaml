@@ -1,11 +1,5 @@
 model: STAMP
 
-data_path: recbole_data/
-
-# Training - HIGH QUALITY
-train_batch_size: 1024
-eval_batch_size: 1024
-
 # Model Parameters
 embedding_size: 256
 hidden_size: 256

@@ -76,7 +76,6 @@ class BenchmarkRunner:
         log_dir = self.output_dir / 'logs'
         log_dir.mkdir(exist_ok=True)
 
-        # Setup básico de logging (mantém para o RecBole interno)
         logging.basicConfig(
             level=logging.INFO,
             format='%(message)s',
@@ -223,19 +222,6 @@ def main():
     parser = argparse.ArgumentParser(
         description='Fermi Benchmark Runner',
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Exemplos de uso:
-  python src/run_benchmark.py --models GRU4Rec NARM
-  python src/run_benchmark.py --models neurais
-  python src/run_benchmark.py --models all --dataset realestate
-  python src/run_benchmark.py --models baselines factorization
-  
-Grupos disponíveis:
-  neurais:       GRU4Rec, NARM, STAMP, SASRec
-  baselines:     Random, POP, RPOP, SPOP
-  factorization: FPMC, FOSSIL
-  all:           Todos os modelos
-        """
     )
 
     parser.add_argument(

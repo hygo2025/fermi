@@ -34,8 +34,8 @@ raw_data:
   
 # Data preparation parameters
 data_preparation:
-  start_date: "2024-05-01"
-  end_date: "2024-05-30"  # 30 dias de dados
+  start_date: "2024-03-01"
+  end_date: "2024-04-01"  # 30 dias de dados
   min_session_length: 2    # Mínimo de interações por sessão
   max_session_length: 50   # Máximo de interações por sessão
   min_item_freq: 5         # Mínimo de vezes que um item deve aparecer
@@ -65,8 +65,11 @@ eval_args:
     LS: valid_and_test  # Leave-One-Out Split: penúltimo (valid) + último (test)
   order: TO             # Temporal Ordering: ordena por timestamp ANTES do split
   group_by: user        # Agrupa por USER_ID_FIELD (session_id)
-  mode: full            # Full ranking: avalia contra todo o catálogo
-
+  #mode: full            # Full ranking: avalia contra todo o catálogo
+  eval_step: 4
+  mode:
+    valid: uni100  # Validação rápida durante treino/tuning
+    test: full     # Teste final rigoroso após escolher melhor modelo
 # -----------------------------------------------------------------------------
 # METRICS
 # -----------------------------------------------------------------------------
@@ -82,14 +85,14 @@ MAX_ITEM_LIST_LENGTH: 50
 # -----------------------------------------------------------------------------
 # TRAINING DEFAULTS
 # -----------------------------------------------------------------------------
-epochs: 50
-train_batch_size: 1024
-eval_batch_size: 1024
+epochs: 20
+train_batch_size: 4096
+eval_batch_size: 4096
 learning_rate: 0.001
 train_neg_sample_args: ~  # Disable negative sampling (full ranking)
 
 # Early stopping
-stopping_step: 5
+stopping_step: 2
 valid_metric_bigger: true
 
 # -----------------------------------------------------------------------------
@@ -98,7 +101,7 @@ valid_metric_bigger: true
 device: cuda
 gpu_id: 0
 seed: 42
-state: INFO
+state: DEBUG
 
 # Reproducibility
 reproducibility: true

@@ -1,20 +1,12 @@
 model: GCSAN
 
-data_path: recbole_data/
-
-# Training
-train_batch_size: 1024
-eval_batch_size: 1024
-epochs: 250
-learning_rate: 0.001
-
 # Model Parameters
-n_layers: 1             # Camadas de GNN
-n_heads: 4              # Cabeças de atenção (parte Transformer)
+n_layers: 1              # Camadas de GNN
+n_heads: 4               # Cabeças de Atenção
 hidden_size: 256
 inner_size: 1024
-step: 1                 # Profundidade do Grafo
-weight_decay: 0.0
+step: 1
+weight_decay: 0.0001     # GNNs precisam de leve regularização L2
 dropout_prob: 0.3
 loss_type: 'CE'
 

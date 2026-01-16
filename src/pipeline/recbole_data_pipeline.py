@@ -42,10 +42,10 @@ class RecBoleDataPipeline:
         log(" Filtrando eventos de interação...")
 
         interaction_types = [
-            'ListingRendered',  # User viewed listing detail
-            'RankingRendered',       # User viewed listing in ranking
+            'ListingRendered',      # User viewed listing detail
+            # 'RankingRendered',      # User viewed listing in ranking
             # 'GalleryClicked',       # User clicked on gallery/image
-            # 'RankingClicked',       # User clicked item in ranking
+            'RankingClicked',       # User clicked item in ranking
             'LeadPanelClicked',     # User clicked contact panel
             'LeadClicked',          # User initiated contact
             'FavoriteClicked',      # User favorited item
@@ -63,7 +63,7 @@ class RecBoleDataPipeline:
 
 
     def filter_by_location(self, df):
-        """Filtra eventos por localização (cidades da Grande Vitória/ES)"""
+        """Filtra eventos por localização"""
         listings_path = self.config.get('listings_path')
         
         if not listings_path:
@@ -77,8 +77,8 @@ class RecBoleDataPipeline:
         listings_before = listings.count()
         
         # Filtra cidades da Grande Vitória/ES
-        # target_cities = ['Vitória', 'Serra', 'Vila Velha', 'Cariacica', 'Viana', 'Guarapari', 'Fundão']
-        # listings = listings.filter(F.col('city').isin(target_cities))
+        #target_cities = ['Vitória', 'Serra', 'Vila Velha', 'Cariacica', 'Viana', 'Guarapari', 'Fundão']
+        #listings = listings.filter(F.col('city').isin(target_cities))
 
         target_states = ['Espírito Santo']
         listings = listings.filter(F.col('state').isin(target_states))
@@ -121,7 +121,6 @@ class RecBoleDataPipeline:
             F.unix_timestamp(F.col('timestamp'))
         )
 
-        # 3. DEDUPLICAÇÃO (Passo Novo Crítico)
         # Agrupa por Sessão e Item, mantendo apenas a primeira interação (min timestamp).
         # Isso evita sequências como: ItemA -> ItemA -> ItemB. Transforma em: ItemA -> ItemB.
         log("    Deduplicando interações repetidas na mesma sessão...")

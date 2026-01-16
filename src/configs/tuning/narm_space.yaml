@@ -23,6 +23,6 @@ dropout_probs:
     - [0.3, 0.3]
     - [0.5, 0.3]
 
-train_batch_size:
-  type: choice
-  values: [1024, 2048, 4096]
+#train_batch_size:
+#  type: choice
+#  values: [1024, 2048, 4096]

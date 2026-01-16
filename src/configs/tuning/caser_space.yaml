@@ -23,9 +23,9 @@ dropout_prob:
 
 reg_weight:
   type: loguniform
-  min: 1e-5
-  max: 1e-3
+  min: 0.00001
+  max: 0.001
 
-train_batch_size:
-  type: choice
-  values: [512, 1024, 2048]
+#train_batch_size:
+#  type: choice
+#  values: [512, 1024, 2048]

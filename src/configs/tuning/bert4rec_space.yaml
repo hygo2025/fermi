@@ -35,6 +35,6 @@ mask_ratio:
   min: 0.1
   max: 0.3
 
-train_batch_size:
-  type: choice
-  values: [512, 1024, 2048]
+#train_batch_size:
+#  type: choice
+#  values: [512, 1024, 2048]
