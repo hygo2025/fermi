@@ -19,3 +19,4 @@ for model in "${REMAINING_MODELS[@]}"; do
   echo
   sleep 5
 done
+
