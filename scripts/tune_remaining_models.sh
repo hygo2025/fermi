@@ -1,9 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# current_datetime: 2026-01-13T21:08:14.523Z
-# Remaining models after overnight run
-REMAINING_MODELS=("GRU4Rec" "NARM" "STAMP" "SASRec" "FPMC" "FOSSIL" "BERT4Rec" "SRGNN" "Caser" "GCSAN")
+REMAINING_MODELS=("FPMC" "FOSSIL" "STAMP" "Caser" "GRU4Rec" "NARM" "SASRec" "SRGNN" "GCSAN" "BERT4Rec")
 
 MAX_EVALS=${MAX_EVALS:-150}
 ALGO=${ALGO:-bayes}
