@@ -91,9 +91,10 @@ class BenchmarkRunner:
         model_output_dir.mkdir(parents=True, exist_ok=True)
         config_dict['checkpoint_dir'] = str(model_output_dir / 'checkpoints')
         
-        # Wandb: define nome do run como nome do modelo
+        # Wandb: define nome do run via variável de ambiente (RecBole não aceita via config)
         if config_dict.get('log_wandb', False):
-            config_dict['wandb_run_name'] = f"{model_name}_{self.timestamp}"
+            import os
+            os.environ['WANDB_NAME'] = f"{model_name}_{self.timestamp}"
         
         return config_dict
 
@@ -106,6 +107,22 @@ class BenchmarkRunner:
         try:
             # Load config
             config_dict = self._get_model_config(model_name, dataset_name)
+            
+            # Configura logging específico por modelo (para tensorboard usar nome correto)
+            model_log_file = self.output_dir / 'logs' / f'{model_name}.log'
+            model_log_file.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Remove handlers antigos e adiciona handler específico do modelo
+            root_logger = logging.getLogger()
+            # Guarda handlers originais
+            original_handlers = root_logger.handlers.copy()
+            # Limpa handlers temporariamente
+            root_logger.handlers.clear()
+            # Adiciona handler do modelo (tensorboard vai usar este nome)
+            model_handler = logging.FileHandler(model_log_file)
+            model_handler.setFormatter(logging.Formatter('%(message)s'))
+            root_logger.addHandler(model_handler)
+            root_logger.addHandler(logging.StreamHandler(sys.stdout))
 
             # Para custom models, usa template e override
             if model_name in CUSTOM_MODELS:
@@ -156,12 +173,23 @@ class BenchmarkRunner:
 
             log(f" Resultados: {test_result}")
 
+            # Restaura handlers originais do logger
+            root_logger.handlers.clear()
+            root_logger.handlers.extend(original_handlers)
+
             return results
 
         except Exception as e:
             log(f" ERRO ao executar {model_name}: {e}")
             import traceback
             traceback.print_exc()
+            
+            # Restaura handlers em caso de erro também
+            root_logger = logging.getLogger()
+            if 'original_handlers' in locals():
+                root_logger.handlers.clear()
+                root_logger.handlers.extend(original_handlers)
+            
             return {
                 'model': model_name,
                 'dataset': dataset_name,

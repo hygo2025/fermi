@@ -80,8 +80,8 @@ class RecBoleDataPipeline:
         #target_cities = ['Vitória', 'Serra', 'Vila Velha', 'Cariacica', 'Viana', 'Guarapari', 'Fundão']
         #listings = listings.filter(F.col('city').isin(target_cities))
 
-        # target_states = ['Espírito Santo']
-        # listings = listings.filter(F.col('state').isin(target_states))
+        target_states = ['Espírito Santo']
+        listings = listings.filter(F.col('state').isin(target_states))
 
         listings_after = listings.count()
         

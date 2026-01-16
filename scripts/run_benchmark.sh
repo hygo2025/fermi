@@ -6,20 +6,20 @@ set -euo pipefail
 
 # Lista de modelos a executar (igual ao tune_remaining_models.sh)
 MODELS=(
-    "Random"
-    "POP"
-    "RPOP"
-    "SPOP"
+    "GRU4Rec"
     "FOSSIL"
     "FPMC"
     "BERT4Rec"
     "Caser"
     "GCSAN"
-    "GRU4Rec"
     "NARM"
     "SASRec"
     "SRGNN"
     "STAMP"
+    "Random"
+    "POP"
+    "RPOP"
+    "SPOP"
 )
 
 # Se passar um modelo específico como argumento, usa apenas ele
