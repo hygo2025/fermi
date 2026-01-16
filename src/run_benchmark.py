@@ -71,7 +71,6 @@ class BenchmarkRunner:
 
     def _get_model_config(self, model_name: str, dataset_name: str) -> dict:
         """Carrega config do modelo e merge com config do projeto"""
-        # Busca config específica do modelo
         config_base = Path('src/configs')
 
         for category in ['neural', 'baselines', 'factorization']:
@@ -88,11 +87,14 @@ class BenchmarkRunner:
         config_dict['dataset'] = dataset_name
         config_dict['data_path'] = self.project_config['data_path']
         
-        # Override checkpoint_dir para incluir nome do modelo
         model_output_dir = self.output_dir / model_name
         model_output_dir.mkdir(parents=True, exist_ok=True)
         config_dict['checkpoint_dir'] = str(model_output_dir / 'checkpoints')
-
+        
+        # Wandb: define nome do run como nome do modelo
+        if config_dict.get('log_wandb', False):
+            config_dict['wandb_run_name'] = f"{model_name}_{self.timestamp}"
+        
         return config_dict
 
     def run_single_model(self, model_name: str, dataset_name: str) -> dict:
