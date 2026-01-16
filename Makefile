@@ -50,23 +50,12 @@ data-custom: ## Prepara dados com intervalo customizado (Requer START_DATE e END
 # -----------------------------------------------------------------------------
 ##@ Execução de Benchmark
 # -----------------------------------------------------------------------------
-benchmark: ## Executa benchmark. Opcional: MODEL=... MODELS='...'
-	@TARGET="$(or $(MODEL),$(or $(MODELS),all))"; \
-	echo "[INFO] Running benchmark for: $$TARGET"; \
-	./scripts/run_benchmark.sh "$$TARGET"
-
-benchmark-neurais: ## Executa apenas modelos baseados em Redes Neurais
-	@./scripts/run_benchmark.sh neurais
-
-benchmark-baselines: ## Executa apenas modelos Baseline
-	@./scripts/run_benchmark.sh baselines
-
-benchmark-factor: ## Executa apenas modelos de Fatoração
-	@./scripts/run_benchmark.sh factorization
-
-benchmark-quick: ## Executa teste rápido (GRU4Rec) para validação
-	@./scripts/run_benchmark.sh GRU4Rec
-
+benchmark: ## Executa benchmark. Opcional: MODEL=... (vazio = todos os modelos)
+	@if [ -n "$(MODEL)" ]; then \
+		./scripts/run_benchmark.sh "$(MODEL)"; \
+	else \
+		./scripts/run_benchmark.sh; \
+	fi
 
 # -----------------------------------------------------------------------------
 ##@ Hyperparameter Tuning

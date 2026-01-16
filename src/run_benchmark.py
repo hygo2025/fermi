@@ -4,10 +4,10 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
+import yaml
 
 import pandas as pd
 import torch
-import yaml
 
 # Monkey-patch torch.load (PyTorch 2.6+ compatibility)
 _original_torch_load = torch.load
@@ -22,7 +22,6 @@ torch.load = _patched_torch_load
 
 from recbole.config import Config
 from recbole.data import create_dataset, data_preparation
-from recbole.model.sequential_recommender import GRU4Rec, NARM, STAMP, SASRec, FPMC, FOSSIL, BERT4Rec, SRGNN, Caser, GCSAN
 from recbole.trainer import Trainer
 from recbole.utils import init_seed
 
@@ -30,30 +29,15 @@ from src.models import RandomRecommender, POPRecommender, RPOPRecommender, SPOPR
 from src.utils import log
 from src.utils.enviroment import get_config
 
-MODEL_REGISTRY = {
-    'GRU4Rec': GRU4Rec,
-    'NARM': NARM,
-    'STAMP': STAMP,
-    'SASRec': SASRec,
-    'BERT4Rec': BERT4Rec,
-    'SRGNN': SRGNN,
-    'Caser': Caser,
-    'GCSAN': GCSAN,
-    'FPMC': FPMC,
-    'FOSSIL': FOSSIL,
+# Custom models need special handling
+CUSTOM_MODELS = {
     'Random': RandomRecommender,
     'POP': POPRecommender,
     'RPOP': RPOPRecommender,
     'SPOP': SPOPRecommender,
 }
 
-MODEL_GROUPS = {
-    'neurais': ['GRU4Rec', 'NARM', 'STAMP', 'SASRec', 'BERT4Rec', 'SRGNN', 'Caser', 'GCSAN'],
-    'baselines': ['Random', 'POP', 'RPOP', 'SPOP'],
-    'factorization': ['FPMC', 'FOSSIL'],
-    'all': list(MODEL_REGISTRY.keys())
-}
-
+MODEL_CONFIG_DIRS = ['neural', 'factorization', 'baselines']
 
 class BenchmarkRunner:
     def __init__(self, output_dir: Optional[str] = None):
@@ -103,6 +87,22 @@ class BenchmarkRunner:
         config_dict = {**self.project_config, **model_config}
         config_dict['dataset'] = dataset_name
         config_dict['data_path'] = self.project_config['data_path']
+        
+        # Override checkpoint_dir e tensorboard_dir para incluir nome do modelo
+        model_output_dir = self.output_dir / model_name
+        model_output_dir.mkdir(parents=True, exist_ok=True)
+        config_dict['checkpoint_dir'] = str(model_output_dir / 'checkpoints')
+        
+        # Tensorboard log separado por modelo com nome correto
+        tensorboard_base = Path(self.project_config.get('output', {}).get('tensorboard_dir', 'log_tensorboard'))
+        config_dict['tensorboard_dir'] = str(tensorboard_base)
+        
+        # Force model name no config para aparecer no tensorboard
+        config_dict['model'] = model_name
+        
+        # Desabilita timestamp no nome do tensorboard (usa só o nome do modelo)
+        config_dict['state'] = 'INFO'
+        config_dict['show_progress'] = True
 
         return config_dict
 
@@ -115,9 +115,14 @@ class BenchmarkRunner:
         try:
             # Load config
             config_dict = self._get_model_config(model_name, dataset_name)
+            
+            # Cria diretório do tensorboard com nome do modelo ANTES do RecBole
+            tb_dir = Path(config_dict['tensorboard_dir']) / model_name
+            tb_dir.mkdir(parents=True, exist_ok=True)
+            config_dict['tensorboard_dir'] = str(tb_dir)
 
             # Para custom models, usa template e override
-            if model_name in ['Random', 'POP', 'RPOP', 'SPOP']:
+            if model_name in CUSTOM_MODELS:
                 config = Config(model='GRU4Rec', config_dict=config_dict)
                 config['model'] = model_name
             else:
@@ -133,8 +138,13 @@ class BenchmarkRunner:
 
             # Create model
             log("Instanciando modelo...")
-            model_class = MODEL_REGISTRY[model_name]
-            model = model_class(config, train_data.dataset).to(config['device'])
+            if model_name in CUSTOM_MODELS:
+                model_class = CUSTOM_MODELS[model_name]
+                model = model_class(config, train_data.dataset).to(config['device'])
+            else:
+                # RecBole models are loaded automatically via Config
+                from recbole.utils import get_model
+                model = get_model(model_name)(config, train_data.dataset).to(config['device'])
 
             # Create trainer
             trainer = Trainer(config, model)
@@ -178,10 +188,21 @@ class BenchmarkRunner:
         log(f"{'=' * 80}")
         log(f"Dataset: {dataset}")
         log(f"Modelos: {models}")
-        log(f"Output: {self.output_dir}")
+        log(f"Output base: {self.output_dir}")
         log(f"{'=' * 80}")
 
-        results_file = self.output_dir / 'results.csv'
+        # Se rodar múltiplos modelos, cria subdir por modelo
+        # Se rodar 1 modelo, usa dir direto
+        if len(models) > 1:
+            base_output = self.output_dir
+        else:
+            # Modelo único: renomeia output_dir para incluir nome do modelo
+            base_dir = Path(self.project_config['output']['results_dir'])
+            self.output_dir = base_dir / f"{self.timestamp}_{models[0]}"
+            self.output_dir.mkdir(parents=True, exist_ok=True)
+            base_output = self.output_dir.parent
+
+        results_file = base_output / f'results_{self.timestamp}.csv'
         all_results = []
 
         for i, model_name in enumerate(models, 1):
@@ -203,32 +224,17 @@ class BenchmarkRunner:
         log(f"{'=' * 80}")
 
 
-def parse_models(model_input: List[str]) -> List[str]:
-    """Parse model input (pode ser grupo ou lista de modelos)"""
-    models = []
-    for item in model_input:
-        if item in MODEL_GROUPS:
-            models.extend(MODEL_GROUPS[item])
-        elif item in MODEL_REGISTRY:
-            models.append(item)
-        else:
-            raise ValueError(f"Modelo/grupo desconhecido: {item}")
-
-    # Remove duplicatas mantendo ordem
-    return list(dict.fromkeys(models))
-
-
 def main():
     parser = argparse.ArgumentParser(
-        description='Fermi Benchmark Runner',
+        description='Fermi Benchmark Runner - Executa um modelo específico',
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
     parser.add_argument(
-        '--models',
-        nargs='+',
+        '--model',
+        type=str,
         required=True,
-        help='Lista de modelos ou grupos (neurais, baselines, factorization, all)'
+        help='Nome do modelo a executar (ex: GRU4Rec, SASRec, etc.)'
     )
     parser.add_argument(
         '--dataset',
@@ -243,13 +249,18 @@ def main():
 
     args = parser.parse_args()
 
-    # Parse models
-    try:
-        models = parse_models(args.models)
-    except ValueError as e:
-        log(f"ERRO: {e}")
-        log(f"Modelos disponíveis: {list(MODEL_REGISTRY.keys())}")
-        log(f"Grupos disponíveis: {list(MODEL_GROUPS.keys())}")
+    # Validate model config exists
+    config_base = Path('src/configs')
+    model_found = False
+    for category in MODEL_CONFIG_DIRS:
+        config_file = config_base / category / f'{args.model.lower()}.yaml'
+        if config_file.exists():
+            model_found = True
+            break
+
+    if not model_found:
+        log(f"ERRO: Config não encontrado para modelo '{args.model}'")
+        log(f"Procurado em: src/configs/{{neural,baselines,factorization}}/{args.model.lower()}.yaml")
         sys.exit(1)
 
     # Load dataset from config if not specified
@@ -258,9 +269,9 @@ def main():
     else:
         dataset = args.dataset
 
-    # Run benchmark
+    # Run benchmark for single model
     runner = BenchmarkRunner(args.output)
-    runner.run(models, dataset)
+    runner.run([args.model], dataset)
 
 
 if __name__ == '__main__':

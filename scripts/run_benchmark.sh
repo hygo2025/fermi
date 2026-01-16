@@ -2,11 +2,40 @@
 set -euo pipefail
 
 # Benchmark runner script
-# Usage: ./scripts/run_benchmark.sh [MODEL|GROUP]
-#   MODEL/GROUP: specific model name, 'neurais', 'baselines', 'factorization', or 'all' (default)
+# Executa benchmark para uma lista de modelos
 
-TARGET=${1:-all}
+# Lista de modelos a executar (igual ao tune_remaining_models.sh)
+MODELS=(
+    "POP"
+    "Random"
+    "RPOP"
+    "SPOP"
+    "FOSSIL"
+    "FPMC"
+    "BERT4Rec"
+    "Caser"
+    "GCSAN"
+    "GRU4Rec"
+    "NARM"
+    "SASRec"
+    "SRGNN"
+    "STAMP"
+)
 
-echo "[INFO] Running benchmark for: ${TARGET}"
-python src/run_benchmark.py --models "${TARGET}"
-echo "[INFO] Benchmark complete for ${TARGET}"
+# Se passar um modelo específico como argumento, usa apenas ele
+if [[ $# -gt 0 ]]; then
+    MODELS=("$1")
+fi
+
+echo "[INFO] Running benchmark for ${#MODELS[@]} model(s): ${MODELS[*]}"
+
+for model in "${MODELS[@]}"; do
+    echo ""
+    echo "[INFO] >>> Starting benchmark for ${model}"
+    python src/run_benchmark.py --model "${model}"
+    echo "[INFO] <<< Finished ${model}"
+    sleep 2
+done
+
+echo ""
+echo "[INFO] Benchmark complete!"
