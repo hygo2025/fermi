@@ -164,8 +164,14 @@ async def list_sessions(
         'timestamp': ['min', 'max'],
         'item_id': 'count'
     }).reset_index()
-    
+
     session_groups.columns = ['session_id', 'user_id', 'first_event', 'last_event', 'event_count']
+
+    session_first_items = (
+        sessions_df.sort_values('timestamp')
+        .groupby('session_id')['item_id']
+        .first()
+    )
     
     # Apply sorting
     valid_sort_columns = ['session_id', 'event_count', 'first_event', 'last_event']
@@ -188,9 +194,20 @@ async def list_sessions(
     # Format sessions for display
     sessions_list = []
     for _, row in paginated_sessions.iterrows():
+        city = state = None
+        session_id = row['session_id']
+        first_item_id = session_first_items.get(session_id)
+        if first_item_id is not None and analyzer is not None:
+            listing = analyzer.item_to_listing.get(int(first_item_id))
+            if listing:
+                city = listing.get('city')
+                state = listing.get('state') or listing.get('state_name')
+
         sessions_list.append({
-            'session_id': row['session_id'],
+            'session_id': session_id,
             'user_id': row['user_id'],
+            'state': state,
+            'city': city,
             'event_count': int(row['event_count']),
             'first_event': row['first_event'].strftime('%Y-%m-%d %H:%M:%S'),
             'last_event': row['last_event'].strftime('%Y-%m-%d %H:%M:%S')

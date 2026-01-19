@@ -32,39 +32,38 @@ class RecBoleDataPipeline:
         count = df.count()
         log(f"    {count:_} eventos carregados")
         
-        # Filtra business_type = SALE (importante para o domínio)
         df = df.filter(F.col('business_type') == 'SALE')
         count_sale = df.count()
         log(f"    {count_sale:_} eventos após filtrar business_type=SALE")
         
         return df
-    
+
     def filter_interaction_events(self, df):
-        """Mantém apenas eventos de interação real (exclui RankingRendered)"""
         log(" Filtrando eventos de interação...")
-        
-        # Eventos que representam interesse real do usuário
+
         interaction_types = [
-            'ListingRendered',  # User viewed listing detail
-            # 'RankingRendered',       # User viewed listing in ranking
+            'ListingRendered',      # User viewed listing detail
+            # 'RankingRendered',      # User viewed listing in ranking
             # 'GalleryClicked',       # User clicked on gallery/image
-            # 'RankingClicked',       # User clicked item in ranking
-            # 'LeadPanelClicked',     # User clicked contact panel
-            # 'LeadClicked',          # User initiated contact
-            # 'FavoriteClicked',      # User favorited item
-            # 'ShareClicked',         # User shared item
+            'RankingClicked',       # User clicked item in ranking
+            'LeadPanelClicked',     # User clicked contact panel
+            'LeadClicked',          # User initiated contact
+            'FavoriteClicked',      # User favorited item
+            'ShareClicked',         # User shared item
         ]
-        
+
         df_filtered = df.filter(F.col('event_type').isin(interaction_types))
-        
+
         total_before = df.count()
         total_after = df_filtered.count()
-        log(f"    {total_after:_} eventos de interação ({total_after/total_before*100:.2f}%)")
-        
+        log(f"    {total_after:_} eventos de interação ({total_after / total_before * 100:.2f}%)")
+        log(f"    Tipos mantidos: {interaction_types}")
+
         return df_filtered
-    
+
+
     def filter_by_location(self, df):
-        """Filtra eventos por localização (cidades da Grande Vitória/ES)"""
+        """Filtra eventos por localização"""
         listings_path = self.config.get('listings_path')
         
         if not listings_path:
@@ -80,9 +79,13 @@ class RecBoleDataPipeline:
         # Filtra cidades da Grande Vitória/ES
         target_cities = ['Vitória', 'Serra', 'Vila Velha', 'Cariacica', 'Viana', 'Guarapari', 'Fundão']
         listings = listings.filter(F.col('city').isin(target_cities))
+
+        #target_states = ['Espírito Santo']
+        #listings = listings.filter(F.col('state').isin(target_states))
+
         listings_after = listings.count()
         
-        log(f"    {listings_before:_} listings → {listings_after:_} nas cidades alvo")
+        log(f"    {listings_before:_} listings → {listings_after:_} nas localizacoes alvo")
         
         # Join com eventos (left_semi = mantém apenas eventos de listings válidos)
         events_before = df.count()
@@ -103,7 +106,7 @@ class RecBoleDataPipeline:
         
         # Seleciona e renomeia colunas
         df = df.select(
-            F.col('session_id').alias('user_id'),  # RecBole agrupa por user_id
+            F.col('session_id').alias('user_id'),
             F.col('listing_id').alias('item_id'),
             F.col('event_ts').alias('timestamp')
         ).filter(
@@ -117,19 +120,26 @@ class RecBoleDataPipeline:
             'timestamp',
             F.unix_timestamp(F.col('timestamp'))
         )
-        
-        # Ordena por sessão e tempo
+
+        # Agrupa por Sessão e Item, mantendo apenas a primeira interação (min timestamp).
+        # Isso evita sequências como: ItemA -> ItemA -> ItemB. Transforma em: ItemA -> ItemB.
+        log("    Deduplicando interações repetidas na mesma sessão...")
+        df = df.groupBy('user_id', 'item_id').agg(
+            F.min('timestamp').alias('timestamp')
+        )
+
+        # 4. Ordenação final da sequência
         df = df.orderBy('user_id', 'timestamp')
-        
-        # Adiciona posição dentro da sessão (para análise)
+
+        # 5. Adiciona posição (recalculada após deduplicação)
         window_spec = Window.partitionBy('user_id').orderBy('timestamp')
         df = df.withColumn('position', F.row_number().over(window_spec))
-        
+
         unique_sessions = df.select('user_id').distinct().count()
-        log(f"    {unique_sessions:_} sessões únicas criadas")
-        
+        log(f"    {unique_sessions:_} sessões únicas preparadas")
+
         return df
-    
+
     def filter_sessions_by_length(self, df, min_length: int, max_length: int):
         """Filtra sessões por comprimento"""
         log(f" Filtrando sessões ({min_length}-{max_length} interações)...")

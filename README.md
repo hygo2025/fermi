@@ -165,6 +165,36 @@ Tempo estimado:
 - Teste rápido (1 modelo): 15-30 min
 - Benchmark completo (10 modelos): 3-6 horas (com GPU)
 
+## Hyperparameter Tuning
+
+Baseado no guia oficial do RecBole, o script `src/hyperparameter_tuning.py`
+executa o HyperTuning (HyperOpt) com os espaços definidos em
+`src/configs/tuning/<modelo>_space.yaml`.
+
+```bash
+# Forma direta
+python src/hyperparameter_tuning.py --model GRU4Rec --max-evals 20 --algo random
+
+# Via Makefile (wrap conveniente)
+make tune MODEL=GRU4Rec MAX_EVALS=20 ALGO=bayes COOLDOWN=60
+
+# Lote completo (todos os modelos com search space)
+make tune-all MAX_EVALS=10 COOLDOWN=60
+
+# Smoke test (1 trial por modelo, ideal para validar pipeline)
+make tune-smoke
+```
+
+Argumentos úteis:
+- `DATASET=<nome>`: usa outro dataset (default: `config/project_config.yaml`)
+- `OUTPUT=<dir>`: salva resultados em um diretório customizado
+- `EARLY_STOP=<n>`: número de trials sem melhora antes de encerrar
+- `COOLDOWN=<segundos>`: pausa entre trials para controlar temperatura da GPU (default 60s)
+
+Para ajustar o espaço de busca, edite os arquivos em `src/configs/tuning/`.
+Cada parâmetro aceita `choice`, `uniform`, `loguniform`, `randint` ou `quniform`,
+seguindo a sintaxe explicada no README daquele diretório.
+
 ## Resultados
 
 Os resultados são salvos em `outputs/results/<timestamp>/`:

@@ -1,6 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install data benchmark clean clean-all test lint format
-
+.PHONY: help install data benchmark clean clean-all test lint format tune tune-all tune-smoke
 
 COLOR_RESET   = \033[0m
 COLOR_CYAN    = \033[36m
@@ -51,45 +50,33 @@ data-custom: ## Prepara dados com intervalo customizado (Requer START_DATE e END
 # -----------------------------------------------------------------------------
 ##@ Execução de Benchmark
 # -----------------------------------------------------------------------------
-benchmark: ## Executa modelos. Opcional: MODELS='...' DATASET='...'
-	@MODELS_ARG=$(or $(MODELS),all); \
-	DATASET_ARG=$(or $(DATASET),); \
-	echo "[INFO] Starting benchmark execution (Models: $$MODELS_ARG)..."; \
-	if [ -n "$$DATASET_ARG" ]; then \
-		python src/run_benchmark.py --models $$MODELS_ARG --dataset $$DATASET_ARG; \
+benchmark: ## Executa benchmark. Opcional: MODEL=... (vazio = todos os modelos)
+	@if [ -n "$(MODEL)" ]; then \
+		./scripts/run_benchmark.sh "$(MODEL)"; \
 	else \
-		python src/run_benchmark.py --models $$MODELS_ARG; \
+		./scripts/run_benchmark.sh; \
 	fi
 
-benchmark-neurais: ## Executa apenas modelos baseados em Redes Neurais (GRU4Rec, NARM, etc.)
-	@echo "[INFO] Running neural models benchmark..."
-	python src/run_benchmark.py --models neurais
-
-benchmark-baselines: ## Executa apenas modelos Baseline (Random, POP, etc.)
-	@echo "[INFO] Running baselines benchmark..."
-	python src/run_benchmark.py --models baselines
-
-benchmark-factor: ## Executa apenas modelos de Fatoração (FPMC, FOSSIL)
-	@echo "[INFO] Running factorization models benchmark..."
-	python src/run_benchmark.py --models factorization
-
-benchmark-quick: ## Executa teste rápido (GRU4Rec) para validação de sanidade
-	@echo "[INFO] Running quick sanity check (GRU4Rec)..."
-	python src/run_benchmark.py --models GRU4Rec
-
 # -----------------------------------------------------------------------------
-##@ Análise de Resultados
+##@ Hyperparameter Tuning
 # -----------------------------------------------------------------------------
-aggregate: ## Agrega os resultados da execução mais recente em um CSV único
-	@LAST_DIR=$$(ls -td outputs/results/*/ 2>/dev/null | head -1); \
-	if [ -z "$$LAST_DIR" ]; then \
-		echo "[ERROR] No results found in outputs/results/"; \
-		exit 1; \
-	fi; \
-	echo "[INFO] Processing results from: $$LAST_DIR"; \
-	python src/aggregate_results.py \
-		--input "$${LAST_DIR%/}" \
-		--output "$${LAST_DIR%/}/aggregated_results.csv"
+tune: ## Executa hyperparameter tuning. MODEL=... para um modelo, vazio para todos
+	@if [ -n "$(MODEL)" ]; then \
+		DATASET_ARG="$(if $(DATASET),--dataset $(DATASET),)"; \
+		ALGO_ARG="$(if $(ALGO),--algo $(ALGO),)"; \
+		MAX_EVALS_ARG="$(if $(MAX_EVALS),--max-evals $(MAX_EVALS),)"; \
+		EARLY_STOP_ARG="$(if $(EARLY_STOP),--early-stop $(EARLY_STOP),)"; \
+		COOLDOWN_ARG="$(if $(COOLDOWN),--cooldown $(COOLDOWN),)"; \
+		OUTPUT_ARG="$(if $(OUTPUT),--output $(OUTPUT),)"; \
+		echo "[INFO] Running tuning for $(MODEL) $$MAX_EVALS_ARG $$ALGO_ARG $$COOLDOWN_ARG"; \
+		python src/hyperparameter_tuning.py --model $(MODEL) $$DATASET_ARG $$ALGO_ARG $$MAX_EVALS_ARG $$EARLY_STOP_ARG $$COOLDOWN_ARG $$OUTPUT_ARG; \
+	else \
+		echo "[INFO] No MODEL specified, running tune_remaining_models.sh for all models"; \
+		echo "[INFO] MAX_EVALS=$(or $(MAX_EVALS),150), ALGO=$(or $(ALGO),bayes), COOLDOWN=$(or $(COOLDOWN),60)"; \
+		MAX_EVALS=$(or $(MAX_EVALS),150) ALGO=$(or $(ALGO),bayes) COOLDOWN=$(or $(COOLDOWN),60) DATASET=$(DATASET) ./scripts/tune_remaining_models.sh; \
+	fi
+
+tune-all: tune ## Alias para 'make tune' (roda todos os modelos)
 
 # -----------------------------------------------------------------------------
 ##@ API Server
@@ -128,6 +115,7 @@ clean-all: clean ## Remove cache, logs, resultados e checkpoints salvos (Reset t
 	rm -rf outputs/logs/* 2>/dev/null || true
 	rm -rf outputs/saved/* 2>/dev/null || true
 	rm -rf log_tensorboard/* 2>/dev/null || true
+	rm -rf log/* 2>/dev/null || true
 
 # -----------------------------------------------------------------------------
 ##@ Desenvolvimento

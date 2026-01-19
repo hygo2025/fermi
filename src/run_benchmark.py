@@ -1,27 +1,13 @@
-"""
-FERMI - Benchmark Orchestrator
-===============================
-Orquestrador central Python-first para execução de experimentos.
-Substitui scripts Shell e Makefile complexo.
-
-FEATURES:
-    - CLI profissional com argparse
-    - Execução de múltiplos modelos com error handling
-    - Logging estruturado
-    - Salva resultados incrementais
-    - Suporta grupos de modelos (neurais, baselines, all)
-"""
-
 import argparse
 import logging
 import sys
 from datetime import datetime
 from pathlib import Path
 from typing import List, Optional
+import yaml
 
 import pandas as pd
 import torch
-import yaml
 
 # Monkey-patch torch.load (PyTorch 2.6+ compatibility)
 _original_torch_load = torch.load
@@ -36,7 +22,6 @@ torch.load = _patched_torch_load
 
 from recbole.config import Config
 from recbole.data import create_dataset, data_preparation
-from recbole.model.sequential_recommender import GRU4Rec, NARM, STAMP, SASRec, FPMC, FOSSIL
 from recbole.trainer import Trainer
 from recbole.utils import init_seed
 
@@ -44,26 +29,15 @@ from src.models import RandomRecommender, POPRecommender, RPOPRecommender, SPOPR
 from src.utils import log
 from src.utils.enviroment import get_config
 
-MODEL_REGISTRY = {
-    'GRU4Rec': GRU4Rec,
-    'NARM': NARM,
-    'STAMP': STAMP,
-    'SASRec': SASRec,
-    'FPMC': FPMC,
-    'FOSSIL': FOSSIL,
+# Custom models need special handling
+CUSTOM_MODELS = {
     'Random': RandomRecommender,
     'POP': POPRecommender,
     'RPOP': RPOPRecommender,
     'SPOP': SPOPRecommender,
 }
 
-MODEL_GROUPS = {
-    'neurais': ['GRU4Rec', 'NARM', 'STAMP', 'SASRec'],
-    'baselines': ['Random', 'POP', 'RPOP', 'SPOP'],
-    'factorization': ['FPMC', 'FOSSIL'],
-    'all': list(MODEL_REGISTRY.keys())
-}
-
+MODEL_CONFIG_DIRS = ['neural', 'factorization', 'baselines']
 
 class BenchmarkRunner:
     def __init__(self, output_dir: Optional[str] = None):
@@ -86,7 +60,6 @@ class BenchmarkRunner:
         log_dir = self.output_dir / 'logs'
         log_dir.mkdir(exist_ok=True)
 
-        # Setup básico de logging (mantém para o RecBole interno)
         logging.basicConfig(
             level=logging.INFO,
             format='%(message)s',
@@ -98,7 +71,6 @@ class BenchmarkRunner:
 
     def _get_model_config(self, model_name: str, dataset_name: str) -> dict:
         """Carrega config do modelo e merge com config do projeto"""
-        # Busca config específica do modelo
         config_base = Path('src/configs')
 
         for category in ['neural', 'baselines', 'factorization']:
@@ -111,10 +83,19 @@ class BenchmarkRunner:
             raise FileNotFoundError(f"Config não encontrado para modelo: {model_name}")
 
         # Merge com project config (projeto override modelo)
-        config_dict = {**model_config, **self.project_config}
+        config_dict = {**self.project_config, **model_config}
         config_dict['dataset'] = dataset_name
         config_dict['data_path'] = self.project_config['data_path']
-
+        
+        model_output_dir = self.output_dir / model_name
+        model_output_dir.mkdir(parents=True, exist_ok=True)
+        config_dict['checkpoint_dir'] = str(model_output_dir / 'checkpoints')
+        
+        # Wandb: define nome do run via variável de ambiente (RecBole não aceita via config)
+        if config_dict.get('log_wandb', False):
+            import os
+            os.environ['WANDB_NAME'] = f"{model_name}_{self.timestamp}"
+        
         return config_dict
 
     def run_single_model(self, model_name: str, dataset_name: str) -> dict:
@@ -126,9 +107,25 @@ class BenchmarkRunner:
         try:
             # Load config
             config_dict = self._get_model_config(model_name, dataset_name)
+            
+            # Configura logging específico por modelo (para tensorboard usar nome correto)
+            model_log_file = self.output_dir / 'logs' / f'{model_name}.log'
+            model_log_file.parent.mkdir(parents=True, exist_ok=True)
+            
+            # Remove handlers antigos e adiciona handler específico do modelo
+            root_logger = logging.getLogger()
+            # Guarda handlers originais
+            original_handlers = root_logger.handlers.copy()
+            # Limpa handlers temporariamente
+            root_logger.handlers.clear()
+            # Adiciona handler do modelo (tensorboard vai usar este nome)
+            model_handler = logging.FileHandler(model_log_file)
+            model_handler.setFormatter(logging.Formatter('%(message)s'))
+            root_logger.addHandler(model_handler)
+            root_logger.addHandler(logging.StreamHandler(sys.stdout))
 
             # Para custom models, usa template e override
-            if model_name in ['Random', 'POP', 'RPOP', 'SPOP']:
+            if model_name in CUSTOM_MODELS:
                 config = Config(model='GRU4Rec', config_dict=config_dict)
                 config['model'] = model_name
             else:
@@ -144,8 +141,13 @@ class BenchmarkRunner:
 
             # Create model
             log("Instanciando modelo...")
-            model_class = MODEL_REGISTRY[model_name]
-            model = model_class(config, train_data.dataset).to(config['device'])
+            if model_name in CUSTOM_MODELS:
+                model_class = CUSTOM_MODELS[model_name]
+                model = model_class(config, train_data.dataset).to(config['device'])
+            else:
+                # RecBole models are loaded automatically via Config
+                from recbole.utils import get_model
+                model = get_model(model_name)(config, train_data.dataset).to(config['device'])
 
             # Create trainer
             trainer = Trainer(config, model)
@@ -171,12 +173,23 @@ class BenchmarkRunner:
 
             log(f" Resultados: {test_result}")
 
+            # Restaura handlers originais do logger
+            root_logger.handlers.clear()
+            root_logger.handlers.extend(original_handlers)
+
             return results
 
         except Exception as e:
             log(f" ERRO ao executar {model_name}: {e}")
             import traceback
             traceback.print_exc()
+            
+            # Restaura handlers em caso de erro também
+            root_logger = logging.getLogger()
+            if 'original_handlers' in locals():
+                root_logger.handlers.clear()
+                root_logger.handlers.extend(original_handlers)
+            
             return {
                 'model': model_name,
                 'dataset': dataset_name,
@@ -189,10 +202,21 @@ class BenchmarkRunner:
         log(f"{'=' * 80}")
         log(f"Dataset: {dataset}")
         log(f"Modelos: {models}")
-        log(f"Output: {self.output_dir}")
+        log(f"Output base: {self.output_dir}")
         log(f"{'=' * 80}")
 
-        results_file = self.output_dir / 'results.csv'
+        # Se rodar múltiplos modelos, cria subdir por modelo
+        # Se rodar 1 modelo, usa dir direto
+        if len(models) > 1:
+            base_output = self.output_dir
+        else:
+            # Modelo único: renomeia output_dir para incluir nome do modelo
+            base_dir = Path(self.project_config['output']['results_dir'])
+            self.output_dir = base_dir / f"{self.timestamp}_{models[0]}"
+            self.output_dir.mkdir(parents=True, exist_ok=True)
+            base_output = self.output_dir.parent
+
+        results_file = base_output / f'results_{self.timestamp}.csv'
         all_results = []
 
         for i, model_name in enumerate(models, 1):
@@ -214,45 +238,17 @@ class BenchmarkRunner:
         log(f"{'=' * 80}")
 
 
-def parse_models(model_input: List[str]) -> List[str]:
-    """Parse model input (pode ser grupo ou lista de modelos)"""
-    models = []
-    for item in model_input:
-        if item in MODEL_GROUPS:
-            models.extend(MODEL_GROUPS[item])
-        elif item in MODEL_REGISTRY:
-            models.append(item)
-        else:
-            raise ValueError(f"Modelo/grupo desconhecido: {item}")
-
-    # Remove duplicatas mantendo ordem
-    return list(dict.fromkeys(models))
-
-
 def main():
     parser = argparse.ArgumentParser(
-        description='Fermi Benchmark Runner',
+        description='Fermi Benchmark Runner - Executa um modelo específico',
         formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Exemplos de uso:
-  python src/run_benchmark.py --models GRU4Rec NARM
-  python src/run_benchmark.py --models neurais
-  python src/run_benchmark.py --models all --dataset realestate
-  python src/run_benchmark.py --models baselines factorization
-  
-Grupos disponíveis:
-  neurais:       GRU4Rec, NARM, STAMP, SASRec
-  baselines:     Random, POP, RPOP, SPOP
-  factorization: FPMC, FOSSIL
-  all:           Todos os modelos
-        """
     )
 
     parser.add_argument(
-        '--models',
-        nargs='+',
+        '--model',
+        type=str,
         required=True,
-        help='Lista de modelos ou grupos (neurais, baselines, factorization, all)'
+        help='Nome do modelo a executar (ex: GRU4Rec, SASRec, etc.)'
     )
     parser.add_argument(
         '--dataset',
@@ -267,13 +263,18 @@ Grupos disponíveis:
 
     args = parser.parse_args()
 
-    # Parse models
-    try:
-        models = parse_models(args.models)
-    except ValueError as e:
-        log(f"ERRO: {e}")
-        log(f"Modelos disponíveis: {list(MODEL_REGISTRY.keys())}")
-        log(f"Grupos disponíveis: {list(MODEL_GROUPS.keys())}")
+    # Validate model config exists
+    config_base = Path('src/configs')
+    model_found = False
+    for category in MODEL_CONFIG_DIRS:
+        config_file = config_base / category / f'{args.model.lower()}.yaml'
+        if config_file.exists():
+            model_found = True
+            break
+
+    if not model_found:
+        log(f"ERRO: Config não encontrado para modelo '{args.model}'")
+        log(f"Procurado em: src/configs/{{neural,baselines,factorization}}/{args.model.lower()}.yaml")
         sys.exit(1)
 
     # Load dataset from config if not specified
@@ -282,9 +283,9 @@ Grupos disponíveis:
     else:
         dataset = args.dataset
 
-    # Run benchmark
+    # Run benchmark for single model
     runner = BenchmarkRunner(args.output)
-    runner.run(models, dataset)
+    runner.run([args.model], dataset)
 
 
 if __name__ == '__main__':

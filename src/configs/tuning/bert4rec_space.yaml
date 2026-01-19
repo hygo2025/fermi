@@ -1,0 +1,40 @@
+# BERT4Rec Hyperparameter Search Space
+learning_rate:
+  type: loguniform
+  min: 0.00005
+  max: 0.01
+
+hidden_size:
+  type: choice
+  values: [128, 256]
+
+n_layers:
+  type: choice
+  values: [1, 2, 3]
+
+n_heads:
+  type: choice
+  values: [2, 4, 8]
+
+inner_size:
+  type: choice
+  values: [512, 1024]
+
+hidden_dropout_prob:
+  type: uniform
+  min: 0.1
+  max: 0.5
+
+attn_dropout_prob:
+  type: uniform
+  min: 0.1
+  max: 0.5
+
+mask_ratio:
+  type: uniform
+  min: 0.1
+  max: 0.3
+
+#train_batch_size:
+#  type: choice
+#  values: [512, 1024, 2048]

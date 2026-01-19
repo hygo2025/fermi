@@ -7,9 +7,8 @@
 # DATA CONFIGURATION
 # -----------------------------------------------------------------------------
 dataset: realestate
-data_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole  # RecBole procura: {data_path}/{dataset}/{dataset}.inter
+data_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole
 
-# Raw data paths (para pipeline de preparação)
 raw_data:
   listings_raw_path: /home/hygo2025/Documents/data/listings
   events_raw_path: /home/hygo2025/Documents/data/events
@@ -25,7 +24,7 @@ raw_data:
   session_id_mapping_path: /home/hygo2025/Documents/data/processed_mapping/session_id_mapping
   user_sessions_path: /home/hygo2025/Documents/data/processed_mapping/user_sessions
   
-  # Enriched events (for RecBole pipeline)
+  # Events
   events_path: /home/hygo2025/Documents/data/processed_data/events
   listings_path: /home/hygo2025/Documents/data/processed_data/listings
   
@@ -35,16 +34,15 @@ raw_data:
   
 # Data preparation parameters
 data_preparation:
-  start_date: "2024-05-01"
-  end_date: "2024-05-30"  # 30 dias de dados
-  min_session_length: 2    # Mínimo de interações por sessão
+  start_date: "2024-03-01"
+  end_date: "2024-03-14"  # 60 dias de dados
+  min_session_length: 3    # Mínimo de interações por sessão
   max_session_length: 50   # Máximo de interações por sessão
   min_item_freq: 5         # Mínimo de vezes que um item deve aparecer
 
 # -----------------------------------------------------------------------------
 # RECBOLE FIELD MAPPINGS (CRITICAL)
 # -----------------------------------------------------------------------------
-# RecBole espera campos padronizados. Mapeamos nossos campos reais.
 USER_ID_FIELD: user_id       # RecBole agrupa por este campo (será session_id)
 ITEM_ID_FIELD: item_id
 TIME_FIELD: timestamp
@@ -55,23 +53,27 @@ load_col:
   inter: [user_id, item_id, timestamp]
 
 # -----------------------------------------------------------------------------
-# EVALUATION PROTOCOL - TEMPORAL LEAVE-ONE-OUT (PAPER STANDARD)
+# EVALUATION PROTOCOL - TEMPORAL LEAVE-ONE-OUT
 # -----------------------------------------------------------------------------
 # Estratégia: 
 #   - Treina com histórico da sessão
 #   - Valida com penúltimo item
 #   - Testa com último item
-# Referência: Session-Based Recommendation papers (RecSys, SIGIR, WWW)
 # -----------------------------------------------------------------------------
 eval_args:
   split:
     LS: valid_and_test  # Leave-One-Out Split: penúltimo (valid) + último (test)
   order: TO             # Temporal Ordering: ordena por timestamp ANTES do split
   group_by: user        # Agrupa por USER_ID_FIELD (session_id)
-  mode: full            # Full ranking: avalia contra todo o catálogo
+  #mode: full            # Full ranking: avalia contra todo o catálogo
+  eval_step: 2
+  mode:
+    valid: uni100  # Validação rápida durante treino/tuning
+    test: full     # Teste final rigoroso após escolher melhor modelo
 
+eval_step: 3
 # -----------------------------------------------------------------------------
-# METRICS (Academic Standard)
+# METRICS
 # -----------------------------------------------------------------------------
 metrics: [Recall, MRR, NDCG, Hit]
 topk: [5, 10, 20]
@@ -80,19 +82,19 @@ valid_metric: MRR@10  # Métrica para early stopping
 # -----------------------------------------------------------------------------
 # SESSION CONFIGURATION
 # -----------------------------------------------------------------------------
-MAX_ITEM_LIST_LENGTH: 50  # Comprimento máximo da sequência (crucial para modelos sequenciais)
+MAX_ITEM_LIST_LENGTH: 50
 
 # -----------------------------------------------------------------------------
-# TRAINING DEFAULTS (podem ser sobrescritos por configs específicas)
+# TRAINING DEFAULTS
 # -----------------------------------------------------------------------------
-epochs: 50
-train_batch_size: 2048
-eval_batch_size: 4096
+epochs: 60
+train_batch_size: 4096
+eval_batch_size: 8192
 learning_rate: 0.001
 train_neg_sample_args: ~  # Disable negative sampling (full ranking)
 
 # Early stopping
-stopping_step: 10
+stopping_step: 3
 valid_metric_bigger: true
 
 # -----------------------------------------------------------------------------
@@ -101,7 +103,7 @@ valid_metric_bigger: true
 device: cuda
 gpu_id: 0
 seed: 42
-state: INFO  # Logging level: INFO, DEBUG, WARNING, ERROR
+state: DEBUG
 
 # Reproducibility
 reproducibility: true
@@ -114,8 +116,10 @@ save_dataset: false
 save_dataloaders: false
 show_progress: true
 
-# Weights & Biases (desabilitado por padrão)
-log_wandb: false
+# Logs
+log_wandb: true
+wandb_project: "fermi"  # Nome do projeto no wandb
+tensorboard: true
 
 # -----------------------------------------------------------------------------
 # OUTPUT PATHS

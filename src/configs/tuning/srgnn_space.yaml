@@ -1,0 +1,26 @@
+# SRGNN Hyperparameter Search Space
+learning_rate:
+  type: loguniform
+  min: 0.00005
+  max: 0.01
+
+embedding_size:
+  type: choice
+  values: [128, 256]
+
+hidden_size:
+  type: choice
+  values: [128, 256]
+
+step:
+  type: choice
+  values: [1, 2]
+
+dropout_prob:
+  type: uniform
+  min: 0.1
+  max: 0.5
+
+#train_batch_size:
+#  type: choice
+#  values: [512, 1024, 2048]

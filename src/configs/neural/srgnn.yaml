@@ -1,0 +1,13 @@
+model: SRGNN
+
+# Model Parameters
+embedding_size: 256
+hidden_size: 256
+step: 1                  # Profundidade 1 pega vizinhos diretos (90% do sinal)
+loss_type: 'CE'
+
+weight_decay: 0.0
+dropout_prob: 0.3
+
+clip_grad_norm:
+  max_norm: 5.0

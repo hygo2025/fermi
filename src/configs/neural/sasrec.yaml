@@ -1,66 +1,17 @@
 model: SASRec
 
-# Dataset (will be overridden by runner for each slice)
-dataset: realestate_slice1
-data_path: recbole_data/
-
-# Training - HIGH QUALITY
-epochs: 50
-train_batch_size: 4096
-eval_batch_size: 4096
-learning_rate: 0.001
-train_neg_sample_args: ~
-
-# Early Stopping
-stopping_step: 10
-
-# Model Parameters - HIGH QUALITY (Self-Attention)
-n_layers: 3
-n_heads: 4
-hidden_size: 256
-inner_size: 1024
-hidden_dropout_prob: 0.3
-attn_dropout_prob: 0.3
+# Model Parameters
+n_layers: 2              # 2 camadas capturam a sequência sem overfittar (Kang et al.)
+n_heads: 2               # Equilíbrio de atenção
+hidden_size: 256         # Padronizado para o benchmark
+inner_size: 1024         # Geralmente 4x o hidden_size
+hidden_dropout_prob: 0.5 # Alto dropout para evitar decorar IDs únicos
+attn_dropout_prob: 0.5
 hidden_act: 'gelu'
 layer_norm_eps: 1e-12
+initializer_range: 0.02
 loss_type: 'CE'
 
 # Gradient Clipping
-clip_grad_norm: 
+clip_grad_norm:
   max_norm: 5.0
-
-# Evaluation
-metrics: ['Recall', 'MRR', 'NDCG', 'Hit']
-topk: [5, 10, 20]
-valid_metric: Recall@10
-
-# Session Settings
-MAX_ITEM_LIST_LENGTH: 50
-SESSION_ID_FIELD: session_id
-ITEM_ID_FIELD: item_id
-TIME_FIELD: timestamp
-USER_ID_FIELD: session_id
-load_col:
-  inter: [session_id, item_id, timestamp]
-
-# Evaluation Protocol - TEMPORAL LEAVE-ONE-OUT (Paper Standard)
-eval_args:
-  split: {'LS': 'valid_and_test'}
-  order: 'TO'
-  group_by: 'user'
-  mode: 'full'
-
-# Device
-device: cuda
-gpu_id: 0
-
-# Reproducibility
-seed: 42
-
-# Checkpointing (save only best model)
-save_dataset: false
-save_dataloaders: false
-checkpoint_dir: outputs/saved
-
-# Logging
-log_wandb: false

@@ -848,6 +848,12 @@ class RecommendationAnalyzer:
             </div>
             """
             
+            layer = folium.FeatureGroup(
+                name=f"Sessão #{idx} - ID {data['item_id']}",
+                show=True
+            )
+            layer.add_to(m)
+            
             # Circle marker azul com número
             folium.CircleMarker(
                 location=[data['lat'], data['lon']],
@@ -859,7 +865,7 @@ class RecommendationAnalyzer:
                 fillColor='#3498DB',
                 fillOpacity=0.8,
                 weight=2
-            ).add_to(m)
+            ).add_to(layer)
             
             # Adicionar número da posição no centro do círculo
             folium.Marker(
@@ -874,7 +880,7 @@ class RecommendationAnalyzer:
                         margin-top: -3px;
                     ">{idx}</div>
                 """)
-            ).add_to(m)
+            ).add_to(layer)
         
         # Recommendations (vermelho) - marcadores melhores
         if rec_data:
@@ -917,6 +923,12 @@ class RecommendationAnalyzer:
                     fill_color = '#E74C3C'
                     border_color = '#C0392B'
                 
+                layer = folium.FeatureGroup(
+                    name=f"Recomendação #{data['rank']} - ID {data['item_id']}",
+                    show=True
+                )
+                layer.add_to(m)
+                
                 # Circle marker com número do rank
                 folium.CircleMarker(
                     location=[data['lat'], data['lon']],
@@ -928,7 +940,7 @@ class RecommendationAnalyzer:
                     fillColor=fill_color,
                     fillOpacity=0.8,
                     weight=2
-                ).add_to(m)
+                ).add_to(layer)
                 
                 # Adicionar número do rank
                 folium.Marker(
@@ -943,7 +955,9 @@ class RecommendationAnalyzer:
                             margin-top: -3px;
                         ">{data['rank']}</div>
                     """)
-                ).add_to(m)
+                ).add_to(layer)
+        
+        folium.LayerControl(collapsed=False).add_to(m)
         
         # Retornar HTML
         return m._repr_html_()
