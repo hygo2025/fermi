@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Benchmark runner script
-# Executa benchmark para uma lista de modelos
-
-# Lista de modelos a executar (igual ao tune_remaining_models.sh)
 MODELS=(
     "GRU4Rec"
     "FOSSIL"
@@ -22,7 +18,6 @@ MODELS=(
     "SPOP"
 )
 
-# Se passar um modelo específico como argumento, usa apenas ele
 if [[ $# -gt 0 ]]; then
     MODELS=("$1")
 fi

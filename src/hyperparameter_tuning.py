@@ -105,9 +105,12 @@ class RecBoleHyperparameterTuner:
         config["data_path"] = str(data_path)
         config["checkpoint_dir"] = str((self.output_dir / "checkpoints").resolve())
         config["show_progress"] = True
-        config["log_wandb"] = False
         if not config.get("neg_sampling"):
             config["neg_sampling"] = {"uniform": 1}
+        
+        if config.get('log_wandb', False):
+            import os
+            os.environ['WANDB_NAME'] = f"{self.model_name}_tuning_{self.timestamp}"
 
         return config
 
