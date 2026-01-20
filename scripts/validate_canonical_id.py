@@ -271,7 +271,7 @@ def main():
     report_path = config['raw_data'].get('validation_report_path', 'data/reports/canonical_validation')
     export_validation_report(cluster_stats, report_path)
     
-    log("\n✅ Validação concluída!")
+    log("\n Validação concluída!")
     
     spark.stop()
 
