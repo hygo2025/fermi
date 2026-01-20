@@ -35,7 +35,7 @@ raw_data:
 # Data preparation parameters
 data_preparation:
   start_date: "2024-03-01"
-  end_date: "2024-03-14"  # 60 dias de dados
+  end_date: "2024-07-01"  # 60 dias de dados
   min_session_length: 3    # Mínimo de interações por sessão
   max_session_length: 50   # Máximo de interações por sessão
   min_item_freq: 5         # Mínimo de vezes que um item deve aparecer
@@ -65,13 +65,12 @@ eval_args:
     LS: valid_and_test  # Leave-One-Out Split: penúltimo (valid) + último (test)
   order: TO             # Temporal Ordering: ordena por timestamp ANTES do split
   group_by: user        # Agrupa por USER_ID_FIELD (session_id)
-  #mode: full            # Full ranking: avalia contra todo o catálogo
-  eval_step: 2
-  mode:
-    valid: uni100  # Validação rápida durante treino/tuning
-    test: full     # Teste final rigoroso após escolher melhor modelo
+  mode: full            # Full ranking: avalia contra todo o catálogo
+  #mode:
+    #valid: uni100  # Validação rápida durante treino/tuning
+    #test: full     # Teste final rigoroso após escolher melhor modelo
 
-eval_step: 3
+#eval_step: 3
 # -----------------------------------------------------------------------------
 # METRICS
 # -----------------------------------------------------------------------------
@@ -88,13 +87,13 @@ MAX_ITEM_LIST_LENGTH: 50
 # TRAINING DEFAULTS
 # -----------------------------------------------------------------------------
 epochs: 60
-train_batch_size: 4096
-eval_batch_size: 8192
+train_batch_size: 2048
+eval_batch_size: 4096
 learning_rate: 0.001
 train_neg_sample_args: ~  # Disable negative sampling (full ranking)
 
 # Early stopping
-stopping_step: 3
+stopping_step: 10
 valid_metric_bigger: true
 
 # -----------------------------------------------------------------------------

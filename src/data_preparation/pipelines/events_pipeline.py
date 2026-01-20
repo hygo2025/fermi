@@ -31,7 +31,11 @@ def process_raw_events(spark: SparkSession) -> DataFrame:
     sale_raw_path = config['raw_data']['events_raw_path'] + "/*.csv.gz"
     all_raw_events = read_csv_data(spark, sale_raw_path, multiline=False)
 
-    listing_map = spark.read.parquet(config['raw_data']['listing_id_mapping_path'])
+    # JOIN apenas com listing_id_numeric - canonical_listing_id virá depois se necessário
+    listing_map = (
+        spark.read.parquet(config['raw_data']['listing_id_mapping_path'])
+        .select("anonymized_listing_id", "listing_id_numeric")
+    )
     joined_df = all_raw_events.join(listing_map, on="anonymized_listing_id", how="inner")
 
     return clean_event_data(joined_df)
@@ -207,7 +211,6 @@ def save_events(spark: SparkSession, events: DataFrame) -> None:
         df.withColumnRenamed("user_logged_numeric_id", "user_id")
         .withColumnRenamed("anonymous_numeric_id", "anonymous_id")
         .withColumnRenamed("session_numeric_id", "session_id")
-        .withColumnRenamed("unified_user_id", "unique_user_id")
         .withColumnRenamed("listing_id_numeric", "listing_id")
         .withColumn("dt", F.col("dt"))
     )
