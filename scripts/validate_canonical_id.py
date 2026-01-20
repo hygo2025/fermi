@@ -17,7 +17,7 @@ Uso:
 import pyspark.sql.functions as F
 from pyspark.sql import SparkSession
 from src.utils.enviroment import get_config
-from src.utils import log
+from src.utils import log, make_spark
 
 
 def analyze_cluster_distribution(mapping_df):
@@ -27,9 +27,9 @@ def analyze_cluster_distribution(mapping_df):
     Args:
         mapping_df: DataFrame com colunas [anonymized_listing_id, canonical_listing_id, listing_id_numeric]
     """
-    log("\n" + "="*80)
+    log("\n" + "-"*80)
     log("ANÁLISE DE DISTRIBUIÇÃO DE CLUSTERS")
-    log("="*80)
+    log("-"*80)
     
     cluster_sizes = (
         mapping_df
@@ -84,9 +84,9 @@ def calculate_sparsity_reduction(mapping_df, events_df=None):
         mapping_df: DataFrame de mapeamento
         events_df: DataFrame de eventos (opcional, para análise de interações)
     """
-    log("\n" + "="*80)
+    log("\n" + "-"*80)
     log("ANÁLISE DE REDUÇÃO DE ESPARSIDADE")
-    log("="*80)
+    log("-"*80)
     
     total_original_ids = mapping_df.select("anonymized_listing_id").distinct().count()
     total_canonical_ids = mapping_df.select("canonical_listing_id").distinct().count()
@@ -135,9 +135,9 @@ def identify_problematic_clusters(mapping_df, listings_df):
         mapping_df: DataFrame de mapeamento
         listings_df: DataFrame processado de listings
     """
-    log("\n" + "="*80)
+    log("\n" + "-"*80)
     log("ANÁLISE DE QUALIDADE DOS CLUSTERS")
-    log("="*80)
+    log("-"*80)
     
     # Juntar mapeamento com features originais
     # Nota: listings_df JÁ tem canonical_listing_id, então usar diretamente
@@ -190,9 +190,9 @@ def sample_cluster_inspection(mapping_df, listings_df, num_samples=5):
         listings_df: DataFrame processado de listings
         num_samples: Número de clusters a amostrar
     """
-    log("\n" + "="*80)
+    log("\n" + "-"*80)
     log("INSPEÇÃO DETALHADA DE CLUSTERS (AMOSTRA)")
-    log("="*80)
+    log("-"*80)
     
     # Selecionar clusters de tamanho médio (entre 2 e 10 itens)
     cluster_sizes = (
@@ -228,36 +228,16 @@ def sample_cluster_inspection(mapping_df, listings_df, num_samples=5):
         cluster_listings.show(truncate=False)
 
 
-def export_validation_report(cluster_stats, output_path):
-    """
-    Exporta relatório de validação para CSV
-    
-    Args:
-        cluster_stats: DataFrame com estatísticas de clusters
-        output_path: Caminho para salvar o relatório
-    """
-    log(f"\n💾 Exportando relatório para: {output_path}")
-    
-    cluster_stats.coalesce(1).write.mode("overwrite").csv(
-        output_path,
-        header=True
-    )
-    
-    log(" Relatório exportado com sucesso!")
-
-
 def main():
     """Função principal de validação"""
-    spark = SparkSession.builder \
-        .appName("Canonical ID Validation") \
-        .getOrCreate()
+    spark = make_spark()
     
     config = get_config()
     
     log(" Iniciando Validação do Canonical Listing ID\n")
     
     # Carregar dados
-    log("📂 Carregando dados...")
+    log(" Carregando dados...")
     mapping_df = spark.read.parquet(config['raw_data']['listing_id_mapping_path'])
     listings_df = spark.read.parquet(config['raw_data']['listings_processed_path'])
     
@@ -267,9 +247,6 @@ def main():
     identify_problematic_clusters(mapping_df, listings_df)
     sample_cluster_inspection(mapping_df, listings_df, num_samples=3)
     
-    # Exportar relatório
-    report_path = config['raw_data'].get('validation_report_path', 'data/reports/canonical_validation')
-    export_validation_report(cluster_stats, report_path)
     
     log("\n Validação concluída!")
     
