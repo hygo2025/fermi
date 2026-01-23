@@ -9,6 +9,7 @@ def make_spark(
         .appName("spark")
         .master("local[*]")
         .config("spark.driver.memory", "112g")
+        .config("spark.driver.maxResultSize", "8g")
         .config("spark.sql.shuffle.partitions", 200)
         .config("spark.default.parallelism", 200)
         .config("spark.memory.storageFraction", memory_storage_fraction)

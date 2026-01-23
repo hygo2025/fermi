@@ -34,9 +34,9 @@ raw_data:
   
 # Data preparation parameters
 data_preparation:
-  start_date: "2024-03-01"
-  end_date: "2024-07-01"  # 60 dias de dados
-  min_session_length: 3    # Mínimo de interações por sessão
+  start_date: "2024-02-01"
+  end_date: "2024-08-01"  # 60 dias de dados
+  min_session_length: 2    # Mínimo de interações por sessão
   max_session_length: 50   # Máximo de interações por sessão
   min_item_freq: 5         # Mínimo de vezes que um item deve aparecer
 

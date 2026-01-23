@@ -99,12 +99,15 @@ class RecBoleDataPipeline:
         log(f"    {events_before:_} eventos → {events_after:_} após filtro geográfico")
         
         return df
-    
+
     def prepare_sessions(self, df):
-        """Prepara dados em formato session-based"""
-        log(" Preparando sessões...")
-        
-        # Seleciona e renomeia colunas
+        """
+        Prepara sessões removendo APENAS repetições consecutivas (A->A),
+        mas mantendo retornos (A->B->A).
+        """
+        log(" Preparando sessões com deduplicação consecutiva...")
+
+        # 1. Seleção Básica e Conversão de TS
         df = df.select(
             F.col('session_id').alias('user_id'),
             F.col('listing_id').alias('item_id'),
@@ -113,32 +116,39 @@ class RecBoleDataPipeline:
             F.col('user_id').isNotNull() &
             F.col('item_id').isNotNull() &
             F.col('timestamp').isNotNull()
-        )
-        
-        # Converte timestamp para Unix (segundos desde 1970-01-01)
-        df = df.withColumn(
+        ).withColumn(
             'timestamp',
             F.unix_timestamp(F.col('timestamp'))
         )
 
-        # Agrupa por Sessão e Item, mantendo apenas a primeira interação (min timestamp).
-        # Isso evita sequências como: ItemA -> ItemA -> ItemB. Transforma em: ItemA -> ItemB.
-        log("    Deduplicando interações repetidas na mesma sessão...")
-        df = df.groupBy('user_id', 'item_id').agg(
-            F.min('timestamp').alias('timestamp')
+        # 2. Definir Janela para olhar o item anterior
+        # Adicionamos um tie_breaker para garantir ordem estável em eventos do mesmo segundo
+        df = df.withColumn("tie_breaker", F.monotonically_increasing_id())
+
+        window_spec = Window.partitionBy("user_id").orderBy("timestamp", "tie_breaker")
+
+        # 3. Criar coluna com o item anterior (Lag)
+        df = df.withColumn("prev_item_id", F.lag("item_id").over(window_spec))
+
+        # 4. Filtrar: Manter apenas se o item atual for DIFERENTE do anterior
+        # O primeiro item da sessão (prev is null) sempre fica.
+        df_clean = df.filter(
+            (F.col("item_id") != F.col("prev_item_id")) |
+            (F.col("prev_item_id").isNull())
         )
 
-        # 4. Ordenação final da sequência
-        df = df.orderBy('user_id', 'timestamp')
+        # 5. Limpeza final
+        df_clean = df_clean.select('user_id', 'item_id', 'timestamp')
 
-        # 5. Adiciona posição (recalculada após deduplicação)
-        window_spec = Window.partitionBy('user_id').orderBy('timestamp')
-        df = df.withColumn('position', F.row_number().over(window_spec))
+        # Ordenação final para garantir a sequência no arquivo .inter
+        df_clean = df_clean.orderBy('user_id', 'timestamp')
 
-        unique_sessions = df.select('user_id').distinct().count()
-        log(f"    {unique_sessions:_} sessões únicas preparadas")
+        # Log de impacto
+        count_before = df.count()
+        count_after = df_clean.count()
+        log(f"    Deduplicação: {count_before:_} -> {count_after:_} interações (Mantidos retornos A->B->A)")
 
-        return df
+        return df_clean
 
     def filter_sessions_by_length(self, df, min_length: int, max_length: int):
         """Filtra sessões por comprimento"""
@@ -286,7 +296,7 @@ class RecBoleDataPipeline:
         df = self.filter_sessions_by_length(df, min_session_len, max_session_len)
         
         # 6. Filtra itens raros
-        min_item_support = self.config.get('min_item_freq', 5)
+        min_item_support = self.config.get('min_item_freq', 2)
         df = self.filter_rare_items(df, min_item_support)
         
         # 7. Re-filtra sessões (após remover itens raros, algumas sessões podem ter ficado curtas)

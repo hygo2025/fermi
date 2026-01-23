@@ -31,7 +31,6 @@ def process_raw_events(spark: SparkSession) -> DataFrame:
     sale_raw_path = config['raw_data']['events_raw_path'] + "/*.csv.gz"
     all_raw_events = read_csv_data(spark, sale_raw_path, multiline=False)
 
-    # JOIN apenas com listing_id_numeric - canonical_listing_id virá depois se necessário
     listing_map = (
         spark.read.parquet(config['raw_data']['listing_id_mapping_path'])
         .select("anonymized_listing_id", "listing_id_numeric")
@@ -140,13 +139,12 @@ def join_events_with_sessions(events: DataFrame, users: DataFrame, listings: Dat
 def create_numeric_keys(events: DataFrame) -> DataFrame:
     log("Iniciando criação de chaves numéricas...")
 
-    id_window = Window.orderBy(F.lit(1))
-
     # user_id (usuário logado) → user_logged_numeric_id
     distinct_logged_users = events.select("user_id").distinct()
     logged_map = (
         distinct_logged_users
-        .withColumn("user_logged_numeric_id", F.concat(F.lit("U_"), F.row_number().over(id_window)))
+        .withColumn("user_logged_numeric_id", 
+                    F.concat(F.lit("U_"), F.monotonically_increasing_id()))
     )
     events = events.join(logged_map, "user_id", "left")
 
@@ -154,7 +152,8 @@ def create_numeric_keys(events: DataFrame) -> DataFrame:
     distinct_anonymous = events.select("anonymous_id").distinct()
     anonymous_map = (
         distinct_anonymous
-        .withColumn("anonymous_numeric_id", F.concat(F.lit("A_"), F.row_number().over(id_window)))
+        .withColumn("anonymous_numeric_id", 
+                    F.concat(F.lit("A_"), F.monotonically_increasing_id()))
     )
     events = events.join(anonymous_map, "anonymous_id", "left")
 
@@ -162,7 +161,8 @@ def create_numeric_keys(events: DataFrame) -> DataFrame:
     distinct_sessions = events.select("anonymized_session_id").distinct()
     session_map = (
         distinct_sessions
-        .withColumn("session_numeric_id", F.concat(F.lit("S_"), F.row_number().over(id_window)))
+        .withColumn("session_numeric_id", 
+                    F.concat(F.lit("S_"), F.monotonically_increasing_id()))
     )
     events = events.join(session_map, "anonymized_session_id", "left")
 

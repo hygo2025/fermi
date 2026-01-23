@@ -176,7 +176,7 @@ def save_results(df_final: DataFrame, mapping_table: DataFrame):
         mapping_table_persisted = mapping_table.persist()
 
         log(f"Salvando listings processados em: {final_path}")
-        df_final_persisted.coalesce(1).write.mode("overwrite").parquet(final_path)
+        df_final_persisted.coalesce(4).write.mode("overwrite").parquet(final_path)
 
         log(f"Salvando mapeamento de listings em: {mapping_path}")
         mapping_table_persisted.coalesce(1).write.mode("overwrite").parquet(mapping_path)
@@ -192,7 +192,7 @@ def run_listings_pipeline(spark: SparkSession):
     config = get_config()
     raw_path = config['raw_data']['listings_raw_path'] + "/*.csv.gz"
     all_raw_listings = read_csv_data(spark, raw_path, multiline=True)
-    all_raw_listings = all_raw_listings.filter((col("state") == "Espírito Santo"))
+    #all_raw_listings = all_raw_listings.filter((col("state") == "Espírito Santo"))
     # all_raw_listings = all_raw_listings.filter(
     #     (col("city") == "Vitória") | (col("city") == "Serra") | (col("city") == "Vila Velha") | (col("city") == "Cariacica") | (col("city") == "Viana") | (col("city") == "Guarapari") | (col("city") == "Fundão")
     # )
