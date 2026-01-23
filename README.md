@@ -396,3 +396,28 @@ DOI: 10.1007/s10506-023-09378-3
 
 MIT License
 
+
+## Item Canonicalization (Correção de Cold Start)
+
+**Problema:** Imóveis idênticos recebem novos IDs ao reentrar no catálogo, zerando o histórico de interações.
+
+**Solução:** `canonical_listing_id` agrupa imóveis fisicamente similares via fingerprint:
+- Localização: lat/lon arredondado (4 casas decimais ~11m)
+- Área: bucketizada em 5m²
+- Tipologia: bedrooms + suites + unit_type
+- Hash: MD5 do fingerprint
+
+**Resultado:** 58% de redução de esparsidade (506k IDs → 210k clusters)
+
+**Uso:** O `listing_id_numeric` é gerado **por canonical_id**, não por anonymized_id. Todos os membros do mesmo cluster compartilham o mesmo ID numérico nos modelos.
+
+```python
+# Mapeamento gerado automaticamente em listings_pipeline.py
+# anonymized_listing_id -> canonical_listing_id -> listing_id_numeric
+# Exemplo: LISTING_A, LISTING_B, LISTING_C (mesmo cluster) → ID numérico 1
+```
+
+**Validação:**
+```bash
+python scripts/validate_canonical_id.py
+```

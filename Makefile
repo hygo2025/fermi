@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install data benchmark clean clean-all test lint format tune tune-all tune-smoke
+.PHONY: help install prepare-raw-data data benchmark tune api clean format
 
 COLOR_RESET   = \033[0m
 COLOR_CYAN    = \033[36m
@@ -35,17 +35,8 @@ prepare-raw-data: ## Processa dados brutos (listings + events) - Etapa 0
 
 data: ## Prepara o dataset para o RecBole (Global Temporal Leave-One-Out)
 	@echo "[INFO] Starting data preparation pipeline..."
-	python src/pipeline/recbole_data_pipeline.py
+	python src/data_preparation/recbole_data_pipeline.py
 	@echo "[INFO] Dataset preparation complete."
-
-data-custom: ## Prepara dados com intervalo customizado (Requer START_DATE e END_DATE)
-	@if [ -z "$(START_DATE)" ] || [ -z "$(END_DATE)" ]; then \
-		echo "[ERROR] START_DATE and END_DATE arguments are required."; \
-		exit 1; \
-	fi
-	python src/pipeline/recbole_data_pipeline.py \
-		--start-date $(START_DATE) \
-		--end-date $(END_DATE)
 
 # -----------------------------------------------------------------------------
 ##@ Execução de Benchmark
@@ -76,7 +67,6 @@ tune: ## Executa hyperparameter tuning. MODEL=... para um modelo, vazio para tod
 		MAX_EVALS=$(or $(MAX_EVALS),150) ALGO=$(or $(ALGO),bayes) COOLDOWN=$(or $(COOLDOWN),60) DATASET=$(DATASET) ./scripts/tune_remaining_models.sh; \
 	fi
 
-tune-all: tune ## Alias para 'make tune' (roda todos os modelos)
 
 # -----------------------------------------------------------------------------
 ##@ API Server
@@ -91,31 +81,24 @@ api: ## Inicia servidor API (Requer: MODEL=nome_do_modelo ou path.pth)
 	@echo "[INFO] Starting API with model: $(MODEL)..."
 	python src/api/app.py --model $(MODEL)
 
-api-dev: ## Inicia API em modo desenvolvimento com auto-reload
-	@if [ -z "$(MODEL)" ]; then \
-		echo "[ERROR] MODEL argument is required."; \
-		exit 1; \
-	fi
-	@echo "[INFO] Starting API (dev mode) with model: $(MODEL)..."
-	python src/api/app.py --model $(MODEL) --reload
-
 # -----------------------------------------------------------------------------
 ##@ Manutenção e Limpeza
 # -----------------------------------------------------------------------------
-clean: ## Remove arquivos de cache do Python (__pycache__, .pyc)
-	@echo "[INFO] Cleaning Python cache..."
+clean: ## Remove cache, logs, resultados e checkpoints salvos (Reset total)
+	@echo "[INFO] Cleaning all artifacts (results, logs, checkpoints)..."
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete 2>/dev/null || true
 	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
+	find . -type f -name "*.pyc" -delete 2>/dev/null || true
+	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
-
-clean-all: clean ## Remove cache, logs, resultados e checkpoints salvos (Reset total)
-	@echo "[INFO] Cleaning all artifacts (results, logs, checkpoints)..."
 	rm -rf outputs/results/* 2>/dev/null || true
 	rm -rf outputs/logs/* 2>/dev/null || true
 	rm -rf outputs/saved/* 2>/dev/null || true
 	rm -rf log_tensorboard/* 2>/dev/null || true
 	rm -rf log/* 2>/dev/null || true
+	rm -rf wandb/* 2>/dev/null || true
 
 # -----------------------------------------------------------------------------
 ##@ Desenvolvimento

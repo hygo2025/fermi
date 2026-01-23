@@ -54,6 +54,7 @@ outputs/results/**/*.json
 outputs/results/**/*.png
 outputs/results/**/*.md
 outputs/results/**/*.pth
+outputs/data/**/*.csv
 log/
 
 premissas.txt

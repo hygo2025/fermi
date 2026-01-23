@@ -3,6 +3,7 @@ set -euo pipefail
 
 MODELS=(
     "GRU4Rec"
+    "POP"
     "FOSSIL"
     "FPMC"
     "BERT4Rec"
@@ -13,7 +14,6 @@ MODELS=(
     "SRGNN"
     "STAMP"
     "Random"
-    "POP"
     "RPOP"
     "SPOP"
 )

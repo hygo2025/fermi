@@ -1,0 +1,84 @@
+==================================================
+[2026-01-23 18:07:48]
+--- Primeiras 5 sessões ---
+                     inicio_sessao  ... duracao_segundos
+session_id                          ...
+S_1000     2024-04-20 15:43:29.363  ...         1_270.01
+S_10003    2024-04-22 19:45:32.405  ...           699.11
+S_10009    2024-04-22 16:35:09.270  ...           231.84
+S_10013    2024-04-21 23:10:37.047  ...           116.73
+S_1003     2024-04-20 17:49:29.102  ...           102.03
+
+[5 rows x 7 columns]
+
+==================================================
+[2026-01-23 18:07:48]
+--- Estatísticas de Eventos por Sessão ---
+count   2_197_420.00
+mean            4.99
+std             4.55
+min             0.00
+25%             2.00
+50%             3.00
+75%             6.00
+90%            10.00
+99%            24.00
+max            50.00
+Name: qtd_eventos, dtype: float64
+
+==================================================
+[2026-01-23 18:07:48]
+Gerando gráfico CDF geral...
+Gráfico salvo em: outputs/cdf/cdf_sessoes_geral.svg
+
+==================================================
+[2026-01-23 18:07:50]
+--- Análise por tipo de usuário ---
+[2026-01-23 18:07:50] Total de sessões anônimas: 1_812_979
+[2026-01-23 18:07:50] Total de sessões logadas: 384_441
+[2026-01-23 18:07:51] Sessões anônimas após filtro: 1_811_998
+[2026-01-23 18:07:51] Sessões logadas após filtro: 383_941
+
+==================================================
+[2026-01-23 18:07:51]
+--- Estatísticas - Usuários Anônimos ---
+count   1_812_979.00
+mean            4.71
+std             4.05
+min             0.00
+25%             2.00
+50%             3.00
+75%             6.00
+90%             9.00
+99%            21.00
+max            50.00
+Name: qtd_eventos, dtype: float64
+
+==================================================
+[2026-01-23 18:07:51]
+--- Estatísticas - Usuários Logados ---
+count   384_441.00
+mean          6.29
+std           6.21
+min           0.00
+25%           2.00
+50%           4.00
+75%           8.00
+90%          13.00
+99%          33.00
+max          50.00
+Name: qtd_eventos, dtype: float64
+
+==================================================
+[2026-01-23 18:07:51]
+Gerando CDF para usuários anônimos...
+Gráfico salvo em: outputs/cdf/cdf_sessoes_anonimos.svg
+
+==================================================
+[2026-01-23 18:07:52]
+Gerando CDF para usuários logados...
+Gráfico salvo em: outputs/cdf/cdf_sessoes_logados.svg
+[2026-01-23 18:07:53]
+Análise concluída! Gráficos salvos em outputs/cdf/
+
+Process finished with exit code 0

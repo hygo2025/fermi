@@ -17,7 +17,7 @@ def main():
     
     try:
         log("Step 1/3: Processing listings...")
-        run_listings_pipeline(spark=spark)
+        ##run_listings_pipeline(spark=spark)
         
         log("Step 2/3: Processing user events...")
         run_events_pipeline(spark=spark)
@@ -25,7 +25,7 @@ def main():
     except Exception as e:
         log(f"ERRO: {e}")
         import traceback
-        traceback.log_exc()
+        traceback.print_exc()
         sys.exit(1)
         
     finally:
