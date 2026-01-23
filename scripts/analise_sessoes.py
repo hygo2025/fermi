@@ -3,8 +3,10 @@ import sys
 from pathlib import Path
 
 import pandas as pd
+
+from src.data_preparation.pipelines.session_data_pipeline import SessionDataPipeline
 from src.utils.enviroment import get_config
-from src.utils import log
+from src.utils import log, make_spark
 from src.utils import plot_cdf
 
 pd.options.display.float_format = '{:_.2f}'.format
@@ -117,6 +119,11 @@ def main(
 
 if __name__ == "__main__":
     config = get_config()
+    spark = make_spark()
+
+    session_data_pipeline = SessionDataPipeline(
+        spark=spark,
+    )
 
     min_session_length = config['data_preparation']['min_session_length']
     max_session_length = config['data_preparation']['max_session_length']
