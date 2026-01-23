@@ -1,35 +1,68 @@
-
 import sys
 from pathlib import Path
+
 
 import pandas as pd
 
 from src.data_preparation.pipelines.session_data_pipeline import SessionDataPipeline
 from src.utils.enviroment import get_config
-from src.utils import log, make_spark
-from src.utils import plot_cdf
+from src.utils import log, make_spark, plot_cdf
 
 pd.options.display.float_format = '{:_.2f}'.format
+
+
+def load_or_generate_events(events_path: str) -> pd.DataFrame:
+    events_file = Path(events_path)
+    
+    if events_file.exists():
+        log(f"Carregando eventos de {events_path}...")
+        df = pd.read_csv(events_path, parse_dates=['event_ts'])
+        log(f"{len(df):_} eventos carregados")
+        return df
+    
+    log(f"Arquivo {events_path} não encontrado. Executando pipeline...")
+    spark = make_spark()
+    
+    # Executa pipeline
+    pipeline = SessionDataPipeline(spark=spark, recbole_format=False)
+    result = pipeline.run()
+    
+    log("Convertendo resultado para pandas...")
+    df = result.toPandas()
+    
+    # Cria diretório se não existir
+    events_file.parent.mkdir(parents=True, exist_ok=True)
+    
+    # Salva CSV
+    log(f"Salvando dados em {events_path}...")
+    df.to_csv(events_path, index=False)
+    log(f"{len(df):_} eventos salvos")
+    spark.stop()
+    
+    return df
+
 
 def main(
         events_path: str,
         min_session_length: int = 2,
-        max_session_length: int = 50):
-    
-    log("Carregando dados de eventos...")
-    # Lê dados do CSV
-    df = pd.read_csv(events_path, parse_dates=['event_ts'])
+        max_session_length: int = 50,
+        ):
+    # Carrega ou gera dados
+    df = load_or_generate_events(events_path)
     log(f"Total de eventos carregados: {len(df):_}")
     
     # Agrupa por session_id para calcular estatísticas
     log("Calculando estatísticas por sessão...")
+    
+
+    df['_is_anonymous'] = df['anonymous_id'] == df['unique_user_id']
+    
     sessao_stats = df.groupby('session_id').agg(
         inicio_sessao=('event_ts', 'min'),
         fim_sessao=('event_ts', 'max'),
         qtd_eventos=('event_id', 'count'),
         qtd_listings_unicos=('listing_id', 'nunique'),
-        # Identifica se é usuário anônimo (user_id é NaN)
-        is_anonymous=('user_id', lambda x: x.isna().all())
+        is_anonymous=('original_user_id', lambda x: x.isna().all())
     )
     
     # Calcula duração das sessões
@@ -43,13 +76,9 @@ def main(
     log("\n--- Estatísticas de Eventos por Sessão ---", True)
     stats = sessao_stats['qtd_eventos'].describe(percentiles=[0.25, 0.5, 0.75, 0.9, 0.99])
     print(stats)
-    
-    # Filtra dados para plotagem (remove outliers)
-    log(f"\nFiltrando sessões entre {min_session_length} e {max_session_length} eventos...", True)
-    df_plot = sessao_stats[sessao_stats['qtd_eventos'] >= min_session_length]
-    df_plot = df_plot[df_plot['qtd_eventos'] <= max_session_length]
-    log(f"Total de sessões após filtro: {len(df_plot):_}")
-    
+
+    df_plot = sessao_stats
+
     # Gera gráfico CDF geral
     log("\nGerando gráfico CDF geral...", True)
     plot_cdf(
@@ -119,17 +148,12 @@ def main(
 
 if __name__ == "__main__":
     config = get_config()
-    spark = make_spark()
-
-    session_data_pipeline = SessionDataPipeline(
-        spark=spark,
-    )
 
     min_session_length = config['data_preparation']['min_session_length']
     max_session_length = config['data_preparation']['max_session_length']
 
     main(
-        events_path='notebooks/events.csv',
+        events_path='outputs/data/sessions.csv',
         min_session_length=min_session_length,
-        max_session_length=max_session_length
+        max_session_length=max_session_length,
     )

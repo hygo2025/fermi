@@ -8,11 +8,13 @@ from src.utils.enviroment import get_config
 class SessionDataPipeline:
     def __init__(self,
                  spark: SparkSession,
+                 recbole_format: bool = True,
                  output_path: str = None,
                  start_date: str = None,
                  end_date: str = None,
                  ):
         project_config = get_config()
+        self.recbole_format = recbole_format
 
         # Build pipeline config
         raw_data_config = project_config['raw_data']
@@ -116,25 +118,29 @@ class SessionDataPipeline:
 
         return df
 
-    def prepare_sessions(self, df):
+    def prepare_sessions(self, df, recbole_format=False):
         """
         Prepara sessões removendo APENAS repetições consecutivas (A->A),
         mas mantendo retornos (A->B->A).
+        
+        Args:
+            df: DataFrame com eventos brutos
+            recbole_format: Se True, retorna apenas colunas user_id, item_id, timestamp.
+                          Se False, mantém todas as colunas originais.
         """
         log(" Preparando sessões com deduplicação consecutiva...")
 
-        # 1. Seleção Básica e Conversão de TS
-        df = df.select(
-            F.col('session_id').alias('user_id'),
-            F.col('listing_id').alias('item_id'),
-            F.col('event_ts').alias('timestamp')
-        ).filter(
+        # 1. Criar colunas auxiliares (preservando todas originais)
+        df = df.withColumn('original_user_id', F.col('user_id'))
+        df = df.withColumn('user_id', F.col('session_id'))
+        df = df.withColumn('item_id', F.col('listing_id'))
+        df = df.withColumn('timestamp', F.unix_timestamp(F.col('event_ts')))
+        
+        # Filtrar registros com valores nulos essenciais
+        df = df.filter(
             F.col('user_id').isNotNull() &
             F.col('item_id').isNotNull() &
             F.col('timestamp').isNotNull()
-        ).withColumn(
-            'timestamp',
-            F.unix_timestamp(F.col('timestamp'))
         )
 
         # 2. Definir Janela para olhar o item anterior
@@ -153,10 +159,14 @@ class SessionDataPipeline:
             (F.col("prev_item_id").isNull())
         )
 
-        # 5. Limpeza final
-        df_clean = df_clean.select('user_id', 'item_id', 'timestamp')
+        # 5. Remover colunas auxiliares
+        df_clean = df_clean.drop("prev_item_id", "tie_breaker")
 
-        # Ordenação final para garantir a sequência no arquivo .inter
+        # 6. Aplicar seleção de colunas se formato RecBole
+        if recbole_format:
+            df_clean = df_clean.select('user_id', 'item_id', 'timestamp')
+
+        # Ordenação final para garantir a sequência
         df_clean = df_clean.orderBy('user_id', 'timestamp')
 
         # Log de impacto
@@ -243,8 +253,7 @@ class SessionDataPipeline:
         # 3. Filtra eventos de interação
         df = self.filter_interaction_events(df)
 
-        # 4. Prepara sessões
-        df = self.prepare_sessions(df)
+        df = self.prepare_sessions(df, recbole_format=self.recbole_format)
 
         # 5. Filtra sessões por comprimento
         min_session_len = self.config.get('min_session_length', 2)
