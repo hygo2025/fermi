@@ -2,8 +2,8 @@
 
 k:
   type: quniform
-  low: 100
-  high: 1000
+  min: 100
+  max: 1000
   q: 50
 
 sample_size:
@@ -16,25 +16,25 @@ similarity:
 
 lambda_spw:
   type: uniform
-  low: 1.0
-  high: 2.0
+  min: 1.0
+  max: 2.0
 
 lambda_snh:
   type: uniform
-  low: 1.0
-  high: 10.0
+  min: 1.0
+  max: 10.0
 
 lambda_inh:
   type: uniform
-  low: 1.0
-  high: 5.0
+  min: 1.0
+  max: 5.0
 
 lambda_ipw:
   type: uniform
-  low: 1.0
-  high: 2.0
+  min: 1.0
+  max: 2.0
 
 lambda_idf:
   type: uniform
-  low: 1.0
-  high: 10.0
+  min: 1.0
+  max: 10.0
