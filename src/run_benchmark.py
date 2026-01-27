@@ -30,9 +30,6 @@ from src.models import (
     POPRecommender, 
     RPOPRecommender, 
     SPOPRecommender,
-    VSKNNRecommender,
-    STANRecommender,
-    VSTANRecommender
 )
 from src.utils import log
 from src.utils.enviroment import get_config
@@ -43,9 +40,6 @@ CUSTOM_MODELS = {
     'POP': POPRecommender,
     'RPOP': RPOPRecommender,
     'SPOP': SPOPRecommender,
-    'VSKNN': VSKNNRecommender,
-    'STAN': STANRecommender,
-    'VSTAN': VSTANRecommender,
 }
 
 MODEL_CONFIG_DIRS = ['neural', 'factorization', 'baselines']

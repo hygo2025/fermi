@@ -1,0 +1,70 @@
+# Herda configuração base
+dataset: realestate
+data_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole
+
+# -----------------------------------------------------------------------------
+# FIELD MAPPINGS
+# -----------------------------------------------------------------------------
+USER_ID_FIELD: user_id
+ITEM_ID_FIELD: item_id
+TIME_FIELD: timestamp
+SESSION_ID_FIELD: user_id
+
+load_col:
+  inter: [user_id, item_id, timestamp]
+
+# -----------------------------------------------------------------------------
+# EVALUATION PROTOCOL - NEGATIVE SAMPLING PARA TUNING
+# -----------------------------------------------------------------------------
+eval_args:
+  split:
+    LS: valid_and_test
+  order: TO
+  group_by: user
+  mode:
+    valid: uni100  # Validação rápida: 1 positivo + 99 negativos
+    test: uni100   # Durante tuning, teste também usa negative sampling
+
+# Configuração de negative sampling
+eval_neg_sample_args:
+  distribution: uniform  # Amostragem uniforme
+  sample_num: 99        # 1 positivo + 99 negativos = 100 total
+
+# -----------------------------------------------------------------------------
+# METRICS (mesmas do benchmark final)
+# -----------------------------------------------------------------------------
+metrics: [Recall, MRR, NDCG, Hit]
+topk: [5, 10, 20]
+valid_metric: MRR@10
+
+# -----------------------------------------------------------------------------
+# SESSION CONFIGURATION
+# -----------------------------------------------------------------------------
+MAX_ITEM_LIST_LENGTH: 50
+
+# -----------------------------------------------------------------------------
+# TRAINING DEFAULTS - OTIMIZADO PARA VELOCIDADE
+# -----------------------------------------------------------------------------
+epochs: 30              # Menos épocas (vs 60 no benchmark)
+train_batch_size: 4096  # Maior batch = mais rápido
+eval_batch_size: 4096
+learning_rate: 0.001
+train_neg_sample_args: ~
+
+# Early stopping mais agressivo
+stopping_step: 5        # Patience reduzido (vs 10 no benchmark)
+valid_metric_bigger: true
+
+# -----------------------------------------------------------------------------
+# ENVIRONMENT
+# -----------------------------------------------------------------------------
+gpu_id: 0
+use_gpu: true
+seed: 42
+reproducibility: true
+
+# -----------------------------------------------------------------------------
+# LOGGING - SIMPLIFICADO
+# -----------------------------------------------------------------------------
+log_wandb: false  # Desabilita wandb durante tuning (muito overhead)
+show_progress: false

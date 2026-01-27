@@ -1,0 +1,19 @@
+# ItemKNN (Item-based K-Nearest Neighbors)
+# RecBole native implementation
+# Reference: https://recbole.io/docs/user_guide/model/general/itemknn.html
+
+model: ItemKNN
+
+# KNN Parameters
+k: 100                    # Number of nearest neighbors
+knn_method: item          # Method: 'item' for ItemKNN, 'user' for UserKNN
+shrink: 0                 # Shrinkage parameter for similarity computation
+
+# Training parameters
+epochs: 1                 # Non-parametric model, only needs 1 epoch to build similarity matrix
+train_batch_size: 4096
+eval_batch_size: 4096
+
+# Evaluation
+valid_metric: MRR@10
+stopping_step: 1000
