@@ -98,7 +98,7 @@ clean: ## Remove cache, logs, resultados e checkpoints salvos (Reset total)
 	rm -rf outputs/saved/* 2>/dev/null || true
 	rm -rf log_tensorboard/* 2>/dev/null || true
 	rm -rf log/* 2>/dev/null || true
-	rm -rf wandb/* 2>/dev/null || true
+	#rm -rf wandb/* 2>/dev/null || true
 
 # -----------------------------------------------------------------------------
 ##@ Desenvolvimento
