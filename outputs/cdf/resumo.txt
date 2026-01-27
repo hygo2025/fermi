@@ -82,3 +82,5 @@ Gráfico salvo em: outputs/cdf/cdf_sessoes_logados.svg
 Análise concluída! Gráficos salvos em outputs/cdf/
 
 Process finished with exit code 0
+
+V-SKNN, STAN, V-STAN

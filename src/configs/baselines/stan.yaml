@@ -1,0 +1,23 @@
+# STAN (Session-based Temporal Attention Network - KNN variant)
+# Extends V-SKNN with temporal decay functions
+
+model: STAN
+
+# KNN Parameters
+k: 500                    # Number of nearest neighbors
+sample_size: 5000         # Sample size for efficiency (0 = use all sessions)
+similarity: cosine        # Similarity function (cosine, jaccard)
+
+# STAN Temporal Parameters
+lambda_spw: 1.02          # Sequential position weight (exponential decay)
+lambda_snh: 5             # Session neighborhood decay in days
+lambda_inh: 2.05          # Item position decay in neighbor sessions
+
+# No training epochs needed (non-parametric)
+epochs: 1
+train_batch_size: 4096
+eval_batch_size: 4096
+
+# Early stopping disabled for KNN
+stopping_step: 1000
+valid_metric: MRR@10

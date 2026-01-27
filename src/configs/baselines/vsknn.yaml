@@ -1,0 +1,23 @@
+# V-SKNN (Vector Session-based KNN)
+# Session-based KNN with vector-based similarity
+
+model: VSKNN
+
+# KNN Parameters
+k: 500                    # Number of nearest neighbors
+sample_size: 5000         # Sample size for efficiency (0 = use all sessions)
+similarity: cosine        # Similarity function (cosine, jaccard)
+
+# Weighting schemes
+weighting: div            # Position weight for current session (same, div, linear, log, quadratic)
+weighting_score: div      # Score decay for neighbor items (same, div, linear, log, quadratic)
+normalize: true           # Normalize final scores
+
+# No training epochs needed (non-parametric)
+epochs: 1
+train_batch_size: 4096
+eval_batch_size: 4096
+
+# Early stopping disabled for KNN
+stopping_step: 1000
+valid_metric: MRR@10

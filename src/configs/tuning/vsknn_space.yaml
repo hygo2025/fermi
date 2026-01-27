@@ -1,0 +1,27 @@
+# Hyperparameter search space for V-SKNN
+
+k:
+  type: quniform
+  low: 100
+  high: 1000
+  q: 50
+
+sample_size:
+  type: choice
+  values: [1000, 2000, 5000, 10000]
+
+similarity:
+  type: choice
+  values: [cosine, jaccard]
+
+weighting:
+  type: choice
+  values: [same, div, linear, log, quadratic]
+
+weighting_score:
+  type: choice
+  values: [same, div, linear, log, quadratic]
+
+normalize:
+  type: choice
+  values: [true, false]

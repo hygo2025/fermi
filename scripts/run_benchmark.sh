@@ -16,6 +16,9 @@ MODELS=(
     "Random"
     "RPOP"
     "SPOP"
+    "VSKNN"
+    "STAN"
+    "VSTAN"
 )
 
 if [[ $# -gt 0 ]]; then
