@@ -69,6 +69,24 @@ eval_args:
   #mode:
     #valid: uni100  # Validação rápida durante treino/tuning
     #test: full     # Teste final rigoroso após escolher melhor modelo
+# -----------------------------------------------------------------------------
+# Configs de tuning
+# -----------------------------------------------------------------------------
+#eval_args:
+#  split:
+#    LS: valid_and_test
+#  order: TO
+#  group_by: user
+#  mode:
+#    valid: uni100  # Validação rápida: 1 positivo + 99 negativos
+#    test: uni100   # Durante tuning, teste também usa negative sampling
+#
+## Configuração de negative sampling
+#eval_neg_sample_args:
+#  distribution: uniform  # Amostragem uniforme
+#  sample_num: 99        # 1 positivo + 99 negativos = 100 total
+# -----------------------------------------------------------------------------
+
 
 #eval_step: 3
 # -----------------------------------------------------------------------------

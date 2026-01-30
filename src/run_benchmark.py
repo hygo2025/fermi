@@ -162,9 +162,6 @@ class BenchmarkRunner:
 
             log(f" Resultados: {test_result}")
 
-            # Restaura handlers originais do logger
-            root_logger.handlers.clear()
-            root_logger.handlers.extend(original_handlers)
 
             return results
 
@@ -172,13 +169,7 @@ class BenchmarkRunner:
             log(f" ERRO ao executar {model_name}: {e}")
             import traceback
             traceback.print_exc()
-            
-            # Restaura handlers em caso de erro também
-            root_logger = logging.getLogger()
-            if 'original_handlers' in locals():
-                root_logger.handlers.clear()
-                root_logger.handlers.extend(original_handlers)
-            
+
             return {
                 'model': model_name,
                 'dataset': dataset_name,

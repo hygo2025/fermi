@@ -2,23 +2,21 @@
 set -euo pipefail
 
 MODELS=(
-    "GRU4Rec"
-    "POP"
-    "FOSSIL"
     "FPMC"
-    "BERT4Rec"
+    "FOSSIL"
     "Caser"
-    "GCSAN"
+    "STAMP"
+    "GRU4Rec"
     "NARM"
     "SASRec"
     "SRGNN"
-    "STAMP"
+    "GCSAN"
+    "BERT4Rec"
+    "POP"
     "Random"
     "RPOP"
     "SPOP"
-    "VSKNN"
-    "STAN"
-    "VSTAN"
+    "ItemKNN"
 )
 
 if [[ $# -gt 0 ]]; then

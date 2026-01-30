@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-REMAINING_MODELS=("VSKNN" "STAN" "VSTAN" "FPMC" "FOSSIL" "Caser" "STAMP" "GRU4Rec" "NARM" "SASRec" "SRGNN" "GCSAN" "BERT4Rec")
+REMAINING_MODELS=("ItemKNN" "FPMC" "FOSSIL" "Caser" "STAMP" "GRU4Rec" "NARM" "SASRec" "SRGNN" "GCSAN" "BERT4Rec")
 
 MAX_EVALS=${MAX_EVALS:-150}
 ALGO=${ALGO:-bayes}
