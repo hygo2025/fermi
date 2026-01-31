@@ -1,15 +1,10 @@
 model: STAMP
 
-
-# --- Arquitetura de Atenção de Curto Prazo ---
-# Liu et al. (2018) - Foca na última interação vs média da sessão
 embedding_size: 64
-hidden_size: 64          # Camadas de atenção interna
+hidden_size: 64
 
-# --- Regularização ---
-dropout_prob: 0.3        # Dropout padrão para as camadas MLP
-mom: 0.1                 # Momentum para otimização (específico do STAMP no RecBole)
+dropout_prob: 0.3
+mom: 0.1
 
-# --- Otimização ---
-loss_type: 'CE'          # Cross-Entropy padrão
-learning_rate: 0.005     # STAMP geralmente performa melhor com LR levemente maior que RNNs
+loss_type: 'CE'
+learning_rate: 0.005

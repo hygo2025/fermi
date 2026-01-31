@@ -1,29 +1,19 @@
 model: SASRec
 
+n_layers: 2
+n_heads: 1
+hidden_size: 128
+inner_size: 256
 
-# --- Arquitetura Transformer Unidirecional ---
-# Baseado em Kang & McAuley (2018)
-n_layers: 2              # 2 blocos são suficientes para capturar dependências em sessões curtas
-n_heads: 1               # Single-head attention é suficiente para d=64
-hidden_size: 128          # Dimensão do embedding (d)
-inner_size: 256          # Camada feed-forward (4x hidden_size)
-
-# --- Configuração de Sequência ---
-# Alinhado com a limpeza de dados do seu benchmark (teto de 50 eventos)
 MAX_ITEM_LIST_LENGTH: 50
 
-# --- Regularização ---
-# O paper recomenda dropout alto (0.5) para datasets com alta esparsidade (Cold-start)
 hidden_dropout_prob: 0.5
 attn_dropout_prob: 0.5
 dropout_prob: 0.5
-weight_decay: 0.0        # Adam já lida com a regularização via dropout
+weight_decay: 0.0
 
-# --- Otimização ---
-# Loss Type: Adaptado para 'CE' (Cross-Entropy) para maximizar performance em Full Ranking.
-# O original usa BCE, mas CE é o padrão-ouro para benchmarks competitivos no RecBole.
 loss_type: 'CE'
 learning_rate: 0.001
-hidden_act: 'gelu'       # Ativação padrão
+hidden_act: 'gelu'
 layer_norm_eps: 1e-12
 initializer_range: 0.02

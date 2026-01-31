@@ -1,29 +1,17 @@
 model: GCSAN
 
+embedding_size: 64
+hidden_size: 64
+inner_size: 256
 
-# --- Arquitetura Híbrida (GNN + Attention) ---
-# Baseado em Xu et al. (2019):
-# Combina a representação local (Session Graph) com global (Self-Attention)
+step: 1
 
-# Dimensões
-embedding_size: 64       # Tamanho do vetor de item
-hidden_size: 64          # Tamanho das camadas ocultas (deve igualar embedding_size)
-inner_size: 256          # Tamanho da FFN (Feed Forward Network), geralmente 4x hidden
+n_layers: 1
+n_heads: 1
+weight: 0.6
 
-# --- Configuração do Grafo (Local Context) ---
-step: 1                  # Profundidade de propagação da GNN.
-                         # 1 é ideal para sessões curtas (DataZAP media=5) para evitar ruído.
+dropout_prob: 0.3
+reg_weight: 1e-5
 
-# --- Configuração da Atenção (Global Context) ---
-n_layers: 1              # Camadas de self-attention. O paper sugere que 1 é suficiente para SBRS.
-n_heads: 1               # Cabeças de atenção.
-weight: 0.6              # Fator de mistura (weight * Global + (1-weight) * Local).
-                         # 0.6 dá leve preferência à coerência global da sessão.
-
-# --- Regularização ---
-dropout_prob: 0.3        # Dropout aplicado tanto na GNN quanto na Atenção
-reg_weight: 1e-5         # Regularização L2 para evitar overfitting em itens de cauda longa
-
-# --- Otimização ---
-loss_type: 'CE'          # Cross-Entropy (Softmax) para Full Ranking
+loss_type: 'CE'
 learning_rate: 0.001

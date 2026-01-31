@@ -1,17 +1,10 @@
 model: NARM
 
-
-# --- Arquitetura Híbrida (RNN + Attention) ---
-# Li et al. (2017) - Captura o propósito principal da sessão vs comportamento sequencial
 embedding_size: 64
 hidden_size: 64
-n_layers: 1              # Camadas da GRU interna
+n_layers: 1
 
-# --- Regularização Específica do Paper ---
-# O NARM aplica dropouts diferentes para embeddings e hidden states.
-# [0.25, 0.5] é a configuração clássica do paper original para datasets de e-commerce.
 dropout_probs: [0.25, 0.5]
 
-# --- Otimização ---
-loss_type: 'CE'          # NARM foi desenhado nativamente com Cross-Entropy
+loss_type: 'CE'
 learning_rate: 0.001

@@ -12,8 +12,8 @@ MODELS=(
     "SRGNN"
     "GCSAN"
     "BERT4Rec"
-    "Pop"      # RecBole native baseline
-    "Random"   # RecBole native baseline
+    "Pop"
+    "Random"
     "ItemKNN"
 )
 

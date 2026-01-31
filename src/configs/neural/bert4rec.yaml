@@ -1,31 +1,24 @@
 model: BERT4Rec
 
-# --- Arquitetura do Transformer (Ajustada para Escala 28M/416k) ---
-# Sun et al. (2019) mostram que 2 camadas são suficientes para sessões curtas.
-n_layers: 2              # Mantenha 2. Aumentar para 3 ou 4 trará ganho marginal e lentidão extrema.
-n_heads: 2               # 2 cabeças para dividir o embedding de 64.
-hidden_size: 64          # REDUZIDO para 64 (vs 128 do SASRec).
-                         # Motivo: BERT é muito mais lento e consome mais VRAM.
-                         # Com 416k itens, a matriz de saída é gigante. 64 é o "doce ponto" de eficiência [3].
-inner_size: 256          # Geralmente 4x o hidden_size (64 * 4).
+n_layers: 2
+n_heads: 2
+hidden_size: 64
+inner_size: 256
 
 # --- Configuração de Sequência ---
-MAX_ITEM_LIST_LENGTH: 50 # Obrigatório: deve ser igual ao SASRec e ao corte do dataset.
+MAX_ITEM_LIST_LENGTH: 50
 
 # --- Treinamento e Otimização ---
-train_batch_size: 1024   # REDUZIDO (vs 2048 do SASRec).
-                         # O BERT precisa guardar mais estados intermediários para o backpropagation.
+train_batch_size: 1024
 learning_rate: 0.001
 
 # --- Tarefa Cloze (Máscara) ---
-# O paper sugere rho entre 0.2 e 0.6. Para sessões curtas (seu caso), valores maiores ajudam a gerar amostras.
-# Mas começamos conservadores em 0.2 para estabilidade.
 mask_ratio: 0.2
 
 # --- Regularização ---
-hidden_dropout_prob: 0.3 # Dropout moderado para evitar overfitting
+hidden_dropout_prob: 0.3
 attn_dropout_prob: 0.3
-loss_type: 'CE'          # Cross-Entropy sobre todos os 416k itens
+loss_type: 'CE'
 
 # --- Estabilidade ---
 clip_grad_norm:

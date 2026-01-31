@@ -1,16 +1,8 @@
 model: FPMC
 
+embedding_size: 64
 
-# --- Arquitetura de Cadeias de Markov Fatoradas ---
-# Rendle et al. (2010)
-embedding_size: 64       # Dimensão latente para UI (User-Item) e IL (Item-LastItem)
-
-# --- Otimização ---
-# FPMC usa nativamente BPR (Bayesian Personalized Ranking) para otimização de pares.
-# O framework de avaliação (Full Ranking) funciona independentemente da loss de treino.
 loss_type: 'BPR'
-learning_rate: 0.01      # FPMC geralmente requer LR maior que Deep Learning (0.001 -> 0.01)
+learning_rate: 0.01
 
-# --- Regularização ---
-# Valores padrão sugeridos pela literatura para evitar overfitting em matrizes esparsas
-reg_weights: [0.001, 0.001, 0.001] # Regularização para [User, Item, Transition]
+reg_weights: [0.001, 0.001, 0.001]

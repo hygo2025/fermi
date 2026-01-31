@@ -23,10 +23,10 @@ def make_spark(
         .config("spark.sql.files.maxPartitionBytes", "256m")
         .config("spark.sql.files.openCostInBytes", "8m")
         .config("spark.shuffle.manager", "sort")
-        .config("spark.sql.autoBroadcastJoinThreshold", "512m")# isso tem de ficar em um valor bem baixo talvez algo proximo a 10m
+        .config("spark.sql.autoBroadcastJoinThreshold", "512m")
         .config("spark.sql.parquet.filterPushdown", "true")
         .config("spark.sql.parquet.enableVectorizedReader", "true")
-        .config("spark.sql.execution.arrow.pyspark.enabled", "true") # isso é um teste para deixar o toPandas mais rapido
+        .config("spark.sql.execution.arrow.pyspark.enabled", "true")
         .config("spark.driver.bindAddress", "127.0.0.1")
         .config("spark.driver.host", "127.0.0.1")
         .config("spark.driver.extraJavaOptions", "-XX:+UseG1GC -XX:MaxGCPauseMillis=200 -XX:+ExitOnOutOfMemoryError")

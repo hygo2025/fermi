@@ -28,8 +28,6 @@ from recbole.utils import init_seed
 from src.utils import log
 from src.utils.enviroment import get_config
 
-# All models now use RecBole native implementations
-# No custom baseline models needed
 CUSTOM_MODELS = {}
 
 MODEL_CONFIG_DIRS = ['neural', 'factorization', 'baselines']
@@ -39,7 +37,6 @@ class BenchmarkRunner:
         self.project_config = get_config()
         self.timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
 
-        # Output directory
         if output_dir:
             self.output_dir = Path(output_dir)
         else:
@@ -48,7 +45,6 @@ class BenchmarkRunner:
 
         self.output_dir.mkdir(parents=True, exist_ok=True)
 
-        # Setup logging
         self._setup_logging()
 
     def _setup_logging(self):
@@ -77,7 +73,6 @@ class BenchmarkRunner:
         else:
             raise FileNotFoundError(f"Config não encontrado para modelo: {model_name}")
 
-        # Merge com project config (projeto override modelo)
         config_dict = {**self.project_config, **model_config}
         config_dict['dataset'] = dataset_name
         config_dict['data_path'] = self.project_config['data_path']
@@ -86,7 +81,6 @@ class BenchmarkRunner:
         model_output_dir.mkdir(parents=True, exist_ok=True)
         config_dict['checkpoint_dir'] = str(model_output_dir / 'checkpoints')
         
-        # Wandb: define nome do run via variável de ambiente (RecBole não aceita via config)
         if config_dict.get('log_wandb', False):
             import os
             os.environ['WANDB_NAME'] = f"{model_name}_{self.timestamp}"
@@ -94,51 +88,41 @@ class BenchmarkRunner:
         return config_dict
 
     def run_single_model(self, model_name: str, dataset_name: str) -> dict:
-        """Executa um único modelo"""
         log(f"{'=' * 80}")
-        log(f"Executando: {model_name} | Dataset: {dataset_name}")
+        log(f"Running: {model_name} | Dataset: {dataset_name}")
         log(f"{'=' * 80}")
 
         try:
-            # Load config
             config_dict = self._get_model_config(model_name, dataset_name)
 
-            # Para custom models, usa template e override
             if model_name in CUSTOM_MODELS:
                 config = Config(model='GRU4Rec', config_dict=config_dict)
                 config['model'] = model_name
             else:
                 config = Config(model=model_name, config_dict=config_dict)
 
-            # Init seed
             init_seed(config['seed'], config['reproducibility'])
 
-            # Load dataset
-            log("Carregando dataset...")
+            log("Loading dataset...")
             dataset = create_dataset(config)
             train_data, valid_data, test_data = data_preparation(config, dataset)
 
-            # Create model
-            log("Instanciando modelo...")
+            log("Initializing model...")
             if model_name in CUSTOM_MODELS:
                 model_class = CUSTOM_MODELS[model_name]
                 model = model_class(config, train_data.dataset).to(config['device'])
             else:
-                # RecBole models are loaded automatically via Config
                 from recbole.utils import get_model
                 model = get_model(model_name)(config, train_data.dataset).to(config['device'])
 
-            # Create trainer
             trainer = Trainer(config, model)
 
-            # Train
-            log("Iniciando treinamento...")
+            log("Training...")
             best_valid_score, best_valid_result = trainer.fit(
                 train_data, valid_data, show_progress=True
             )
 
-            # Test
-            log("Avaliando no conjunto de teste...")
+            log("Evaluating...")
             test_result = trainer.evaluate(test_data, show_progress=True)
 
             # Format results

@@ -1,32 +1,14 @@
 model: Caser
 
-
-# --- Arquitetura de Embedding ---
-# Tang & Wang (2018) sugerem d entre 50 e 100.
-# Fixamos 64 para manter paridade com BERT4Rec/SASRec e eficiência de memória.
 embedding_size: 64
 
-# --- Configuração Convolucional (A "Imagem" da Sessão) ---
-# Baseado na análise de regras de associação do paper (Fig 2),
-# a maioria dos padrões sequenciais ocorre em saltos de 1 a 3 itens.
-# filter_sizes: Altura dos filtros horizontais. [1-3] captura
-# bigramas, trigramas e padrões de 4 itens, cobrindo a média de sessões do DataZAP (~5).
 filter_sizes: [1-3]
+n_v: 4
+n_h: 16
 
-# Quantidade de filtros (Feature Detectors)
-# Valores conservadores escolhidos devido à alta esparsidade do imobiliário.
-n_v: 4                   # Número de filtros verticais (captura correlação item-feature latente)
-n_h: 16                  # Número de filtros horizontais para CADA tamanho em filter_sizes
+dropout_prob: 0.4
+reg_weight: 1e-4
 
-# --- Otimização e Regularização ---
-# O paper enfatiza o uso de Dropout para evitar overfitting na matriz de embedding.
-dropout_prob: 0.4        # Um pouco mais alto (0.4) devido à brevidade das sessões reais
-reg_weight: 1e-4         # Regularização L2 leve nos pesos (Weight Decay)
-
-# --- Aprendizado ---
-# Loss type: O paper usa BCE (Binary Cross Entropy) com amostragem negativa.
-# POREM, para benchmarks de Full Ranking (sua metodologia), Cross Entropy (CE)
-# oferece melhor convergência e métricas de ranking mais estáveis.
 loss_type: 'CE'
 learning_rate: 0.001
-weight_decay: 0.0        # Otimizador Adam já possui decaimento adaptativo
+weight_decay: 0.0

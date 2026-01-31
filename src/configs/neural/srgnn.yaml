@@ -1,19 +1,12 @@
 model: SRGNN
 
-
-# --- Arquitetura de Redes Neurais em Grafos ---
-# Baseado em Wu et al. (2019) - Session-based Recommendation with GNN
 embedding_size: 64
-hidden_size: 64          # Deve igualar embedding_size
-step: 1                  # Profundidade da propagação na GNN (1 captura vizinhos diretos)
-train_batch_size: 1024   # GNNs consomem muita VRAM com estruturas de grafo. Reduza se der OOM.
+hidden_size: 64
+step: 1
+train_batch_size: 1024
 
-# --- Otimização ---
-# SR-GNN usa nativamente Cross-Entropy (Softmax) sobre todos os candidatos
 loss_type: 'CE'
 learning_rate: 0.001
 
-# --- Regularização ---
-# O paper sugere uma penalidade L2 (weight_decay) leve de 1e-5
 weight_decay: 1e-5
-dropout_prob: 0.1        # Dropout baixo pois a estrutura do grafo já regulariza
+dropout_prob: 0.1

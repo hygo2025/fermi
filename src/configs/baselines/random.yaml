@@ -1,4 +1,3 @@
-model: Random  # RecBole native model (general recommendation)
+model: Random
 
-# Training (baselines não treinam de verdade)
 epochs: 1

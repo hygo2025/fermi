@@ -1,14 +1,10 @@
 model: FOSSIL
 
-# --- Arquitetura Híbrida (Similarity + Markov) ---
-# He & McAuley (2016) - Fusion of Similarity Models and Markov Chains
 embedding_size: 64
 
-# --- Hiperparâmetros Específicos do Paper ---
-order_len: 1             # Ordem da Cadeia de Markov. O paper mostra que L=1 é ideal para esparsidade.
-alpha: 0.2               # Peso de balanço entre Long-Term e Short-Term (0.2 é o padrão do paper).
+order_len: 1
+alpha: 0.2
 
-# --- Otimização ---
-loss_type: 'BPR'         # FOSSIL é otimizado para ranking pairwise
-learning_rate: 0.01      # Similar ao FPMC
+loss_type: 'BPR'
+learning_rate: 0.01
 reg_weights: [0.001, 0.001]

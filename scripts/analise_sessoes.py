@@ -15,28 +15,25 @@ def load_or_generate_events(events_path: str) -> pd.DataFrame:
     events_file = Path(events_path)
     
     if events_file.exists():
-        log(f"Carregando eventos de {events_path}...")
+        log(f"Loading events from {events_path}...")
         df = pd.read_csv(events_path, parse_dates=['event_ts'])
-        log(f"{len(df):_} eventos carregados")
+        log(f"{len(df):_} events loaded")
         return df
     
-    log(f"Arquivo {events_path} não encontrado. Executando pipeline...")
+    log(f"File {events_path} not found. Running pipeline...")
     spark = make_spark()
     
-    # Executa pipeline
     pipeline = SessionDataPipeline(spark=spark, recbole_format=False)
     result = pipeline.run()
     
-    log("Convertendo resultado para pandas...")
+    log("Converting to pandas...")
     df = result.toPandas()
     
-    # Cria diretório se não existir
     events_file.parent.mkdir(parents=True, exist_ok=True)
     
-    # Salva CSV
-    log(f"Salvando dados em {events_path}...")
+    log(f"Saving to {events_path}...")
     df.to_csv(events_path, index=False)
-    log(f"{len(df):_} eventos salvos")
+    log(f"{len(df):_} events saved")
     spark.stop()
     
     return df
@@ -47,7 +44,6 @@ def main(
         min_session_length: int = 2,
         max_session_length: int = 50,
         ):
-    # Carrega ou gera dados
     df = load_or_generate_events(events_path)
     log(f"Total de eventos carregados: {len(df):_}")
     
