@@ -8,5 +8,5 @@ train_batch_size: 1024
 loss_type: 'CE'
 learning_rate: 0.001
 
-weight_decay: 1e-5
+weight_decay: 0.00001
 dropout_prob: 0.1

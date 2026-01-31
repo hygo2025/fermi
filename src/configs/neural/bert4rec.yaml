@@ -22,4 +22,4 @@ loss_type: 'CE'
 
 # --- Estabilidade ---
 clip_grad_norm:
-  max_norm: 5.0e
+  max_norm: 5.0
