@@ -12,6 +12,7 @@ MODELS=(
     "SRGNN"
     "GCSAN"
     "BERT4Rec"
+    "BPR"
     "Pop"
     "Random"
     "ItemKNN"

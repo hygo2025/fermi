@@ -1,0 +1,8 @@
+model: BPR
+
+embedding_size: 64
+
+loss_type: 'BPR'
+learning_rate: 0.01
+
+reg_weight: 1e-4
