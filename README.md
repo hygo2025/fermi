@@ -8,7 +8,7 @@ O projeto implementa um pipeline completo de avaliação de sistemas de recomend
 
 1. Preparação e filtragem de dados brutos
 2. Criação de dataset em formato RecBole
-3. Treinamento de 10 modelos (4 neurais + 2 fatoração + 4 baselines)
+3. Treinamento de 13 modelos (4 neurais + 2 fatoração + 4 baselines + 3 KNN)
 4. Avaliação com métricas padrão (Recall, MRR, NDCG, Hit)
 5. Agregação de resultados
 6. Análise visual via API web
@@ -120,7 +120,21 @@ Estatísticas típicas:
 - **RPOP**: Popularidade recente (últimos 7 dias)
 - **SPOP**: Popularidade por sessão
 
-Configurações comuns:
+### Modelos KNN (Neighbor-based)
+
+**V-SKNN** (Jannach & Ludewig, 2017)
+- Session-based KNN com similaridade vetorial
+- Config: k=500, similarity=cosine, weighting=div
+
+**STAN** (Garg et al., 2019)
+- V-SKNN + decaimento temporal
+- Config: k=500, lambda_spw=1.02, lambda_snh=5 dias, lambda_inh=2.05
+
+**V-STAN** (Ludewig et al., 2018)
+- STAN + pesos IDF para itens raros
+- Config: k=500, lambda_idf=5.0, todos os parâmetros STAN
+
+Configurações comuns (neurais/fatoração):
 - Early stopping (patience 10)
 - Gradient clipping (max_norm 5.0)
 - Batch size: 4096
@@ -146,6 +160,11 @@ make benchmark-baselines
 
 # Apenas modelos de fatoração
 make benchmark-factor
+
+# Apenas modelos KNN
+python src/run_benchmark.py --model VSKNN
+python src/run_benchmark.py --model STAN
+python src/run_benchmark.py --model VSTAN
 
 # Teste rápido (apenas GRU4Rec)
 make benchmark-quick
@@ -396,3 +415,28 @@ DOI: 10.1007/s10506-023-09378-3
 
 MIT License
 
+
+## Item Canonicalization (Correção de Cold Start)
+
+**Problema:** Imóveis idênticos recebem novos IDs ao reentrar no catálogo, zerando o histórico de interações.
+
+**Solução:** `canonical_listing_id` agrupa imóveis fisicamente similares via fingerprint:
+- Localização: lat/lon arredondado (4 casas decimais ~11m)
+- Área: bucketizada em 5m²
+- Tipologia: bedrooms + suites + unit_type
+- Hash: MD5 do fingerprint
+
+**Resultado:** 58% de redução de esparsidade (506k IDs → 210k clusters)
+
+**Uso:** O `listing_id_numeric` é gerado **por canonical_id**, não por anonymized_id. Todos os membros do mesmo cluster compartilham o mesmo ID numérico nos modelos.
+
+```python
+# Mapeamento gerado automaticamente em listings_pipeline.py
+# anonymized_listing_id -> canonical_listing_id -> listing_id_numeric
+# Exemplo: LISTING_A, LISTING_B, LISTING_C (mesmo cluster) → ID numérico 1
+```
+
+**Validação:**
+```bash
+python scripts/validate_canonical_id.py
+```

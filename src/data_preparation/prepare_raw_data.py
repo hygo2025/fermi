@@ -25,7 +25,7 @@ def main():
     except Exception as e:
         log(f"ERRO: {e}")
         import traceback
-        traceback.log_exc()
+        traceback.print_exc()
         sys.exit(1)
         
     finally:
