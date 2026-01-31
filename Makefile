@@ -42,10 +42,12 @@ data: ## Prepara o dataset para o RecBole
 ##@ Execução de Benchmark
 # -----------------------------------------------------------------------------
 benchmark: ## Executa benchmark. Opcional: MODEL=... (vazio = todos os modelos)
-	@if [ -n "$(MODEL)" ]; then \
-		./scripts/run_benchmark.sh "$(MODEL)"; \
+	@GROUP_NAME="run_$(shell date +%m-%d_%H-%M)"; \
+	echo "[INFO] W&B Group: $$GROUP_NAME"; \
+	if [ -n "$(MODEL)" ]; then \
+		WANDB_RUN_GROUP="$$GROUP_NAME" ./scripts/run_benchmark.sh "$(MODEL)"; \
 	else \
-		./scripts/run_benchmark.sh; \
+		WANDB_RUN_GROUP="$$GROUP_NAME" ./scripts/run_benchmark.sh; \
 	fi
 
 # -----------------------------------------------------------------------------

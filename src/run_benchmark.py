@@ -84,6 +84,8 @@ class BenchmarkRunner:
         if config_dict.get('log_wandb', False):
             import os
             os.environ['WANDB_NAME'] = f"{model_name}_{self.timestamp}"
+            if 'wandb_group' in config_dict and config_dict['wandb_group']:
+                os.environ['WANDB_RUN_GROUP'] = config_dict['wandb_group']
         
         return config_dict
 

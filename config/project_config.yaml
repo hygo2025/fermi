@@ -136,7 +136,8 @@ show_progress: true
 
 # Logs
 log_wandb: true
-wandb_project: "fermi"  # Nome do projeto no wandb
+wandb_project: "fermi"
+wandb_group: ""  # Opcional: agrupa múltiplos runs (ex: "baseline_comparison")
 tensorboard: true
 
 # -----------------------------------------------------------------------------
