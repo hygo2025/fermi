@@ -113,26 +113,16 @@ Estatísticas típicas:
 - Hybrid FISM + FPMC
 - Config: order 3, alpha 0.5, 256 embedding, reg_weight 0.0001, 50 epochs
 
-### Baselines
+### Baselines (RecBole Native)
 
+- **Pop**: Popularidade global
 - **Random**: Recomendação aleatória
-- **POP**: Popularidade global
-- **RPOP**: Popularidade recente (últimos 7 dias)
-- **SPOP**: Popularidade por sessão
 
 ### Modelos KNN (Neighbor-based)
 
-**V-SKNN** (Jannach & Ludewig, 2017)
-- Session-based KNN com similaridade vetorial
-- Config: k=500, similarity=cosine, weighting=div
-
-**STAN** (Garg et al., 2019)
-- V-SKNN + decaimento temporal
-- Config: k=500, lambda_spw=1.02, lambda_snh=5 dias, lambda_inh=2.05
-
-**V-STAN** (Ludewig et al., 2018)
-- STAN + pesos IDF para itens raros
-- Config: k=500, lambda_idf=5.0, todos os parâmetros STAN
+**ItemKNN** (Sarwar et al., 2001)
+- Item-based collaborative filtering
+- Config: k=500, similarity=cosine
 
 Configurações comuns (neurais/fatoração):
 - Early stopping (patience 10)

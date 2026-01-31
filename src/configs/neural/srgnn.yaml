@@ -6,6 +6,7 @@ model: SRGNN
 embedding_size: 64
 hidden_size: 64          # Deve igualar embedding_size
 step: 1                  # Profundidade da propagação na GNN (1 captura vizinhos diretos)
+train_batch_size: 1024   # GNNs consomem muita VRAM com estruturas de grafo. Reduza se der OOM.
 
 # --- Otimização ---
 # SR-GNN usa nativamente Cross-Entropy (Softmax) sobre todos os candidatos

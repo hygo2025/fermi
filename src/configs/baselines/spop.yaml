@@ -1,4 +1,0 @@
-model: SPOP
-
-# Training (1 época para calcular popularidade global)
-epochs: 1

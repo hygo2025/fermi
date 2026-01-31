@@ -5,7 +5,7 @@ model: SASRec
 # Baseado em Kang & McAuley (2018)
 n_layers: 2              # 2 blocos são suficientes para capturar dependências em sessões curtas
 n_heads: 1               # Single-head attention é suficiente para d=64
-hidden_size: 64          # Dimensão do embedding (d)
+hidden_size: 128          # Dimensão do embedding (d)
 inner_size: 256          # Camada feed-forward (4x hidden_size)
 
 # --- Configuração de Sequência ---

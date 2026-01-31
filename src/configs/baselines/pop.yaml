@@ -1,4 +1,4 @@
-model: POP
+model: Pop  # RecBole native model (general recommendation)
 
-# Training (1 época para contar frequências)
+# Training (baselines não treinam de verdade)
 epochs: 1

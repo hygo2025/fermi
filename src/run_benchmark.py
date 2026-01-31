@@ -25,22 +25,12 @@ from recbole.data import create_dataset, data_preparation
 from recbole.trainer import Trainer
 from recbole.utils import init_seed
 
-from src.models import (
-    RandomRecommender, 
-    POPRecommender, 
-    RPOPRecommender, 
-    SPOPRecommender,
-)
 from src.utils import log
 from src.utils.enviroment import get_config
 
-# Custom models need special handling
-CUSTOM_MODELS = {
-    'Random': RandomRecommender,
-    'POP': POPRecommender,
-    'RPOP': RPOPRecommender,
-    'SPOP': SPOPRecommender,
-}
+# All models now use RecBole native implementations
+# No custom baseline models needed
+CUSTOM_MODELS = {}
 
 MODEL_CONFIG_DIRS = ['neural', 'factorization', 'baselines']
 
