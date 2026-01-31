@@ -5,21 +5,16 @@ n_heads: 2
 hidden_size: 64
 inner_size: 256
 
-# --- Configuração de Sequência ---
 MAX_ITEM_LIST_LENGTH: 50
 
-# --- Treinamento e Otimização ---
 train_batch_size: 1024
 learning_rate: 0.001
 
-# --- Tarefa Cloze (Máscara) ---
 mask_ratio: 0.2
 
-# --- Regularização ---
 hidden_dropout_prob: 0.3
 attn_dropout_prob: 0.3
 loss_type: 'CE'
 
-# --- Estabilidade ---
 clip_grad_norm:
   max_norm: 5.0

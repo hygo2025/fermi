@@ -1,6 +1,6 @@
 # =============================================================================
-# Este arquivo define a configuração GLOBAL do benchmark.
-# Configurações específicas de modelos ficam em src/configs/{neural,baselines,factorization}/
+# Global benchmark configuration
+# Model-specific configs are in src/configs/{neural,baselines,factorization}/
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -137,7 +137,7 @@ show_progress: true
 # Logs
 log_wandb: true
 wandb_project: "fermi"
-wandb_group: ""  # Opcional: agrupa múltiplos runs (ex: "baseline_comparison")
+wandb_group: ""
 tensorboard: true
 
 # -----------------------------------------------------------------------------

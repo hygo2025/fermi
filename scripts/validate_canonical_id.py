@@ -102,14 +102,11 @@ def calculate_sparsity_reduction(mapping_df, events_df=None):
             .select(F.avg("count").alias("avg_interactions_original"))
         )
         
-        # Interações por ID canônico
-        # Nota: Se events_df não tiver canonical_id, fazer JOIN
-        # Se já tiver, usar diretamente
         canonical_interactions = (
             events_df
             .join(mapping_df.select("anonymized_listing_id", "canonical_listing_id"), 
                   on="anonymized_listing_id",
-                  how="left")  # LEFT para manter todos eventos
+                  how="left")
             .groupBy("canonical_listing_id")
             .count()
             .select(F.avg("count").alias("avg_interactions_canonical"))

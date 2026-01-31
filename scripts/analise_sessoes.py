@@ -45,10 +45,10 @@ def main(
         max_session_length: int = 50,
         ):
     df = load_or_generate_events(events_path)
-    log(f"Total de eventos carregados: {len(df):_}")
+    log(f"Total events loaded: {len(df):_}")
     
     # Agrupa por session_id para calcular estatísticas
-    log("Calculando estatísticas por sessão...")
+    log("Calculating session statistics...")
     
 
     df['_is_anonymous'] = df['anonymous_id'] == df['unique_user_id']
@@ -69,7 +69,7 @@ def main(
     print(sessao_stats.head(5))
     
     # Estatísticas descritivas
-    log("\n--- Estatísticas de Eventos por Sessão ---", True)
+    log("\n--- Session Event Statistics ---", True)
     stats = sessao_stats['qtd_eventos'].describe(percentiles=[0.25, 0.5, 0.75, 0.9, 0.99])
     print(stats)
 
@@ -81,7 +81,7 @@ def main(
         df=df_plot,
         col='qtd_eventos',
         max_limit=max_session_length,
-        title='CDF - Distribuição Acumulada de Eventos por Sessão',
+        title='CDF - Cumulative Event Distribution per Session',
         color='#007acc',
         save_path='outputs/cdf/cdf_sessoes_geral.svg'
     )

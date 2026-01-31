@@ -71,7 +71,7 @@ class BenchmarkRunner:
                     model_config = yaml.safe_load(f)
                 break
         else:
-            raise FileNotFoundError(f"Config não encontrado para modelo: {model_name}")
+            raise FileNotFoundError(f"Config not found for model: {model_name}")
 
         config_dict = {**self.project_config, **model_config}
         config_dict['dataset'] = dataset_name
@@ -229,8 +229,8 @@ def main():
             break
 
     if not model_found:
-        log(f"ERRO: Config não encontrado para modelo '{args.model}'")
-        log(f"Procurado em: src/configs/{{neural,baselines,factorization}}/{args.model.lower()}.yaml")
+        log(f"ERROR: Config not found for model '{args.model}'")
+        log(f"Searched in: src/configs/{{neural,baselines,factorization}}/{args.model.lower()}.yaml")
         sys.exit(1)
 
     # Load dataset from config if not specified

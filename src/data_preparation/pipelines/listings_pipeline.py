@@ -45,7 +45,7 @@ def create_canonical_id(df: DataFrame) -> DataFrame:
         coalesce(col("bedrooms").cast("string"), lit("0"))
     )
     
-    # Suites: verificar se coluna existe, senão usar "0"
+    
     if "suites" in df.columns:
         df = df.withColumn(
             "suites_normalized",
@@ -110,7 +110,7 @@ def deduplicate_and_map_ids(df: DataFrame) -> tuple[DataFrame, DataFrame]:
     """
     Deduplicação e criação de mapeamentos:
     1. Filtra apenas listings ACTIVE
-    2. Mantém versão mais recente de cada anonymized_listing_id
+
     3. Cria mapeamento: anonymized_listing_id -> listing_id_numeric + canonical_listing_id
     
     Returns:

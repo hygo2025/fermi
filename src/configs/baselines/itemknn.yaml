@@ -1,4 +1,4 @@
 model: ItemKNN
 
-k: 100                   # Número de vizinhos (Ludewig et al. sugerem entre 100-500)
-shrink: 0.0              # Shrinkage para suavizar similaridades raras
+k: 100
+shrink: 0.0
