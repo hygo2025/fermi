@@ -1,16 +1,16 @@
 model: FPMC
 
-# Training Overrides
-neg_sampling:
-  uniform: 1             # FPMC exige amostragem negativa explícita
-train_neg_sample_args:
-  distribution: uniform
-  sample_num: 1
 
-# Model Parameters
-embedding_size: 128      # Fatoração tende a saturar acima de 128
-reg_weight: 0.0001
+# --- Arquitetura de Cadeias de Markov Fatoradas ---
+# Rendle et al. (2010)
+embedding_size: 64       # Dimensão latente para UI (User-Item) e IL (Item-LastItem)
 
-# Gradient Clipping
-clip_grad_norm:
-  max_norm: 5.0
+# --- Otimização ---
+# FPMC usa nativamente BPR (Bayesian Personalized Ranking) para otimização de pares.
+# O framework de avaliação (Full Ranking) funciona independentemente da loss de treino.
+loss_type: 'BPR'
+learning_rate: 0.01      # FPMC geralmente requer LR maior que Deep Learning (0.001 -> 0.01)
+
+# --- Regularização ---
+# Valores padrão sugeridos pela literatura para evitar overfitting em matrizes esparsas
+reg_weights: [0.001, 0.001, 0.001] # Regularização para [User, Item, Transition]

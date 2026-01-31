@@ -1,19 +1,27 @@
 model: BERT4Rec
 
-# Model Parameters
-n_layers: 2              # BERT é pesado, 2 camadas bastam para sequências curtas (<50)
-n_heads: 4               # Mais cabeças para capturar contextos bidirecionais
-hidden_size: 256
-inner_size: 1024
-hidden_dropout_prob: 0.3
-attn_dropout_prob: 0.3
-hidden_act: 'gelu'
+# --- Arquitetura do Transformer ---
+# Baseado em Sun et al. (2019) e análise de datasets esparsos (Beauty/Steam)
+n_layers: 2              # Profundidade ideal para sessões curtas (<50 itens) para evitar overfitting
+n_heads: 4               # Divide o embedding de 256 em 4 subespaços de 64
+hidden_size: 256         # Dimensão do vetor latente (deve ser divisível por n_heads)
+inner_size: 1024         # Feed-forward layer size (padrão é 4x hidden_size)
+
+# --- Regularização ---
+hidden_dropout_prob: 0.3 # Dropout na camada densa
+attn_dropout_prob: 0.3   # Dropout na matriz de atenção
+weight_decay: 0.01       # Decaimento de peso para o otimizador Adam
+
+# --- Configuração Específica do BERT (Cloze Task) ---
+mask_ratio: 0.2          # Probabilidade de mascarar um item na sequência de treino
+hidden_act: 'gelu'       # Ativação Gaussiana (padrão do BERT)
 layer_norm_eps: 1e-12
+initializer_range: 0.02
 
-# BERT Specific
-mask_ratio: 0.2          # Mascara 20% dos itens (Cloze task)
-loss_type: 'CE'
+# --- Otimização ---
+loss_type: 'CE'          # Cross-Entropy (padrão para prever o item mascarado)
+learning_rate: 0.001     # Learning rate padrão da literatura
 
-# Gradient Clipping
+# --- Estabilidade Numérica ---
 clip_grad_norm:
-  max_norm: 5.0
+  max_norm: 5.0          # Previne explosão de gradiente

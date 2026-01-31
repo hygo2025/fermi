@@ -3,12 +3,14 @@ from pyspark.sql import SparkSession
 
 def make_spark(
         memory_storage_fraction: float = 0.2,
+        local_dir: str = "/mnt/hdd/hygo2025/tmp"
 ) -> SparkSession:
     return (
         SparkSession.builder
         .appName("spark")
         .master("local[*]")
         .config("spark.driver.memory", "112g")
+        .config("spark.local.dir", local_dir)
         .config("spark.driver.maxResultSize", "8g")
         .config("spark.sql.shuffle.partitions", 200)
         .config("spark.default.parallelism", 200)

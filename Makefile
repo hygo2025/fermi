@@ -25,6 +25,9 @@ install: ## Instala todas as dependências do projeto em modo editável
 	@echo "[INFO] Installing dependencies..."
 	pip install -e .
 
+install: $(VENV_DIR)
+	@echo "Virtual environment ready!"
+
 # -----------------------------------------------------------------------------
 ##@ Pipeline de Dados
 # -----------------------------------------------------------------------------

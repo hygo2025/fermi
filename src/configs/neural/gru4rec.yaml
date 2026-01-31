@@ -1,12 +1,18 @@
 model: GRU4Rec
 
-# Model Parameters
-embedding_size: 256      # Aumentado de 128 para 256 (Padrão SOTA)
-hidden_size: 256         # Deve igualar o embedding_size
-num_layers: 1            # 1 camada é suficiente e mais estável para sessões
-dropout_prob: 0.3
-loss_type: 'CE'
 
-# Gradient Clipping
-clip_grad_norm:
-  max_norm: 5.0
+# --- Arquitetura Recorrente ---
+# Hidasi et al. (2016) mostram que 1 camada é suficiente para a maioria dos datasets de sessão.
+embedding_size: 64       # Tamanho do vetor de item
+hidden_size: 64          # Tamanho do estado oculto da GRU (deve casar com embedding para eficiência)
+num_layers: 1            # Camadas GRU empilhadas. Mantemos 1 para evitar overfitting em sessões curtas.
+
+# --- Regularização ---
+dropout_prob: 0.3        # Dropout na entrada e na saída da GRU.
+                         # Valor de 0.3 é conservador para datasets de média densidade (DataZAP).
+
+# --- Otimização ---
+# Loss Type: Cross-Entropy (CE) é escolhida para compatibilidade com a avaliação Full Ranking.
+# O original propôs BPR/TOP1, mas CE demonstrou performance superior em benchmarks recentes (RecBole defaults).
+loss_type: 'CE'
+learning_rate: 0.001

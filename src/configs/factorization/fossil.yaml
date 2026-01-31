@@ -1,12 +1,14 @@
 model: FOSSIL
 
-# Model Parameters
-embedding_size: 128      # Similar ao FPMC, mantemos menor que os Transformers
-order: 3                 # Olha para os últimos 3 itens (Markov Order)
-alpha: 0.5               # Peso do termo de similaridade
-reg_weight: 0.0001
-loss_type: 'CE'
+# --- Arquitetura Híbrida (Similarity + Markov) ---
+# He & McAuley (2016) - Fusion of Similarity Models and Markov Chains
+embedding_size: 64
 
-# Gradient Clipping
-clip_grad_norm: 
-  max_norm: 5.0
+# --- Hiperparâmetros Específicos do Paper ---
+order_len: 1             # Ordem da Cadeia de Markov. O paper mostra que L=1 é ideal para esparsidade.
+alpha: 0.2               # Peso de balanço entre Long-Term e Short-Term (0.2 é o padrão do paper).
+
+# --- Otimização ---
+loss_type: 'BPR'         # FOSSIL é otimizado para ranking pairwise
+learning_rate: 0.01      # Similar ao FPMC
+reg_weights: [0.001, 0.001]
