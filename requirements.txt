@@ -35,6 +35,7 @@ torch>=1.10.0
 torchaudio
 torchvision
 tqdm>=4.62.0
+wandb>=0.15.0
 
 # Web API dependencies
 geopy==2.4.1
