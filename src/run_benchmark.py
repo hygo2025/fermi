@@ -129,6 +129,12 @@ class BenchmarkRunner:
             log("Evaluating...")
             test_result = trainer.evaluate(test_data, show_progress=True)
 
+            # Log test metrics to W&B
+            if config.get('log_wandb', False):
+                import wandb
+                if wandb.run is not None:
+                    wandb.log({f'test_{k}': v for k, v in test_result.items()})
+
             # Format results
             results = {
                 'model': model_name,
