@@ -79,7 +79,9 @@ class BenchmarkRunner:
         
         model_output_dir = self.output_dir / model_name
         model_output_dir.mkdir(parents=True, exist_ok=True)
-        config_dict['checkpoint_dir'] = str(model_output_dir / 'checkpoints')
+        # Use shared checkpoint_dir from project_config.yaml for dataset cache
+        # Model checkpoints will be saved with unique names
+        config_dict['show_progress'] = True
         
         if config_dict.get('log_wandb', False):
             import os
