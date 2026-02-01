@@ -9,9 +9,9 @@ COLOR_GREEN   = \033[32m
 # -----------------------------------------------------------------------------
 # HELP SYSTEM
 # -----------------------------------------------------------------------------
-help: ## Exibe esta mensagem de ajuda
+help: ## Show available commands
 	@echo ""
-	@echo "Fermi Benchmark - Comandos Disponíveis"
+	@echo "Available Commands"
 	@echo "----------------------------------------------------------------"
 	@awk 'BEGIN {FS = ":.*##"; printf "\nUsage:\n  make $(COLOR_YELLOW)<target>$(COLOR_RESET)\n"} \
 	/^[a-zA-Z_-]+:.*?##/ { printf "  $(COLOR_CYAN)%-25s$(COLOR_RESET) %s\n", $$1, $$2 } \
@@ -19,39 +19,41 @@ help: ## Exibe esta mensagem de ajuda
 	@echo ""
 
 # -----------------------------------------------------------------------------
-##@ Setup & Instalação
+##@ Setup & Installation
 # -----------------------------------------------------------------------------
-install: ## Instala todas as dependências do projeto em modo editável
+install: ## Install all project dependencies
 	@echo "[INFO] Installing dependencies..."
 	pip install -e .
 
 # -----------------------------------------------------------------------------
-##@ Pipeline de Dados
+##@ Data Pipeline
 # -----------------------------------------------------------------------------
-prepare-raw-data: ## Processa dados brutos (listings + events) - Etapa 0
-	@echo "[INFO] Processing raw data (listings + events)..."
+prepare-raw-data: ## Process raw data (listings + events)
+	@echo "[INFO] Processing raw data..."
 	python src/data_preparation/prepare_raw_data.py
-	@echo "[INFO] Raw data processing complete."
+	@echo "[INFO] Done."
 
-data: ## Prepara o dataset para o RecBole (Global Temporal Leave-One-Out)
-	@echo "[INFO] Starting data preparation pipeline..."
+data: ## Prepare dataset for RecBole
+	@echo "[INFO] Starting data pipeline..."
 	python src/data_preparation/recbole_data_pipeline.py
-	@echo "[INFO] Dataset preparation complete."
+	@echo "[INFO] Done."
 
 # -----------------------------------------------------------------------------
-##@ Execução de Benchmark
+##@ Benchmark Execution
 # -----------------------------------------------------------------------------
-benchmark: ## Executa benchmark. Opcional: MODEL=... (vazio = todos os modelos)
-	@if [ -n "$(MODEL)" ]; then \
-		./scripts/run_benchmark.sh "$(MODEL)"; \
+benchmark: ## Run benchmark. Optional: MODEL=...
+	@GROUP_NAME="run_$(shell date +%m-%d_%H-%M)"; \
+	echo "[INFO] W&B Group: $$GROUP_NAME"; \
+	if [ -n "$(MODEL)" ]; then \
+		WANDB_RUN_GROUP="$$GROUP_NAME" ./scripts/run_benchmark.sh "$(MODEL)"; \
 	else \
-		./scripts/run_benchmark.sh; \
+		WANDB_RUN_GROUP="$$GROUP_NAME" ./scripts/run_benchmark.sh; \
 	fi
 
 # -----------------------------------------------------------------------------
 ##@ Hyperparameter Tuning
 # -----------------------------------------------------------------------------
-tune: ## Executa hyperparameter tuning. MODEL=... para um modelo, vazio para todos
+tune: ## Run hyperparameter tuning. MODEL=... or empty for all
 	@if [ -n "$(MODEL)" ]; then \
 		DATASET_ARG="$(if $(DATASET),--dataset $(DATASET),)"; \
 		ALGO_ARG="$(if $(ALGO),--algo $(ALGO),)"; \
@@ -67,29 +69,24 @@ tune: ## Executa hyperparameter tuning. MODEL=... para um modelo, vazio para tod
 		MAX_EVALS=$(or $(MAX_EVALS),150) ALGO=$(or $(ALGO),bayes) COOLDOWN=$(or $(COOLDOWN),60) DATASET=$(DATASET) ./scripts/tune_remaining_models.sh; \
 	fi
 
-
 # -----------------------------------------------------------------------------
 ##@ API Server
 # -----------------------------------------------------------------------------
-api: ## Inicia servidor API (Requer: MODEL=nome_do_modelo ou path.pth)
+api: ## Start API server (Requires: MODEL=filename.pth)
 	@if [ -z "$(MODEL)" ]; then \
-		echo "[ERROR] MODEL argument is required."; \
+		echo "[ERROR] MODEL argument required."; \
 		echo "[INFO] Usage: make api MODEL=GRU4Rec"; \
-		echo "[INFO]    or: make api MODEL=outputs/saved/GRU4Rec-Dec-31-2024_12-34-56.pth"; \
 		exit 1; \
 	fi
 	@echo "[INFO] Starting API with model: $(MODEL)..."
 	python src/api/app.py --model $(MODEL)
 
 # -----------------------------------------------------------------------------
-##@ Manutenção e Limpeza
+##@ Maintenance
 # -----------------------------------------------------------------------------
-clean: ## Remove cache, logs, resultados e checkpoints salvos (Reset total)
-	@echo "[INFO] Cleaning all artifacts (results, logs, checkpoints)..."
+clean: ## Remove cache, logs and checkpoints
+	@echo "[INFO] Cleaning artifacts..."
 	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
-	find . -type f -name "*.pyc" -delete 2>/dev/null || true
-	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
-	find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true	find . -type d -name "__pycache__" -exec rm -rf {} + 2>/dev/null || true
 	find . -type f -name "*.pyc" -delete 2>/dev/null || true
 	find . -type d -name ".pytest_cache" -exec rm -rf {} + 2>/dev/null || true
 	find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
@@ -98,10 +95,9 @@ clean: ## Remove cache, logs, resultados e checkpoints salvos (Reset total)
 	rm -rf outputs/saved/* 2>/dev/null || true
 	rm -rf log_tensorboard/* 2>/dev/null || true
 	rm -rf log/* 2>/dev/null || true
-	#rm -rf wandb/* 2>/dev/null || true
 
 # -----------------------------------------------------------------------------
-##@ Desenvolvimento
+##@ Development
 # -----------------------------------------------------------------------------
-format: ## Formata o código fonte (black)
+format: ## Format source code (black)
 	black src/ --line-length=100

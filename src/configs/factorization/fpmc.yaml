@@ -1,16 +1,8 @@
 model: FPMC
 
-# Training Overrides
-neg_sampling:
-  uniform: 1             # FPMC exige amostragem negativa explícita
-train_neg_sample_args:
-  distribution: uniform
-  sample_num: 1
+embedding_size: 64
 
-# Model Parameters
-embedding_size: 128      # Fatoração tende a saturar acima de 128
-reg_weight: 0.0001
+loss_type: 'BPR'
+learning_rate: 0.01
 
-# Gradient Clipping
-clip_grad_norm:
-  max_norm: 5.0
+reg_weights: [0.001, 0.001, 0.001]

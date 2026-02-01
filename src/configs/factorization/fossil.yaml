@@ -1,12 +1,10 @@
 model: FOSSIL
 
-# Model Parameters
-embedding_size: 128      # Similar ao FPMC, mantemos menor que os Transformers
-order: 3                 # Olha para os últimos 3 itens (Markov Order)
-alpha: 0.5               # Peso do termo de similaridade
-reg_weight: 0.0001
-loss_type: 'CE'
+embedding_size: 64
 
-# Gradient Clipping
-clip_grad_norm: 
-  max_norm: 5.0
+order_len: 1
+alpha: 0.2
+
+loss_type: 'BPR'
+learning_rate: 0.01
+reg_weights: [0.001, 0.001]

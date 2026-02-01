@@ -21,14 +21,8 @@ from src.utils import log, make_spark
 
 
 def analyze_cluster_distribution(mapping_df):
-    """
-    Analisa a distribuição de tamanho dos clusters canônicos
-    
-    Args:
-        mapping_df: DataFrame com colunas [anonymized_listing_id, canonical_listing_id, listing_id_numeric]
-    """
     log("\n" + "-"*80)
-    log("ANÁLISE DE DISTRIBUIÇÃO DE CLUSTERS")
+    log("CLUSTER DISTRIBUTION ANALYSIS")
     log("-"*80)
     
     cluster_sizes = (
@@ -40,9 +34,8 @@ def analyze_cluster_distribution(mapping_df):
         )
     )
     
-    # Estatísticas descritivas
     stats = cluster_sizes.select("num_listings_agrupados").describe()
-    log("\n Estatísticas de Tamanho de Clusters:")
+    log("\n Cluster Size Statistics:")
     stats.show()
     
     # Distribuição por faixas
@@ -109,14 +102,11 @@ def calculate_sparsity_reduction(mapping_df, events_df=None):
             .select(F.avg("count").alias("avg_interactions_original"))
         )
         
-        # Interações por ID canônico
-        # Nota: Se events_df não tiver canonical_id, fazer JOIN
-        # Se já tiver, usar diretamente
         canonical_interactions = (
             events_df
             .join(mapping_df.select("anonymized_listing_id", "canonical_listing_id"), 
                   on="anonymized_listing_id",
-                  how="left")  # LEFT para manter todos eventos
+                  how="left")
             .groupBy("canonical_listing_id")
             .count()
             .select(F.avg("count").alias("avg_interactions_canonical"))

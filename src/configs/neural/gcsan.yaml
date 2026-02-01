@@ -1,15 +1,17 @@
 model: GCSAN
 
-# Model Parameters
-n_layers: 1              # Camadas de GNN
-n_heads: 4               # Cabeças de Atenção
-hidden_size: 256
-inner_size: 1024
-step: 1
-weight_decay: 0.0001     # GNNs precisam de leve regularização L2
-dropout_prob: 0.3
-loss_type: 'CE'
+embedding_size: 64
+hidden_size: 64
+inner_size: 256
 
-# Clipping
-clip_grad_norm:
-  max_norm: 5.0
+step: 1
+
+n_layers: 1
+n_heads: 1
+weight: 0.6
+
+dropout_prob: 0.3
+reg_weight: 0.00001
+
+loss_type: 'CE'
+learning_rate: 0.001

@@ -45,7 +45,7 @@ def resolve_user_identities(events: DataFrame) -> DataFrame:
 
     num_partitions = 512
     collision_threshold = 7
-    events = events.repartition(num_partitions, F.col("anonymized_listing_id"))
+    #events = events.repartition(num_partitions, F.col("anonymized_listing_id"))
 
     grouped = events.groupBy("anonymized_anonymous_id").agg(
         F.collect_list("anonymized_user_id").alias("user_id_list")
@@ -220,7 +220,7 @@ def save_events(spark: SparkSession, events: DataFrame) -> None:
     df = df.select(*first_columns, *remaining_columns)
 
     log(f"Salvando eventos com chaves numéricas em: {events_path}")
-    df.coalesce(8).write.mode("overwrite").partitionBy("dt").parquet(events_path)
+    df.write.mode("overwrite").partitionBy("dt").parquet(events_path)
 
     log("Eventos salvos com sucesso.")
 

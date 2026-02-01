@@ -15,28 +15,25 @@ def load_or_generate_events(events_path: str) -> pd.DataFrame:
     events_file = Path(events_path)
     
     if events_file.exists():
-        log(f"Carregando eventos de {events_path}...")
+        log(f"Loading events from {events_path}...")
         df = pd.read_csv(events_path, parse_dates=['event_ts'])
-        log(f"{len(df):_} eventos carregados")
+        log(f"{len(df):_} events loaded")
         return df
     
-    log(f"Arquivo {events_path} não encontrado. Executando pipeline...")
+    log(f"File {events_path} not found. Running pipeline...")
     spark = make_spark()
     
-    # Executa pipeline
     pipeline = SessionDataPipeline(spark=spark, recbole_format=False)
     result = pipeline.run()
     
-    log("Convertendo resultado para pandas...")
+    log("Converting to pandas...")
     df = result.toPandas()
     
-    # Cria diretório se não existir
     events_file.parent.mkdir(parents=True, exist_ok=True)
     
-    # Salva CSV
-    log(f"Salvando dados em {events_path}...")
+    log(f"Saving to {events_path}...")
     df.to_csv(events_path, index=False)
-    log(f"{len(df):_} eventos salvos")
+    log(f"{len(df):_} events saved")
     spark.stop()
     
     return df
@@ -47,12 +44,11 @@ def main(
         min_session_length: int = 2,
         max_session_length: int = 50,
         ):
-    # Carrega ou gera dados
     df = load_or_generate_events(events_path)
-    log(f"Total de eventos carregados: {len(df):_}")
+    log(f"Total events loaded: {len(df):_}")
     
     # Agrupa por session_id para calcular estatísticas
-    log("Calculando estatísticas por sessão...")
+    log("Calculating session statistics...")
     
 
     df['_is_anonymous'] = df['anonymous_id'] == df['unique_user_id']
@@ -73,7 +69,7 @@ def main(
     print(sessao_stats.head(5))
     
     # Estatísticas descritivas
-    log("\n--- Estatísticas de Eventos por Sessão ---", True)
+    log("\n--- Session Event Statistics ---", True)
     stats = sessao_stats['qtd_eventos'].describe(percentiles=[0.25, 0.5, 0.75, 0.9, 0.99])
     print(stats)
 
@@ -85,7 +81,7 @@ def main(
         df=df_plot,
         col='qtd_eventos',
         max_limit=max_session_length,
-        title='CDF - Distribuição Acumulada de Eventos por Sessão',
+        title='CDF - Cumulative Event Distribution per Session',
         color='#007acc',
         save_path='outputs/cdf/cdf_sessoes_geral.svg'
     )

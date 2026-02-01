@@ -1,6 +1,6 @@
 # =============================================================================
-# Este arquivo define a configuração GLOBAL do benchmark.
-# Configurações específicas de modelos ficam em src/configs/{neural,baselines,factorization}/
+# Global benchmark configuration
+# Model-specific configs are in src/configs/{neural,baselines,factorization}/
 # =============================================================================
 
 # -----------------------------------------------------------------------------
@@ -65,10 +65,10 @@ eval_args:
     LS: valid_and_test  # Leave-One-Out Split: penúltimo (valid) + último (test)
   order: TO             # Temporal Ordering: ordena por timestamp ANTES do split
   group_by: user        # Agrupa por USER_ID_FIELD (session_id)
-  mode: full            # Full ranking: avalia contra todo o catálogo
-  #mode:
-    #valid: uni100  # Validação rápida durante treino/tuning
-    #test: full     # Teste final rigoroso após escolher melhor modelo
+  #mode: full            # Full ranking: avalia contra todo o catálogo
+  mode:
+    valid: uni100  # Validação rápida durante treino/tuning
+    test: full     # Teste final rigoroso após escolher melhor modelo
 # -----------------------------------------------------------------------------
 # Configs de tuning
 # -----------------------------------------------------------------------------
@@ -82,13 +82,13 @@ eval_args:
 #    test: uni100   # Durante tuning, teste também usa negative sampling
 #
 ## Configuração de negative sampling
-#eval_neg_sample_args:
-#  distribution: uniform  # Amostragem uniforme
-#  sample_num: 99        # 1 positivo + 99 negativos = 100 total
+eval_neg_sample_args:
+  distribution: uniform  # Amostragem uniforme
+  sample_num: 100        # 1 positivo + 99 negativos = 100 total
 # -----------------------------------------------------------------------------
 
 
-#eval_step: 3
+eval_step: 3
 # -----------------------------------------------------------------------------
 # METRICS
 # -----------------------------------------------------------------------------
@@ -105,13 +105,14 @@ MAX_ITEM_LIST_LENGTH: 50
 # TRAINING DEFAULTS
 # -----------------------------------------------------------------------------
 epochs: 60
+embedding_size: 64
 train_batch_size: 2048
-eval_batch_size: 4096
+eval_batch_size: 12288
 learning_rate: 0.001
 train_neg_sample_args: ~  # Disable negative sampling (full ranking)
 
 # Early stopping
-stopping_step: 10
+stopping_step: 3
 valid_metric_bigger: true
 
 # -----------------------------------------------------------------------------
@@ -135,7 +136,8 @@ show_progress: true
 
 # Logs
 log_wandb: true
-wandb_project: "fermi"  # Nome do projeto no wandb
+wandb_project: "fermi"
+wandb_group: ""
 tensorboard: true
 
 # -----------------------------------------------------------------------------

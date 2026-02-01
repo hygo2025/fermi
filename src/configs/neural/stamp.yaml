@@ -1,11 +1,10 @@
 model: STAMP
 
-# Model Parameters
-embedding_size: 256
-hidden_size: 256
-dropout_prob: 0.3
-loss_type: 'CE'
+embedding_size: 64
+hidden_size: 64
 
-# Gradient Clipping
-clip_grad_norm: 
-  max_norm: 5.0
+dropout_prob: 0.3
+mom: 0.1
+
+loss_type: 'CE'
+learning_rate: 0.005

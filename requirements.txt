@@ -8,12 +8,11 @@ jupyter>=1.0.0
 LibRecommender
 matplotlib
 matplotlib>=3.4.0
-numpy
-numpy>=1.21.0
+numpy<2.0.0
+numpy>=1.21.0,<2.0.0
 pandas
 pandas>=1.3.0
-pyarrow
-pyarrow>=6.0.0
+pyarrow>=11.0.0  # Required by PySpark 4.0.0 for Arrow optimization
 pympler>=1.0
 pyspark==4.0.0
 python-dateutil
@@ -36,6 +35,7 @@ torch>=1.10.0
 torchaudio
 torchvision
 tqdm>=4.62.0
+wandb>=0.15.0
 
 # Web API dependencies
 geopy==2.4.1

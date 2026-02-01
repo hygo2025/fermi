@@ -1,22 +1,4 @@
-# ItemKNN (Item-based K-Nearest Neighbors)
-# RecBole native implementation
-# Reference: https://recbole.io/docs/user_guide/model/general/itemknn.html
-# NOTE: This is a CPU-only model (uses NumPy/SciPy sparse matrices)
-
 model: ItemKNN
 
-# Device configuration
-device: cpu               # ItemKNN only uses CPU (NumPy/SciPy operations)
-
-# KNN Parameters (based on RecBole's tuning recommendations)
-k: 350                    # Number of nearest neighbors (recommended range: 10-1000)
-shrink: 0.0               # Shrinkage parameter (recommended range: 0-1000)
-
-# Training parameters
-epochs: 1                 # Non-parametric model, only needs 1 epoch to build similarity matrix
-train_batch_size: 4096
-eval_batch_size: 4096
-
-# Evaluation
-valid_metric: MRR@10
-stopping_step: 1000
+k: 100
+shrink: 0.0

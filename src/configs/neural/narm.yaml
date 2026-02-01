@@ -1,12 +1,10 @@
 model: NARM
 
-# Model Parameters
-embedding_size: 256
-hidden_size: 256         # Obrigatório ser igual ao embedding_size no NARM
+embedding_size: 64
+hidden_size: 64
 n_layers: 1
-dropout_probs: [0.25, 0.5] # [Hidden Dropout, Attention Dropout]
-loss_type: 'CE'
 
-# Gradient Clipping
-clip_grad_norm:
-  max_norm: 5.0
+dropout_probs: [0.25, 0.5]
+
+loss_type: 'CE'
+learning_rate: 0.001

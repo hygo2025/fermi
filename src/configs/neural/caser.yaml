@@ -1,13 +1,14 @@
 model: Caser
 
-# Model Parameters
-embedding_size: 64       # CNNs operam melhor com embeddings densos e menores
-n_v: 4                   # Filtros verticais
-n_h: 8                   # Filtros horizontais
-dropout_prob: 0.4        # Dropout alto é crítico em Caser
-reg_weight: 1e-4         # Regularização forte
-loss_type: 'CE'
+embedding_size: 64
 
-# Clipping
-clip_grad_norm:
-  max_norm: 5.0
+filter_sizes: [2, 3, 4]
+n_v: 4
+n_h: 16
+
+dropout_prob: 0.4
+reg_weight: 0.0001
+
+loss_type: 'CE'
+learning_rate: 0.001
+weight_decay: 0.0

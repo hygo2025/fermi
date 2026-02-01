@@ -8,23 +8,9 @@ from src.utils import log
 
 def create_canonical_id(df: DataFrame) -> DataFrame:
     """
-    Cria um ID canônico (canonical_listing_id) para agrupar imóveis fisicamente idênticos.
-    
-    Estratégia de Fingerprint:
-    1. Localização: lat_region/lon_region arredondados (4 casas decimais ~11m precisão) 
-       - Fallback para zip_code se coordenadas forem nulas
-    2. Área útil: Bucketizada em intervalos de 5m² 
-       - Nulos tratados como -1
-    3. Tipologia: bedrooms, suites (se existir), unit_type
-       - Nulos tratados como 0 ou "UNKNOWN"
-    
-    Args:
-        df: DataFrame com colunas de listings
-        
-    Returns:
-        DataFrame com coluna adicional 'canonical_listing_id' (MD5 hash)
+    Creates canonical ID for grouping physically identical properties.
+    Uses fingerprint based on: location (lat/lon), area, bedrooms, suites, unit_type.
     """
-    # 1. Tratar coordenadas geográficas (arredondar para 4 casas decimais)
     df = df.withColumn(
         "lat_normalized",
         spark_round(col("lat_region"), 4)
@@ -59,7 +45,7 @@ def create_canonical_id(df: DataFrame) -> DataFrame:
         coalesce(col("bedrooms").cast("string"), lit("0"))
     )
     
-    # Suites: verificar se coluna existe, senão usar "0"
+    
     if "suites" in df.columns:
         df = df.withColumn(
             "suites_normalized",
@@ -124,7 +110,7 @@ def deduplicate_and_map_ids(df: DataFrame) -> tuple[DataFrame, DataFrame]:
     """
     Deduplicação e criação de mapeamentos:
     1. Filtra apenas listings ACTIVE
-    2. Mantém versão mais recente de cada anonymized_listing_id
+
     3. Cria mapeamento: anonymized_listing_id -> listing_id_numeric + canonical_listing_id
     
     Returns:

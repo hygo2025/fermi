@@ -1,4 +1,6 @@
 model: Random
 
-# Training (baselines não treinam de verdade)
 epochs: 1
+
+eval_args:
+ mode: uni100

@@ -14,96 +14,72 @@ class RecBoleDataPipeline:
         self.session_data_pipeline = session_data_pipeline
 
     def save_inter_file(self, df, output_path: Path):
-        """Salva DataFrame como arquivo .inter do RecBole"""
-        log(f" Salvando arquivo .inter...")
+        log(f" Saving .inter file...")
         log(f"   Path: {output_path}")
 
-        # Converte para Pandas (cabe em memória após filtros)
         pdf = df.toPandas()
 
-        # Garante tipos corretos
         pdf['user_id'] = pdf['user_id'].astype(str)
         pdf['item_id'] = pdf['item_id'].astype(str)
         pdf['timestamp'] = pdf['timestamp'].astype(float)
 
-        # Ordena novamente (garantia)
         pdf = pdf.sort_values(['user_id', 'timestamp']).reset_index(drop=True)
 
-        # Cria diretório
         output_path.parent.mkdir(parents=True, exist_ok=True)
 
-        # Escreve arquivo com header RecBole
         with open(output_path, 'w') as f:
-            # Header: field_name:type
             f.write("user_id:token\titem_id:token\ttimestamp:float\n")
 
-            # Data (tab-separated)
             for _, row in pdf.iterrows():
                 f.write(f"{row['user_id']}\t{row['item_id']}\t{row['timestamp']}\n")
 
         size_mb = output_path.stat().st_size / (1024 * 1024)
-        log(f"    Arquivo salvo: {len(pdf):_} interações ({size_mb:.1f} MB)")
+        log(f"    File saved: {len(pdf):_} interactions ({size_mb:.1f} MB)")
 
-        return pdf  # Retorna pandas para reutilizar
+        return pdf
 
     def save_sessions_for_api(self, pdf, output_path: Path):
-        """Salva sessions em formato parquet para a API (recebe pandas DataFrame)"""
-        log(f" Salvando sessions para API...")
+        log(f" Saving sessions for API...")
         log(f"   Path: {output_path}")
 
-        # Renomeia colunas para formato esperado pela API
         pdf_api = pdf.copy()
         pdf_api.rename(columns={'user_id': 'session_id'}, inplace=True)
 
-        # Converte item_id para int
         pdf_api['item_id'] = pdf_api['item_id'].astype(int)
-
-        # Adiciona user_id (mesmo que session_id)
         pdf_api['user_id'] = pdf_api['session_id']
-
-        # Converte timestamp para datetime
         pdf_api['timestamp'] = pd.to_datetime(pdf_api['timestamp'], unit='s')
 
-        # Salva parquet
         output_path.parent.mkdir(parents=True, exist_ok=True)
         pdf_api.to_parquet(output_path, index=False)
 
         size_mb = output_path.stat().st_size / (1024 * 1024)
-        log(f"    Arquivo salvo: {len(pdf_api):_} interações ({size_mb:.1f} MB)")
-        log(f"    Sessões: {pdf_api['session_id'].nunique():_}")
-        log(f"    Itens: {pdf_api['item_id'].nunique():_}")
+        log(f"    File saved: {len(pdf_api):_} interactions ({size_mb:.1f} MB)")
+        log(f"    Sessions: {pdf_api['session_id'].nunique():_}")
+        log(f"    Items: {pdf_api['item_id'].nunique():_}")
 
     def run(self):
-        """Executa pipeline completo"""
         df = self.session_data_pipeline.run()
 
-        # Remove coluna auxiliar 'position' antes de salvar
         df = df.select('user_id', 'item_id', 'timestamp')
 
-        # Estatísticas finais
         count = df.count()
         n_users = df.select('user_id').distinct().count()
         n_items = df.select('item_id').distinct().count()
 
-        log(" ESTATÍSTICAS FINAIS:")
-        log(f"    {count:_} interações")
-        log(f"    {n_users:_} sessões")
-        log(f"    {n_items:_} itens únicos")
+        log(" FINAL STATISTICS:")
+        log(f"    {count:_} interactions")
+        log(f"    {n_users:_} sessions")
+        log(f"    {n_items:_} unique items")
 
-        # 8. Salva arquivo atômico .inter (e retorna pandas df)
         dataset_name = self.config.get('dataset_name', 'realestate')
         output_dir = Path(self.config['output_path']) / dataset_name
         inter_file = output_dir / f"{dataset_name}.inter"
 
         pdf = self.save_inter_file(df, inter_file)
-
-        # 9. Salva sessions para API (reutiliza pandas df)
         sessions_api_file = Path(self.config['output_path']) / 'sessions_for_api.parquet'
         self.save_sessions_for_api(pdf, sessions_api_file)
 
         log("" + "=" * 80)
-        log(" PIPELINE COMPLETO!")
-        log("=" * 80)
         log(f"Dataset: {dataset_name}")
         log(f"Arquivo: {inter_file}")
         log("Próximo passo:")

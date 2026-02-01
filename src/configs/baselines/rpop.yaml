@@ -1,4 +1,0 @@
-model: RPOP
-
-# Training (1 época para contar frequências recentes)
-epochs: 1

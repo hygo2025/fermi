@@ -85,7 +85,7 @@ class SessionDataPipeline:
         listings_path = self.config.get('listings_path')
 
         if not listings_path:
-            log("     listings_path não configurado, pulando filtro de localização")
+            log("     listings_path not configured, skipping location filter")
             return df
 
         log(" Filtrando por localização...")
@@ -98,8 +98,8 @@ class SessionDataPipeline:
         # target_cities = ['Vitória', 'Serra', 'Vila Velha', 'Cariacica', 'Viana', 'Guarapari', 'Fundão']
         # listings = listings.filter(F.col('city').isin(target_cities))
 
-        # target_states = ['Espírito Santo']
-        # listings = listings.filter(F.col('state').isin(target_states))
+        target_states = ['Minas Gerais']
+        listings = listings.filter(F.col('state').isin(target_states))
 
         listings_after = listings.count()
 
@@ -144,7 +144,7 @@ class SessionDataPipeline:
         )
 
         # 2. Definir Janela para olhar o item anterior
-        # Adicionamos um tie_breaker para garantir ordem estável em eventos do mesmo segundo
+        
         df = df.withColumn("tie_breaker", F.monotonically_increasing_id())
 
         window_spec = Window.partitionBy("user_id").orderBy("timestamp", "tie_breaker")
@@ -153,7 +153,7 @@ class SessionDataPipeline:
         df = df.withColumn("prev_item_id", F.lag("item_id").over(window_spec))
 
         # 4. Filtrar: Manter apenas se o item atual for DIFERENTE do anterior
-        # O primeiro item da sessão (prev is null) sempre fica.
+        
         df_clean = df.filter(
             (F.col("item_id") != F.col("prev_item_id")) |
             (F.col("prev_item_id").isNull())
