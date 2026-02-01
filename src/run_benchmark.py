@@ -116,7 +116,7 @@ class BenchmarkRunner:
             else:
                 from recbole.utils import get_model
                 model = get_model(model_name)(config, train_data.dataset).to(config['device'])
-
+            log("Initializing trainer...")
             trainer = Trainer(config, model)
 
             log("Training...")
