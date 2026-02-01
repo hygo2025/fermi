@@ -2,16 +2,16 @@
 set -euo pipefail
 
 MODELS=(
-    "Random"
-    "Pop"
+    #"Random"
+    #"Pop"
     "ItemKNN"
     "STAMP"
+    "BPR"
+    "FPMC"
     "SASRec"
     "GRU4Rec"
     "Caser"
     "NARM"
-    "BPR"
-    "FPMC"
     "FOSSIL"
     "BERT4Rec"
     "SRGNN"
