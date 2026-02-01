@@ -130,8 +130,8 @@ reproducibility: true
 # CHECKPOINT & LOGGING
 # -----------------------------------------------------------------------------
 checkpoint_dir: outputs/saved
-save_dataset: false
-save_dataloaders: false
+save_dataset: true
+save_dataloaders: true
 show_progress: true
 
 # Logs
