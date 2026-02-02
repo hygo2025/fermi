@@ -34,8 +34,8 @@ raw_data:
   
 # Data preparation parameters
 data_preparation:
-  start_date: "2024-02-01"
-  end_date: "2024-08-01"  # 60 dias de dados
+  start_date: "2024-04-01"
+  end_date: "2024-06-01"  # 60 dias de dados
   min_session_length: 2    # Mínimo de interações por sessão
   max_session_length: 50   # Máximo de interações por sessão
   min_item_freq: 5         # Mínimo de vezes que um item deve aparecer
@@ -104,7 +104,7 @@ MAX_ITEM_LIST_LENGTH: 50
 # -----------------------------------------------------------------------------
 # TRAINING DEFAULTS
 # -----------------------------------------------------------------------------
-epochs: 60
+epochs: 80
 embedding_size: 64
 train_batch_size: 2048
 eval_batch_size: 2048
@@ -112,7 +112,7 @@ learning_rate: 0.001
 train_neg_sample_args: ~  # Disable negative sampling (full ranking)
 
 # Early stopping
-stopping_step: 2
+stopping_step: 3
 valid_metric_bigger: true
 
 # -----------------------------------------------------------------------------
