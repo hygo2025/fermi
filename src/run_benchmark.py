@@ -1,5 +1,6 @@
 import argparse
 import logging
+import os
 import sys
 from datetime import datetime
 from pathlib import Path
@@ -8,6 +9,9 @@ import yaml
 
 import pandas as pd
 import torch
+
+# Configure PyTorch CUDA memory allocator to reduce fragmentation
+os.environ.setdefault('PYTORCH_CUDA_ALLOC_CONF', 'expandable_segments:True')
 
 # Monkey-patch torch.load (PyTorch 2.6+ compatibility)
 _original_torch_load = torch.load
@@ -125,12 +129,26 @@ class BenchmarkRunner:
             best_valid_score, best_valid_result = trainer.fit(
                 train_data, valid_data, show_progress=True
             )
+            
+            # Clear GPU cache after training
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                log(f"GPU memory after training: {torch.cuda.memory_allocated(0)/1e9:.2f} GB")
 
             log("Evaluating...")
+            # Clear GPU cache before evaluation
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
+                log(f"GPU memory before eval: {torch.cuda.memory_allocated(0)/1e9:.2f} GB / {torch.cuda.get_device_properties(0).total_memory/1e9:.2f} GB")
+            
             test_result = trainer.evaluate(test_data, show_progress=True)
+            
+            # Clear GPU cache after evaluation
+            if torch.cuda.is_available():
+                torch.cuda.empty_cache()
 
             # Log test metrics to W&B
-            if config.get('log_wandb', False):
+            if config['log_wandb']:
                 import wandb
                 if wandb.run is not None:
                     wandb.log({f'test_{k}': v for k, v in test_result.items()})
