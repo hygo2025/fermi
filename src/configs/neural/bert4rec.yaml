@@ -3,11 +3,10 @@ model: BERT4Rec
 n_layers: 2
 n_heads: 2
 hidden_size: 64
-inner_size: 256
-
-MAX_ITEM_LIST_LENGTH: 50
+inner_size: 128
 
 train_batch_size: 1024
+eval_batch_size: 2048
 learning_rate: 0.001
 
 mask_ratio: 0.2
@@ -18,3 +17,5 @@ loss_type: 'CE'
 
 clip_grad_norm:
   max_norm: 5.0
+
+transform: ~
