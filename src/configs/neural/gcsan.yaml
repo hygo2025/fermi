@@ -15,3 +15,5 @@ reg_weight: 0.00001
 
 loss_type: 'CE'
 learning_rate: 0.001
+train_batch_size: 8192
+eval_batch_size: 12288

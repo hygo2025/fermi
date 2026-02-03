@@ -1,0 +1,12 @@
+model: SHAN
+
+embedding_size: 64
+short_item_length: 5
+
+short_hidden_size: 64
+long_hidden_size: 64
+
+dropout_prob: 0.2
+
+loss_type: 'CE'
+learning_rate: 0.001
