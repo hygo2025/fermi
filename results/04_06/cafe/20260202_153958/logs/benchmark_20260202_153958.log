@@ -1,0 +1,69 @@
+command line args [--model GRU4Rec] will not be used in RecBole
+[1;35mSaving filtered dataset into [0m[outputs/saved/realestate-SequentialDataset.pth]
+[1;35mSaving split dataloaders into[0m: [outputs/saved/realestate-for-GRU4Rec-dataloader.pth]
+[1;35m[Training]: [0m[1;36mtrain_batch_size[0m = [1;33m[2048][0m[1;36m train_neg_sample_args[0m: [1;33m[{'distribution': 'none', 'sample_num': 'none', 'alpha': 'none', 'dynamic': False, 'candidate_num': 0}][0m
+[1;35m[Evaluation]: [0m[1;36meval_batch_size[0m = [1;33m[2048][0m[1;36m eval_args[0m: [1;33m[{'split': {'LS': 'valid_and_test'}, 'order': 'TO', 'group_by': 'user', 'mode': {'valid': 'uni100', 'test': 'full'}}][0m
+[1;32mepoch 0 training[0m [[1;34mtime[0m: 64.33s, [1;34mtrain loss[0m: 18992.4587]
+[1;32mepoch 1 training[0m [[1;34mtime[0m: 64.49s, [1;34mtrain loss[0m: 15232.8454]
+[1;32mepoch 1 evaluating[0m [[1;34mtime[0m: 305.35s, [1;34mvalid_score[0m: 0.777700]
+[1;34mvalid result[0m: 
+recall@5 : 0.9113    recall@10 : 0.9552    recall@20 : 0.9793    mrr@5 : 0.7717    mrr@10 : 0.7777    mrr@20 : 0.7795    ndcg@5 : 0.8069    ndcg@10 : 0.8213    ndcg@20 : 0.8274    hit@5 : 0.9113    hit@10 : 0.9552    hit@20 : 0.9793
+[1;34mSaving current[0m: outputs/saved/GRU4Rec-Feb-02-2026_15-42-52.pth
+[1;32mepoch 2 training[0m [[1;34mtime[0m: 64.36s, [1;34mtrain loss[0m: 13665.9698]
+[1;32mepoch 3 training[0m [[1;34mtime[0m: 64.52s, [1;34mtrain loss[0m: 12779.6196]
+[1;32mepoch 3 evaluating[0m [[1;34mtime[0m: 305.71s, [1;34mvalid_score[0m: 0.861900]
+[1;34mvalid result[0m: 
+recall@5 : 0.9479    recall@10 : 0.9716    recall@20 : 0.9858    mrr@5 : 0.8586    mrr@10 : 0.8619    mrr@20 : 0.8629    ndcg@5 : 0.8812    ndcg@10 : 0.889    ndcg@20 : 0.8926    hit@5 : 0.9479    hit@10 : 0.9716    hit@20 : 0.9858
+[1;34mSaving current[0m: outputs/saved/GRU4Rec-Feb-02-2026_15-42-52.pth
+[1;32mepoch 4 training[0m [[1;34mtime[0m: 64.34s, [1;34mtrain loss[0m: 12235.4115]
+[1;32mepoch 5 training[0m [[1;34mtime[0m: 64.55s, [1;34mtrain loss[0m: 11854.7112]
+[1;32mepoch 5 evaluating[0m [[1;34mtime[0m: 302.42s, [1;34mvalid_score[0m: 0.881000]
+[1;34mvalid result[0m: 
+recall@5 : 0.9549    recall@10 : 0.9747    recall@20 : 0.9872    mrr@5 : 0.8783    mrr@10 : 0.881    mrr@20 : 0.8819    ndcg@5 : 0.8977    ndcg@10 : 0.9042    ndcg@20 : 0.9074    hit@5 : 0.9549    hit@10 : 0.9747    hit@20 : 0.9872
+[1;34mSaving current[0m: outputs/saved/GRU4Rec-Feb-02-2026_15-42-52.pth
+[1;32mepoch 6 training[0m [[1;34mtime[0m: 64.31s, [1;34mtrain loss[0m: 11568.9979]
+[1;32mepoch 7 training[0m [[1;34mtime[0m: 64.18s, [1;34mtrain loss[0m: 11342.3899]
+[1;32mepoch 7 evaluating[0m [[1;34mtime[0m: 302.16s, [1;34mvalid_score[0m: 0.888700]
+[1;34mvalid result[0m: 
+recall@5 : 0.9573    recall@10 : 0.9764    recall@20 : 0.9879    mrr@5 : 0.8861    mrr@10 : 0.8887    mrr@20 : 0.8895    ndcg@5 : 0.9041    ndcg@10 : 0.9104    ndcg@20 : 0.9133    hit@5 : 0.9573    hit@10 : 0.9764    hit@20 : 0.9879
+[1;34mSaving current[0m: outputs/saved/GRU4Rec-Feb-02-2026_15-42-52.pth
+[1;32mepoch 8 training[0m [[1;34mtime[0m: 64.43s, [1;34mtrain loss[0m: 11155.5569]
+[1;32mepoch 9 training[0m [[1;34mtime[0m: 64.20s, [1;34mtrain loss[0m: 10996.0184]
+[1;32mepoch 9 evaluating[0m [[1;34mtime[0m: 302.58s, [1;34mvalid_score[0m: 0.891600]
+[1;34mvalid result[0m: 
+recall@5 : 0.9584    recall@10 : 0.9771    recall@20 : 0.9882    mrr@5 : 0.889    mrr@10 : 0.8916    mrr@20 : 0.8924    ndcg@5 : 0.9066    ndcg@10 : 0.9127    ndcg@20 : 0.9156    hit@5 : 0.9584    hit@10 : 0.9771    hit@20 : 0.9882
+[1;34mSaving current[0m: outputs/saved/GRU4Rec-Feb-02-2026_15-42-52.pth
+[1;32mepoch 10 training[0m [[1;34mtime[0m: 64.62s, [1;34mtrain loss[0m: 10859.4775]
+[1;32mepoch 11 training[0m [[1;34mtime[0m: 64.20s, [1;34mtrain loss[0m: 10736.5766]
+[1;32mepoch 11 evaluating[0m [[1;34mtime[0m: 302.66s, [1;34mvalid_score[0m: 0.892900]
+[1;34mvalid result[0m: 
+recall@5 : 0.9587    recall@10 : 0.9769    recall@20 : 0.9882    mrr@5 : 0.8904    mrr@10 : 0.8929    mrr@20 : 0.8937    ndcg@5 : 0.9077    ndcg@10 : 0.9137    ndcg@20 : 0.9165    hit@5 : 0.9587    hit@10 : 0.9769    hit@20 : 0.9882
+[1;34mSaving current[0m: outputs/saved/GRU4Rec-Feb-02-2026_15-42-52.pth
+[1;32mepoch 12 training[0m [[1;34mtime[0m: 64.29s, [1;34mtrain loss[0m: 10627.0041]
+[1;32mepoch 13 training[0m [[1;34mtime[0m: 64.25s, [1;34mtrain loss[0m: 10526.0560]
+[1;32mepoch 13 evaluating[0m [[1;34mtime[0m: 303.58s, [1;34mvalid_score[0m: 0.893200]
+[1;34mvalid result[0m: 
+recall@5 : 0.9588    recall@10 : 0.977    recall@20 : 0.9883    mrr@5 : 0.8907    mrr@10 : 0.8932    mrr@20 : 0.894    ndcg@5 : 0.908    ndcg@10 : 0.9139    ndcg@20 : 0.9168    hit@5 : 0.9588    hit@10 : 0.977    hit@20 : 0.9883
+[1;34mSaving current[0m: outputs/saved/GRU4Rec-Feb-02-2026_15-42-52.pth
+[1;32mepoch 14 training[0m [[1;34mtime[0m: 64.43s, [1;34mtrain loss[0m: 10435.5454]
+[1;32mepoch 15 training[0m [[1;34mtime[0m: 64.52s, [1;34mtrain loss[0m: 10350.8885]
+[1;32mepoch 15 evaluating[0m [[1;34mtime[0m: 298.88s, [1;34mvalid_score[0m: 0.893000]
+[1;34mvalid result[0m: 
+recall@5 : 0.9583    recall@10 : 0.9766    recall@20 : 0.9881    mrr@5 : 0.8905    mrr@10 : 0.893    mrr@20 : 0.8938    ndcg@5 : 0.9077    ndcg@10 : 0.9137    ndcg@20 : 0.9166    hit@5 : 0.9583    hit@10 : 0.9766    hit@20 : 0.9881
+[1;32mepoch 16 training[0m [[1;34mtime[0m: 64.62s, [1;34mtrain loss[0m: 10273.1895]
+[1;32mepoch 17 training[0m [[1;34mtime[0m: 64.25s, [1;34mtrain loss[0m: 10200.6611]
+[1;32mepoch 17 evaluating[0m [[1;34mtime[0m: 299.50s, [1;34mvalid_score[0m: 0.892000]
+[1;34mvalid result[0m: 
+recall@5 : 0.9579    recall@10 : 0.9766    recall@20 : 0.988    mrr@5 : 0.8895    mrr@10 : 0.892    mrr@20 : 0.8928    ndcg@5 : 0.9068    ndcg@10 : 0.9129    ndcg@20 : 0.9158    hit@5 : 0.9579    hit@10 : 0.9766    hit@20 : 0.988
+[1;32mepoch 18 training[0m [[1;34mtime[0m: 64.46s, [1;34mtrain loss[0m: 10133.6207]
+[1;32mepoch 19 training[0m [[1;34mtime[0m: 64.15s, [1;34mtrain loss[0m: 10073.2809]
+[1;32mepoch 19 evaluating[0m [[1;34mtime[0m: 308.95s, [1;34mvalid_score[0m: 0.891200]
+[1;34mvalid result[0m: 
+recall@5 : 0.9575    recall@10 : 0.9761    recall@20 : 0.9879    mrr@5 : 0.8887    mrr@10 : 0.8912    mrr@20 : 0.892    ndcg@5 : 0.9061    ndcg@10 : 0.9122    ndcg@20 : 0.9152    hit@5 : 0.9575    hit@10 : 0.9761    hit@20 : 0.9879
+[1;32mepoch 20 training[0m [[1;34mtime[0m: 64.35s, [1;34mtrain loss[0m: 10011.0439]
+[1;32mepoch 21 training[0m [[1;34mtime[0m: 64.38s, [1;34mtrain loss[0m: 9958.0078]
+[1;32mepoch 21 evaluating[0m [[1;34mtime[0m: 299.77s, [1;34mvalid_score[0m: 0.890200]
+[1;34mvalid result[0m: 
+recall@5 : 0.9568    recall@10 : 0.9758    recall@20 : 0.9877    mrr@5 : 0.8876    mrr@10 : 0.8902    mrr@20 : 0.8911    ndcg@5 : 0.9051    ndcg@10 : 0.9113    ndcg@20 : 0.9144    hit@5 : 0.9568    hit@10 : 0.9758    hit@20 : 0.9877
+Finished training, best eval result in epoch 13
+Loading model structure and parameters from outputs/saved/GRU4Rec-Feb-02-2026_15-42-52.pth
