@@ -10,3 +10,10 @@ train_neg_sample_args:
   sample_num: 1
 
 reg_weights: [0.001, 0.001, 0.001]
+
+# Gradient clipping para estabilidade numérica com AMP
+clip_grad_norm:
+  max_norm: 5.0
+
+enable_amp: false
+enable_scaler: false
