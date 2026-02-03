@@ -1,6 +1,7 @@
 model: Pop
 
 epochs: 1
+enable_scaler: false  # Pop model doesn't use gradients
 
 eval_args:
  mode: uni100

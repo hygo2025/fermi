@@ -2,3 +2,4 @@ model: ItemKNN
 
 k: 100
 shrink: 0.0
+enable_scaler: false  # ItemKNN doesn't use gradients
