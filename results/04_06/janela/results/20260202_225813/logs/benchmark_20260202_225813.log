@@ -1,0 +1,5 @@
+command line args [--model FPMC] will not be used in RecBole
+[1;35mSaving filtered dataset into [0m[outputs/saved/realestate-SequentialDataset.pth]
+[1;35mSaving split dataloaders into[0m: [outputs/saved/realestate-for-FPMC-dataloader.pth]
+[1;35m[Training]: [0m[1;36mtrain_batch_size[0m = [1;33m[2048][0m[1;36m train_neg_sample_args[0m: [1;33m[{'distribution': 'none', 'sample_num': 'none', 'alpha': 'none', 'dynamic': False, 'candidate_num': 0}][0m
+[1;35m[Evaluation]: [0m[1;36meval_batch_size[0m = [1;33m[2048][0m[1;36m eval_args[0m: [1;33m[{'split': {'LS': 'valid_and_test'}, 'order': 'TO', 'group_by': 'user', 'mode': {'valid': 'uni100', 'test': 'full'}}][0m

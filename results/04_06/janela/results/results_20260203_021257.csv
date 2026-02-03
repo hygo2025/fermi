@@ -1,0 +1,2 @@
+model,dataset,best_valid_score,timestamp,recall@5,recall@10,recall@20,mrr@5,mrr@10,mrr@20,ndcg@5,ndcg@10,ndcg@20,hit@5,hit@10,hit@20
+ItemKNN,realestate,0.6533,20260203_021257,0.1384,0.2018,0.2784,0.0791,0.0875,0.0928,0.0938,0.1142,0.1335,0.1384,0.2018,0.2784

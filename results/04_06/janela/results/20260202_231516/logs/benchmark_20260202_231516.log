@@ -1,0 +1,81 @@
+command line args [--model SASRec] will not be used in RecBole
+[1;35mLoad filtered dataset from[0m: [outputs/saved/realestate-SequentialDataset.pth]
+[1;35mSaving split dataloaders into[0m: [outputs/saved/realestate-for-SASRec-dataloader.pth]
+[1;35m[Training]: [0m[1;36mtrain_batch_size[0m = [1;33m[2048][0m[1;36m train_neg_sample_args[0m: [1;33m[{'distribution': 'none', 'sample_num': 'none', 'alpha': 'none', 'dynamic': False, 'candidate_num': 0}][0m
+[1;35m[Evaluation]: [0m[1;36meval_batch_size[0m = [1;33m[2048][0m[1;36m eval_args[0m: [1;33m[{'split': {'LS': 'valid_and_test'}, 'order': 'TO', 'group_by': 'user', 'mode': {'valid': 'uni100', 'test': 'full'}}][0m
+[1;32mepoch 0 training[0m [[1;34mtime[0m: 140.02s, [1;34mtrain loss[0m: 17247.6283]
+[1;32mepoch 1 training[0m [[1;34mtime[0m: 138.78s, [1;34mtrain loss[0m: 12663.2484]
+[1;32mepoch 1 evaluating[0m [[1;34mtime[0m: 528.91s, [1;34mvalid_score[0m: 0.886000]
+[1;34mvalid result[0m: 
+recall@5 : 0.9581    recall@10 : 0.9763    recall@20 : 0.9872    mrr@5 : 0.8835    mrr@10 : 0.886    mrr@20 : 0.8868    ndcg@5 : 0.9024    ndcg@10 : 0.9084    ndcg@20 : 0.9112    hit@5 : 0.9581    hit@10 : 0.9763    hit@20 : 0.9872
+[1;34mSaving current[0m: outputs/saved/SASRec-Feb-02-2026_23-17-32.pth
+[1;32mepoch 2 training[0m [[1;34mtime[0m: 138.07s, [1;34mtrain loss[0m: 11827.0326]
+[1;32mepoch 3 training[0m [[1;34mtime[0m: 140.77s, [1;34mtrain loss[0m: 11499.6882]
+[1;32mepoch 3 evaluating[0m [[1;34mtime[0m: 529.35s, [1;34mvalid_score[0m: 0.902700]
+[1;34mvalid result[0m: 
+recall@5 : 0.9664    recall@10 : 0.9809    recall@20 : 0.9896    mrr@5 : 0.9007    mrr@10 : 0.9027    mrr@20 : 0.9033    ndcg@5 : 0.9174    ndcg@10 : 0.9221    ndcg@20 : 0.9243    hit@5 : 0.9664    hit@10 : 0.9809    hit@20 : 0.9896
+[1;34mSaving current[0m: outputs/saved/SASRec-Feb-02-2026_23-17-32.pth
+[1;32mepoch 4 training[0m [[1;34mtime[0m: 140.36s, [1;34mtrain loss[0m: 11307.5315]
+[1;32mepoch 5 training[0m [[1;34mtime[0m: 141.69s, [1;34mtrain loss[0m: 11174.1215]
+[1;32mepoch 5 evaluating[0m [[1;34mtime[0m: 526.64s, [1;34mvalid_score[0m: 0.907300]
+[1;34mvalid result[0m: 
+recall@5 : 0.9689    recall@10 : 0.9821    recall@20 : 0.9903    mrr@5 : 0.9054    mrr@10 : 0.9073    mrr@20 : 0.9079    ndcg@5 : 0.9216    ndcg@10 : 0.9259    ndcg@20 : 0.928    hit@5 : 0.9689    hit@10 : 0.9821    hit@20 : 0.9903
+[1;34mSaving current[0m: outputs/saved/SASRec-Feb-02-2026_23-17-32.pth
+[1;32mepoch 6 training[0m [[1;34mtime[0m: 140.08s, [1;34mtrain loss[0m: 11070.8663]
+[1;32mepoch 7 training[0m [[1;34mtime[0m: 138.77s, [1;34mtrain loss[0m: 10986.8679]
+[1;32mepoch 7 evaluating[0m [[1;34mtime[0m: 528.80s, [1;34mvalid_score[0m: 0.910100]
+[1;34mvalid result[0m: 
+recall@5 : 0.9702    recall@10 : 0.9829    recall@20 : 0.9906    mrr@5 : 0.9083    mrr@10 : 0.9101    mrr@20 : 0.9106    ndcg@5 : 0.9241    ndcg@10 : 0.9282    ndcg@20 : 0.9302    hit@5 : 0.9702    hit@10 : 0.9829    hit@20 : 0.9906
+[1;34mSaving current[0m: outputs/saved/SASRec-Feb-02-2026_23-17-32.pth
+[1;32mepoch 8 training[0m [[1;34mtime[0m: 139.79s, [1;34mtrain loss[0m: 10917.1426]
+[1;32mepoch 9 training[0m [[1;34mtime[0m: 140.52s, [1;34mtrain loss[0m: 10854.1060]
+[1;32mepoch 9 evaluating[0m [[1;34mtime[0m: 527.01s, [1;34mvalid_score[0m: 0.911200]
+[1;34mvalid result[0m: 
+recall@5 : 0.9707    recall@10 : 0.9832    recall@20 : 0.9908    mrr@5 : 0.9095    mrr@10 : 0.9112    mrr@20 : 0.9117    ndcg@5 : 0.9251    ndcg@10 : 0.9292    ndcg@20 : 0.9311    hit@5 : 0.9707    hit@10 : 0.9832    hit@20 : 0.9908
+[1;34mSaving current[0m: outputs/saved/SASRec-Feb-02-2026_23-17-32.pth
+[1;32mepoch 10 training[0m [[1;34mtime[0m: 139.48s, [1;34mtrain loss[0m: 10801.2462]
+[1;32mepoch 11 training[0m [[1;34mtime[0m: 138.03s, [1;34mtrain loss[0m: 10752.3220]
+[1;32mepoch 11 evaluating[0m [[1;34mtime[0m: 525.76s, [1;34mvalid_score[0m: 0.912900]
+[1;34mvalid result[0m: 
+recall@5 : 0.9712    recall@10 : 0.9837    recall@20 : 0.991    mrr@5 : 0.9112    mrr@10 : 0.9129    mrr@20 : 0.9134    ndcg@5 : 0.9265    ndcg@10 : 0.9305    ndcg@20 : 0.9324    hit@5 : 0.9712    hit@10 : 0.9837    hit@20 : 0.991
+[1;34mSaving current[0m: outputs/saved/SASRec-Feb-02-2026_23-17-32.pth
+[1;32mepoch 12 training[0m [[1;34mtime[0m: 140.40s, [1;34mtrain loss[0m: 10705.9120]
+[1;32mepoch 13 training[0m [[1;34mtime[0m: 138.99s, [1;34mtrain loss[0m: 10664.1823]
+[1;32mepoch 13 evaluating[0m [[1;34mtime[0m: 528.13s, [1;34mvalid_score[0m: 0.912900]
+[1;34mvalid result[0m: 
+recall@5 : 0.9716    recall@10 : 0.9837    recall@20 : 0.991    mrr@5 : 0.9112    mrr@10 : 0.9129    mrr@20 : 0.9134    ndcg@5 : 0.9265    ndcg@10 : 0.9305    ndcg@20 : 0.9324    hit@5 : 0.9716    hit@10 : 0.9837    hit@20 : 0.991
+[1;34mSaving current[0m: outputs/saved/SASRec-Feb-02-2026_23-17-32.pth
+[1;32mepoch 14 training[0m [[1;34mtime[0m: 141.88s, [1;34mtrain loss[0m: 10626.0426]
+[1;32mepoch 15 training[0m [[1;34mtime[0m: 139.89s, [1;34mtrain loss[0m: 10591.6939]
+[1;32mepoch 15 evaluating[0m [[1;34mtime[0m: 525.13s, [1;34mvalid_score[0m: 0.913200]
+[1;34mvalid result[0m: 
+recall@5 : 0.9715    recall@10 : 0.9835    recall@20 : 0.9911    mrr@5 : 0.9116    mrr@10 : 0.9132    mrr@20 : 0.9138    ndcg@5 : 0.9268    ndcg@10 : 0.9308    ndcg@20 : 0.9327    hit@5 : 0.9715    hit@10 : 0.9835    hit@20 : 0.9911
+[1;34mSaving current[0m: outputs/saved/SASRec-Feb-02-2026_23-17-32.pth
+[1;32mepoch 16 training[0m [[1;34mtime[0m: 140.45s, [1;34mtrain loss[0m: 10557.2577]
+[1;32mepoch 17 training[0m [[1;34mtime[0m: 141.71s, [1;34mtrain loss[0m: 10523.6221]
+[1;32mepoch 17 evaluating[0m [[1;34mtime[0m: 524.90s, [1;34mvalid_score[0m: 0.913200]
+[1;34mvalid result[0m: 
+recall@5 : 0.9718    recall@10 : 0.9838    recall@20 : 0.9912    mrr@5 : 0.9115    mrr@10 : 0.9132    mrr@20 : 0.9137    ndcg@5 : 0.9268    ndcg@10 : 0.9308    ndcg@20 : 0.9327    hit@5 : 0.9718    hit@10 : 0.9838    hit@20 : 0.9912
+[1;34mSaving current[0m: outputs/saved/SASRec-Feb-02-2026_23-17-32.pth
+[1;32mepoch 18 training[0m [[1;34mtime[0m: 140.04s, [1;34mtrain loss[0m: 10496.9210]
+[1;32mepoch 19 training[0m [[1;34mtime[0m: 139.36s, [1;34mtrain loss[0m: 10469.0158]
+[1;32mepoch 19 evaluating[0m [[1;34mtime[0m: 527.01s, [1;34mvalid_score[0m: 0.913000]
+[1;34mvalid result[0m: 
+recall@5 : 0.9717    recall@10 : 0.9839    recall@20 : 0.9911    mrr@5 : 0.9113    mrr@10 : 0.913    mrr@20 : 0.9135    ndcg@5 : 0.9267    ndcg@10 : 0.9307    ndcg@20 : 0.9325    hit@5 : 0.9717    hit@10 : 0.9839    hit@20 : 0.9911
+[1;32mepoch 20 training[0m [[1;34mtime[0m: 140.59s, [1;34mtrain loss[0m: 10442.6877]
+[1;32mepoch 21 training[0m [[1;34mtime[0m: 139.84s, [1;34mtrain loss[0m: 10417.0778]
+[1;32mepoch 21 evaluating[0m [[1;34mtime[0m: 529.63s, [1;34mvalid_score[0m: 0.912800]
+[1;34mvalid result[0m: 
+recall@5 : 0.9716    recall@10 : 0.9839    recall@20 : 0.9911    mrr@5 : 0.9111    mrr@10 : 0.9128    mrr@20 : 0.9133    ndcg@5 : 0.9265    ndcg@10 : 0.9305    ndcg@20 : 0.9323    hit@5 : 0.9716    hit@10 : 0.9839    hit@20 : 0.9911
+[1;32mepoch 22 training[0m [[1;34mtime[0m: 140.47s, [1;34mtrain loss[0m: 10392.2036]
+[1;32mepoch 23 training[0m [[1;34mtime[0m: 140.74s, [1;34mtrain loss[0m: 10370.2450]
+[1;32mepoch 23 evaluating[0m [[1;34mtime[0m: 529.45s, [1;34mvalid_score[0m: 0.912600]
+[1;34mvalid result[0m: 
+recall@5 : 0.9713    recall@10 : 0.9838    recall@20 : 0.9911    mrr@5 : 0.9109    mrr@10 : 0.9126    mrr@20 : 0.9131    ndcg@5 : 0.9263    ndcg@10 : 0.9303    ndcg@20 : 0.9322    hit@5 : 0.9713    hit@10 : 0.9838    hit@20 : 0.9911
+[1;32mepoch 24 training[0m [[1;34mtime[0m: 137.76s, [1;34mtrain loss[0m: 10347.0027]
+[1;32mepoch 25 training[0m [[1;34mtime[0m: 138.84s, [1;34mtrain loss[0m: 10324.7932]
+[1;32mepoch 25 evaluating[0m [[1;34mtime[0m: 527.79s, [1;34mvalid_score[0m: 0.912100]
+[1;34mvalid result[0m: 
+recall@5 : 0.9712    recall@10 : 0.9835    recall@20 : 0.9909    mrr@5 : 0.9104    mrr@10 : 0.9121    mrr@20 : 0.9126    ndcg@5 : 0.9259    ndcg@10 : 0.9299    ndcg@20 : 0.9318    hit@5 : 0.9712    hit@10 : 0.9835    hit@20 : 0.9909
+Finished training, best eval result in epoch 17
+Loading model structure and parameters from outputs/saved/SASRec-Feb-02-2026_23-17-32.pth
