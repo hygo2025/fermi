@@ -1,0 +1,14 @@
+model: FISM
+
+embedding_size: 64
+
+alpha: 0.5
+reg_weights: [0.001, 0.001]
+split_to: 1024
+
+loss_type: 'BPR'
+learning_rate: 0.001
+
+train_neg_sample_args:
+  distribution: uniform
+  sample_num: 1

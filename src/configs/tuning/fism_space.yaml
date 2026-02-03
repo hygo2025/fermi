@@ -1,0 +1,22 @@
+# FISM Hyperparameter Search Space
+learning_rate:
+  type: loguniform
+  min: 0.0001
+  max: 0.01
+
+embedding_size:
+  type: choice
+  values: [64, 128, 256]
+
+alpha:
+  type: uniform
+  min: 0.0
+  max: 1.0
+
+reg_weights:
+  type: choice
+  values: [[0.0001, 0.0001], [0.001, 0.001], [0.01, 0.01]]
+
+split_to:
+  type: choice
+  values: [512, 1024, 2048]
