@@ -7,7 +7,6 @@ MODELS=(
     "TransRec" #n Rodnado
     "FISM"
     "GCSAN"
-    "SHAN"
     "SRGNN"
 )
 
