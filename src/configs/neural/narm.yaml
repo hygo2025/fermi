@@ -6,5 +6,11 @@ n_layers: 1
 
 dropout_probs: [0.25, 0.5]
 
-loss_type: 'CE'
-learning_rate: 0.001
+loss_type: 'BPR'
+
+train_neg_sample_args:
+  distribution: 'uniform'
+  sample_num: 5
+  alpha: 1.0
+  dynamic: false
+  candidate_num: 0

@@ -6,5 +6,11 @@ hidden_size: 64
 dropout_prob: 0.3
 mom: 0.1
 
-loss_type: 'CE'
-learning_rate: 0.005
+loss_type: 'BPR'
+
+train_neg_sample_args:
+  distribution: 'uniform'
+  sample_num: 5
+  alpha: 1.0
+  dynamic: false
+  candidate_num: 0
