@@ -2,7 +2,7 @@
 set -euo pipefail
 
 
-MODELS=(
+DEFAULT_MODELS=(
     "BERT4Rec" #n Rodando
     "TransRec" #n Rodnado
     "FISM"
@@ -32,12 +32,18 @@ MODELS_ALL=(
     )
 
 if [[ $# -gt 0 ]]; then
-    MODELS=("$1")
+    # Explicit single-model override via CLI arg
+    MODELS_LIST=("$1")
+elif [[ -n "${MODELS:-}" ]]; then
+    # Space-separated list via env var MODELS="A B C"
+    IFS=' ' read -r -a MODELS_LIST <<< "$MODELS"
+else
+    MODELS_LIST=("${DEFAULT_MODELS[@]}")
 fi
 
-echo "[INFO] Running benchmark for ${#MODELS[@]} model(s): ${MODELS[*]}"
+echo "[INFO] Running benchmark for ${#MODELS_LIST[@]} model(s): ${MODELS_LIST[*]}"
 
-for model in "${MODELS[@]}"; do
+for model in "${MODELS_LIST[@]}"; do
     echo ""
     echo "[INFO] >>> Starting benchmark for ${model}"
     python src/run_benchmark.py --model "${model}"
