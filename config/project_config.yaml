@@ -120,7 +120,7 @@ valid_metric_bigger: true
 # -----------------------------------------------------------------------------
 device: cuda
 gpu_id: 0
-worker: 16
+worker: 12
 seed: 42
 state: DEBUG
 
