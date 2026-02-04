@@ -3,12 +3,12 @@ set -euo pipefail
 
 
 MODELS=(
-    "SRGNN" # Rodando na janela
-    "TransRec" # Rodando no cafe
-    "GCSAN"
+    "BERT4Rec" #n Rodando
+    "TransRec" #n Rodnado
     "FISM"
-    "FPMC"
-    "BERT4Rec"
+    "GCSAN"
+    "SHAN"
+    "SRGNN"
 )
 
 MODELS_ALL=(
@@ -16,10 +16,10 @@ MODELS_ALL=(
     "ItemKNN"
     "Pop"
     "Random"
-    "FISM" #n
+    "FISM"
     "FOSSIL"
-    "FPMC" #n -no cafe
-    "BERT4Rec" #n -no cafe
+    "FPMC"
+    "BERT4Rec"
     "Caser"
     "GCSAN" #n
     "GRU4Rec"
@@ -27,9 +27,9 @@ MODELS_ALL=(
     "NextItNet"
     "SASRec"
     "SHAN"
-    "SRGNN" #n
+    "SRGNN"
     "STAMP"
-    "TransRec" #n
+    "TransRec"
     )
 
 if [[ $# -gt 0 ]]; then
