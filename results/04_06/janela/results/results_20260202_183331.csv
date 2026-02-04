@@ -1,2 +1,0 @@
-model,dataset,best_valid_score,timestamp,recall@5,recall@10,recall@20,mrr@5,mrr@10,mrr@20,ndcg@5,ndcg@10,ndcg@20,hit@5,hit@10,hit@20
-BPR,realestate,0.5813,20260202_183331,0.0943,0.12,0.1509,0.0656,0.069,0.0711,0.0727,0.081,0.0888,0.0943,0.12,0.1509

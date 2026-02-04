@@ -1,2 +1,0 @@
-model,dataset,best_valid_score,timestamp,recall@5,recall@10,recall@20,mrr@5,mrr@10,mrr@20,ndcg@5,ndcg@10,ndcg@20,hit@5,hit@10,hit@20
-Random,realestate,0.0289,20260203_192653,0.0488,0.0978,0.1955,0.0226,0.029,0.0356,0.0289,0.0446,0.069,0.0493,0.0987,0.1974
