@@ -5,6 +5,16 @@ embedding_size: 64
 order_len: 1
 alpha: 0.2
 
-loss_type: 'BPR'
+loss_type: 'CE'
 learning_rate: 0.01
 reg_weights: [0.001, 0.001]
+
+# FOSSIL com CE não precisa de negative sampling
+train_neg_sample_args: ~
+
+# Gradient clipping para estabilidade numérica com AMP
+clip_grad_norm:
+  max_norm: 5.0
+
+enable_amp: false
+enable_scaler: false
