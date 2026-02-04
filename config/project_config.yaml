@@ -136,7 +136,7 @@ enable_scaler: true   # Gradient scaling for FP16 stability
 # -----------------------------------------------------------------------------
 checkpoint_dir: outputs/saved
 save_dataset: true
-save_dataloaders: true
+save_dataloaders: false
 show_progress: true
 
 # Logs

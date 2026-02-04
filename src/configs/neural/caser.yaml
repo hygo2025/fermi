@@ -1,8 +1,8 @@
 model: Caser
 
 # Faster config for benchmark (Caser only)
-train_batch_size: 4096
-eval_batch_size: 4096
+train_batch_size: 16384
+eval_batch_size: 8192
 
 embedding_size: 32
 
