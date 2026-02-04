@@ -1,22 +1,37 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+
 MODELS=(
-    "STAMP"
+    "FISM" #n
+    "FDSA" #n
+    "NextItNet" #n
+    "TransRec" #n
+    "SRGNN" #n
+    "GCSAN" #n
+)
+
+MODELS_ALL=(
     "BPR"
-    "FPMC"
-    "Caser"
-    "SASRec"
     "ItemKNN"
     "Pop"
-    #"GRU4Rec"
-    #"NARM"
-    #"FOSSIL"
-    #"BERT4Rec"
-    #"SRGNN"
-    #"GCSAN"
-    #"Random"
-)
+    "Random"
+    "FISM" #n
+    "FOSSIL" #n -no cafe
+    "FPMC" #n -no cafe
+    "BERT4Rec" #n -no cafe
+    "Caser"
+    "FDSA" #n
+    "GCSAN" #n
+    "GRU4Rec"
+    "NARM"
+    "NextItNet" #n
+    "SASRec"
+    "SHAN"
+    "SRGNN" #n
+    "STAMP"
+    "TransRec" #n
+    )
 
 if [[ $# -gt 0 ]]; then
     MODELS=("$1")
