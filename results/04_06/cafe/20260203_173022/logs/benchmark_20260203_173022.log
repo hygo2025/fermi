@@ -1,0 +1,246 @@
+command line args [--model FPMC] will not be used in RecBole
+[1;35mLoad filtered dataset from[0m: [outputs/saved/realestate-SequentialDataset.pth]
+[1;35mLoad split dataloaders from[0m: [outputs/saved/realestate-for-FPMC-dataloader.pth]
+[1;35m[Training]: [0m[1;36mtrain_batch_size[0m = [1;33m[2048][0m[1;36m train_neg_sample_args[0m: [1;33m[{'distribution': 'uniform', 'sample_num': 1, 'alpha': 1.0, 'dynamic': False, 'candidate_num': 0}][0m
+[1;35m[Evaluation]: [0m[1;36meval_batch_size[0m = [1;33m[2048][0m[1;36m eval_args[0m: [1;33m[{'split': {'LS': 'valid_and_test'}, 'order': 'TO', 'group_by': 'user', 'mode': {'valid': 'uni100', 'test': 'full'}}][0m
+[1;32mepoch 0 training[0m [[1;34mtime[0m: 42.14s, [1;34mtrain loss[0m: 720.9602]
+[1;32mepoch 1 training[0m [[1;34mtime[0m: 42.52s, [1;34mtrain loss[0m: 64.8767]
+[1;32mepoch 1 evaluating[0m [[1;34mtime[0m: 290.33s, [1;34mvalid_score[0m: 0.588600]
+[1;34mvalid result[0m: 
+recall@5 : 0.7201    recall@10 : 0.7956    recall@20 : 0.8648    mrr@5 : 0.5784    mrr@10 : 0.5886    mrr@20 : 0.5934    ndcg@5 : 0.6139    ndcg@10 : 0.6384    ndcg@20 : 0.6559    hit@5 : 0.7201    hit@10 : 0.7956    hit@20 : 0.8648
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 2 training[0m [[1;34mtime[0m: 42.09s, [1;34mtrain loss[0m: 23.2434]
+[1;32mepoch 3 training[0m [[1;34mtime[0m: 42.17s, [1;34mtrain loss[0m: 18.0386]
+[1;32mepoch 3 evaluating[0m [[1;34mtime[0m: 290.55s, [1;34mvalid_score[0m: 0.607700]
+[1;34mvalid result[0m: 
+recall@5 : 0.7437    recall@10 : 0.817    recall@20 : 0.8808    mrr@5 : 0.5978    mrr@10 : 0.6077    mrr@20 : 0.6121    ndcg@5 : 0.6343    ndcg@10 : 0.6582    ndcg@20 : 0.6743    hit@5 : 0.7437    hit@10 : 0.817    hit@20 : 0.8808
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 4 training[0m [[1;34mtime[0m: 41.71s, [1;34mtrain loss[0m: 16.9522]
+[1;32mepoch 5 training[0m [[1;34mtime[0m: 42.73s, [1;34mtrain loss[0m: 16.6301]
+[1;32mepoch 5 evaluating[0m [[1;34mtime[0m: 295.00s, [1;34mvalid_score[0m: 0.618300]
+[1;34mvalid result[0m: 
+recall@5 : 0.7545    recall@10 : 0.8273    recall@20 : 0.8888    mrr@5 : 0.6085    mrr@10 : 0.6183    mrr@20 : 0.6226    ndcg@5 : 0.6451    ndcg@10 : 0.6688    ndcg@20 : 0.6843    hit@5 : 0.7545    hit@10 : 0.8273    hit@20 : 0.8888
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 6 training[0m [[1;34mtime[0m: 41.82s, [1;34mtrain loss[0m: 16.6613]
+[1;32mepoch 7 training[0m [[1;34mtime[0m: 42.80s, [1;34mtrain loss[0m: 16.5592]
+[1;32mepoch 7 evaluating[0m [[1;34mtime[0m: 293.41s, [1;34mvalid_score[0m: 0.625700]
+[1;34mvalid result[0m: 
+recall@5 : 0.7622    recall@10 : 0.8328    recall@20 : 0.8928    mrr@5 : 0.6162    mrr@10 : 0.6257    mrr@20 : 0.6299    ndcg@5 : 0.6528    ndcg@10 : 0.6757    ndcg@20 : 0.6909    hit@5 : 0.7622    hit@10 : 0.8328    hit@20 : 0.8928
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 8 training[0m [[1;34mtime[0m: 42.16s, [1;34mtrain loss[0m: 16.3046]
+[1;32mepoch 9 training[0m [[1;34mtime[0m: 41.67s, [1;34mtrain loss[0m: 15.6459]
+[1;32mepoch 9 evaluating[0m [[1;34mtime[0m: 291.64s, [1;34mvalid_score[0m: 0.632300]
+[1;34mvalid result[0m: 
+recall@5 : 0.7683    recall@10 : 0.8374    recall@20 : 0.8961    mrr@5 : 0.6229    mrr@10 : 0.6323    mrr@20 : 0.6364    ndcg@5 : 0.6594    ndcg@10 : 0.6819    ndcg@20 : 0.6968    hit@5 : 0.7683    hit@10 : 0.8374    hit@20 : 0.8961
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 10 training[0m [[1;34mtime[0m: 42.48s, [1;34mtrain loss[0m: 15.7528]
+[1;32mepoch 11 training[0m [[1;34mtime[0m: 42.21s, [1;34mtrain loss[0m: 15.6468]
+[1;32mepoch 11 evaluating[0m [[1;34mtime[0m: 293.31s, [1;34mvalid_score[0m: 0.636800]
+[1;34mvalid result[0m: 
+recall@5 : 0.7721    recall@10 : 0.8407    recall@20 : 0.8985    mrr@5 : 0.6275    mrr@10 : 0.6368    mrr@20 : 0.6409    ndcg@5 : 0.6638    ndcg@10 : 0.6861    ndcg@20 : 0.7008    hit@5 : 0.7721    hit@10 : 0.8407    hit@20 : 0.8985
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 12 training[0m [[1;34mtime[0m: 42.74s, [1;34mtrain loss[0m: 15.2061]
+[1;32mepoch 13 training[0m [[1;34mtime[0m: 42.01s, [1;34mtrain loss[0m: 15.1608]
+[1;32mepoch 13 evaluating[0m [[1;34mtime[0m: 311.14s, [1;34mvalid_score[0m: 0.641600]
+[1;34mvalid result[0m: 
+recall@5 : 0.7766    recall@10 : 0.8439    recall@20 : 0.9004    mrr@5 : 0.6325    mrr@10 : 0.6416    mrr@20 : 0.6456    ndcg@5 : 0.6687    ndcg@10 : 0.6905    ndcg@20 : 0.7049    hit@5 : 0.7766    hit@10 : 0.8439    hit@20 : 0.9004
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 14 training[0m [[1;34mtime[0m: 42.38s, [1;34mtrain loss[0m: 15.1635]
+[1;32mepoch 15 training[0m [[1;34mtime[0m: 42.23s, [1;34mtrain loss[0m: 15.3112]
+[1;32mepoch 15 evaluating[0m [[1;34mtime[0m: 293.44s, [1;34mvalid_score[0m: 0.644800]
+[1;34mvalid result[0m: 
+recall@5 : 0.7792    recall@10 : 0.8462    recall@20 : 0.9019    mrr@5 : 0.6357    mrr@10 : 0.6448    mrr@20 : 0.6487    ndcg@5 : 0.6717    ndcg@10 : 0.6935    ndcg@20 : 0.7076    hit@5 : 0.7792    hit@10 : 0.8462    hit@20 : 0.9019
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 16 training[0m [[1;34mtime[0m: 42.71s, [1;34mtrain loss[0m: 15.0647]
+[1;32mepoch 17 training[0m [[1;34mtime[0m: 42.38s, [1;34mtrain loss[0m: 14.9357]
+[1;32mepoch 17 evaluating[0m [[1;34mtime[0m: 292.03s, [1;34mvalid_score[0m: 0.647700]
+[1;34mvalid result[0m: 
+recall@5 : 0.7817    recall@10 : 0.8478    recall@20 : 0.9029    mrr@5 : 0.6388    mrr@10 : 0.6477    mrr@20 : 0.6516    ndcg@5 : 0.6746    ndcg@10 : 0.6961    ndcg@20 : 0.7101    hit@5 : 0.7817    hit@10 : 0.8478    hit@20 : 0.9029
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 18 training[0m [[1;34mtime[0m: 42.42s, [1;34mtrain loss[0m: 15.0632]
+[1;32mepoch 19 training[0m [[1;34mtime[0m: 42.33s, [1;34mtrain loss[0m: 14.9201]
+[1;32mepoch 19 evaluating[0m [[1;34mtime[0m: 293.48s, [1;34mvalid_score[0m: 0.649500]
+[1;34mvalid result[0m: 
+recall@5 : 0.7835    recall@10 : 0.8492    recall@20 : 0.904    mrr@5 : 0.6407    mrr@10 : 0.6495    mrr@20 : 0.6534    ndcg@5 : 0.6765    ndcg@10 : 0.6979    ndcg@20 : 0.7118    hit@5 : 0.7835    hit@10 : 0.8492    hit@20 : 0.904
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 20 training[0m [[1;34mtime[0m: 41.62s, [1;34mtrain loss[0m: 14.2263]
+[1;32mepoch 21 training[0m [[1;34mtime[0m: 42.56s, [1;34mtrain loss[0m: 14.4143]
+[1;32mepoch 21 evaluating[0m [[1;34mtime[0m: 290.16s, [1;34mvalid_score[0m: 0.652200]
+[1;34mvalid result[0m: 
+recall@5 : 0.7851    recall@10 : 0.8503    recall@20 : 0.9049    mrr@5 : 0.6434    mrr@10 : 0.6522    mrr@20 : 0.656    ndcg@5 : 0.6789    ndcg@10 : 0.7002    ndcg@20 : 0.714    hit@5 : 0.7851    hit@10 : 0.8503    hit@20 : 0.9049
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 22 training[0m [[1;34mtime[0m: 42.61s, [1;34mtrain loss[0m: 14.4791]
+[1;32mepoch 23 training[0m [[1;34mtime[0m: 42.27s, [1;34mtrain loss[0m: 14.7322]
+[1;32mepoch 23 evaluating[0m [[1;34mtime[0m: 289.58s, [1;34mvalid_score[0m: 0.653800]
+[1;34mvalid result[0m: 
+recall@5 : 0.7858    recall@10 : 0.851    recall@20 : 0.9056    mrr@5 : 0.645    mrr@10 : 0.6538    mrr@20 : 0.6576    ndcg@5 : 0.6804    ndcg@10 : 0.7015    ndcg@20 : 0.7154    hit@5 : 0.7858    hit@10 : 0.851    hit@20 : 0.9056
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 24 training[0m [[1;34mtime[0m: 41.95s, [1;34mtrain loss[0m: 13.9635]
+[1;32mepoch 25 training[0m [[1;34mtime[0m: 42.09s, [1;34mtrain loss[0m: 14.1794]
+[1;32mepoch 25 evaluating[0m [[1;34mtime[0m: 289.47s, [1;34mvalid_score[0m: 0.654900]
+[1;34mvalid result[0m: 
+recall@5 : 0.787    recall@10 : 0.8522    recall@20 : 0.9063    mrr@5 : 0.6461    mrr@10 : 0.6549    mrr@20 : 0.6587    ndcg@5 : 0.6815    ndcg@10 : 0.7027    ndcg@20 : 0.7164    hit@5 : 0.787    hit@10 : 0.8522    hit@20 : 0.9063
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 26 training[0m [[1;34mtime[0m: 42.06s, [1;34mtrain loss[0m: 14.3240]
+[1;32mepoch 27 training[0m [[1;34mtime[0m: 42.48s, [1;34mtrain loss[0m: 14.2817]
+[1;32mepoch 27 evaluating[0m [[1;34mtime[0m: 293.31s, [1;34mvalid_score[0m: 0.656700]
+[1;34mvalid result[0m: 
+recall@5 : 0.7882    recall@10 : 0.8532    recall@20 : 0.9067    mrr@5 : 0.6479    mrr@10 : 0.6567    mrr@20 : 0.6604    ndcg@5 : 0.6831    ndcg@10 : 0.7042    ndcg@20 : 0.7178    hit@5 : 0.7882    hit@10 : 0.8532    hit@20 : 0.9067
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 28 training[0m [[1;34mtime[0m: 42.52s, [1;34mtrain loss[0m: 13.7912]
+[1;32mepoch 29 training[0m [[1;34mtime[0m: 42.20s, [1;34mtrain loss[0m: 13.9466]
+[1;32mepoch 29 evaluating[0m [[1;34mtime[0m: 290.48s, [1;34mvalid_score[0m: 0.657600]
+[1;34mvalid result[0m: 
+recall@5 : 0.7884    recall@10 : 0.8533    recall@20 : 0.9071    mrr@5 : 0.6488    mrr@10 : 0.6576    mrr@20 : 0.6614    ndcg@5 : 0.6839    ndcg@10 : 0.705    ndcg@20 : 0.7186    hit@5 : 0.7884    hit@10 : 0.8533    hit@20 : 0.9071
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 30 training[0m [[1;34mtime[0m: 42.55s, [1;34mtrain loss[0m: 13.7856]
+[1;32mepoch 31 training[0m [[1;34mtime[0m: 42.69s, [1;34mtrain loss[0m: 13.8257]
+[1;32mepoch 31 evaluating[0m [[1;34mtime[0m: 296.52s, [1;34mvalid_score[0m: 0.658900]
+[1;34mvalid result[0m: 
+recall@5 : 0.7893    recall@10 : 0.8538    recall@20 : 0.9074    mrr@5 : 0.6502    mrr@10 : 0.6589    mrr@20 : 0.6627    ndcg@5 : 0.6851    ndcg@10 : 0.7061    ndcg@20 : 0.7197    hit@5 : 0.7893    hit@10 : 0.8538    hit@20 : 0.9074
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 32 training[0m [[1;34mtime[0m: 42.23s, [1;34mtrain loss[0m: 13.8500]
+[1;32mepoch 33 training[0m [[1;34mtime[0m: 42.68s, [1;34mtrain loss[0m: 13.8041]
+[1;32mepoch 33 evaluating[0m [[1;34mtime[0m: 296.84s, [1;34mvalid_score[0m: 0.660400]
+[1;34mvalid result[0m: 
+recall@5 : 0.7906    recall@10 : 0.8542    recall@20 : 0.9077    mrr@5 : 0.6518    mrr@10 : 0.6604    mrr@20 : 0.6641    ndcg@5 : 0.6866    ndcg@10 : 0.7073    ndcg@20 : 0.7209    hit@5 : 0.7906    hit@10 : 0.8542    hit@20 : 0.9077
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 34 training[0m [[1;34mtime[0m: 42.34s, [1;34mtrain loss[0m: 14.3212]
+[1;32mepoch 35 training[0m [[1;34mtime[0m: 42.42s, [1;34mtrain loss[0m: 14.2088]
+[1;32mepoch 35 evaluating[0m [[1;34mtime[0m: 291.98s, [1;34mvalid_score[0m: 0.661300]
+[1;34mvalid result[0m: 
+recall@5 : 0.791    recall@10 : 0.8548    recall@20 : 0.9079    mrr@5 : 0.6527    mrr@10 : 0.6613    mrr@20 : 0.665    ndcg@5 : 0.6874    ndcg@10 : 0.7081    ndcg@20 : 0.7216    hit@5 : 0.791    hit@10 : 0.8548    hit@20 : 0.9079
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 36 training[0m [[1;34mtime[0m: 42.78s, [1;34mtrain loss[0m: 13.3960]
+[1;32mepoch 37 training[0m [[1;34mtime[0m: 42.62s, [1;34mtrain loss[0m: 13.6831]
+[1;32mepoch 37 evaluating[0m [[1;34mtime[0m: 294.47s, [1;34mvalid_score[0m: 0.662300]
+[1;34mvalid result[0m: 
+recall@5 : 0.7919    recall@10 : 0.8558    recall@20 : 0.9084    mrr@5 : 0.6537    mrr@10 : 0.6623    mrr@20 : 0.666    ndcg@5 : 0.6884    ndcg@10 : 0.7092    ndcg@20 : 0.7225    hit@5 : 0.7919    hit@10 : 0.8558    hit@20 : 0.9084
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 38 training[0m [[1;34mtime[0m: 42.74s, [1;34mtrain loss[0m: 13.4730]
+[1;32mepoch 39 training[0m [[1;34mtime[0m: 42.19s, [1;34mtrain loss[0m: 13.6354]
+[1;32mepoch 39 evaluating[0m [[1;34mtime[0m: 290.24s, [1;34mvalid_score[0m: 0.663200]
+[1;34mvalid result[0m: 
+recall@5 : 0.7932    recall@10 : 0.8561    recall@20 : 0.9088    mrr@5 : 0.6547    mrr@10 : 0.6632    mrr@20 : 0.6669    ndcg@5 : 0.6895    ndcg@10 : 0.7099    ndcg@20 : 0.7233    hit@5 : 0.7932    hit@10 : 0.8561    hit@20 : 0.9088
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 40 training[0m [[1;34mtime[0m: 42.37s, [1;34mtrain loss[0m: 13.3725]
+[1;32mepoch 41 training[0m [[1;34mtime[0m: 42.75s, [1;34mtrain loss[0m: 13.3774]
+[1;32mepoch 41 evaluating[0m [[1;34mtime[0m: 292.19s, [1;34mvalid_score[0m: 0.663800]
+[1;34mvalid result[0m: 
+recall@5 : 0.7935    recall@10 : 0.8564    recall@20 : 0.9089    mrr@5 : 0.6553    mrr@10 : 0.6638    mrr@20 : 0.6675    ndcg@5 : 0.69    ndcg@10 : 0.7104    ndcg@20 : 0.7237    hit@5 : 0.7935    hit@10 : 0.8564    hit@20 : 0.9089
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 42 training[0m [[1;34mtime[0m: 42.14s, [1;34mtrain loss[0m: 13.5332]
+[1;32mepoch 43 training[0m [[1;34mtime[0m: 42.41s, [1;34mtrain loss[0m: 13.2858]
+[1;32mepoch 43 evaluating[0m [[1;34mtime[0m: 291.80s, [1;34mvalid_score[0m: 0.664800]
+[1;34mvalid result[0m: 
+recall@5 : 0.7938    recall@10 : 0.857    recall@20 : 0.9093    mrr@5 : 0.6563    mrr@10 : 0.6648    mrr@20 : 0.6685    ndcg@5 : 0.6908    ndcg@10 : 0.7113    ndcg@20 : 0.7246    hit@5 : 0.7938    hit@10 : 0.857    hit@20 : 0.9093
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 44 training[0m [[1;34mtime[0m: 42.37s, [1;34mtrain loss[0m: 13.2473]
+[1;32mepoch 45 training[0m [[1;34mtime[0m: 42.46s, [1;34mtrain loss[0m: 12.8326]
+[1;32mepoch 45 evaluating[0m [[1;34mtime[0m: 541.57s, [1;34mvalid_score[0m: 0.665400]
+[1;34mvalid result[0m: 
+recall@5 : 0.7941    recall@10 : 0.8576    recall@20 : 0.9092    mrr@5 : 0.6568    mrr@10 : 0.6654    mrr@20 : 0.669    ndcg@5 : 0.6912    ndcg@10 : 0.7119    ndcg@20 : 0.725    hit@5 : 0.7941    hit@10 : 0.8576    hit@20 : 0.9092
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 46 training[0m [[1;34mtime[0m: 42.18s, [1;34mtrain loss[0m: 12.7817]
+[1;32mepoch 47 training[0m [[1;34mtime[0m: 41.88s, [1;34mtrain loss[0m: 13.4640]
+[1;32mepoch 47 evaluating[0m [[1;34mtime[0m: 290.33s, [1;34mvalid_score[0m: 0.666200]
+[1;34mvalid result[0m: 
+recall@5 : 0.7945    recall@10 : 0.8577    recall@20 : 0.9093    mrr@5 : 0.6577    mrr@10 : 0.6662    mrr@20 : 0.6698    ndcg@5 : 0.692    ndcg@10 : 0.7126    ndcg@20 : 0.7257    hit@5 : 0.7945    hit@10 : 0.8577    hit@20 : 0.9093
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 48 training[0m [[1;34mtime[0m: 42.51s, [1;34mtrain loss[0m: 12.5565]
+[1;32mepoch 49 training[0m [[1;34mtime[0m: 42.43s, [1;34mtrain loss[0m: 12.8554]
+[1;32mepoch 49 evaluating[0m [[1;34mtime[0m: 292.71s, [1;34mvalid_score[0m: 0.667000]
+[1;34mvalid result[0m: 
+recall@5 : 0.7954    recall@10 : 0.8582    recall@20 : 0.9097    mrr@5 : 0.6585    mrr@10 : 0.667    mrr@20 : 0.6706    ndcg@5 : 0.6929    ndcg@10 : 0.7133    ndcg@20 : 0.7264    hit@5 : 0.7954    hit@10 : 0.8582    hit@20 : 0.9097
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 50 training[0m [[1;34mtime[0m: 42.46s, [1;34mtrain loss[0m: 12.4487]
+[1;32mepoch 51 training[0m [[1;34mtime[0m: 42.70s, [1;34mtrain loss[0m: 13.0673]
+[1;32mepoch 51 evaluating[0m [[1;34mtime[0m: 288.76s, [1;34mvalid_score[0m: 0.667500]
+[1;34mvalid result[0m: 
+recall@5 : 0.7958    recall@10 : 0.8585    recall@20 : 0.91    mrr@5 : 0.659    mrr@10 : 0.6675    mrr@20 : 0.6711    ndcg@5 : 0.6933    ndcg@10 : 0.7138    ndcg@20 : 0.7268    hit@5 : 0.7958    hit@10 : 0.8585    hit@20 : 0.91
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 52 training[0m [[1;34mtime[0m: 42.28s, [1;34mtrain loss[0m: 12.7850]
+[1;32mepoch 53 training[0m [[1;34mtime[0m: 42.23s, [1;34mtrain loss[0m: 12.4845]
+[1;32mepoch 53 evaluating[0m [[1;34mtime[0m: 296.01s, [1;34mvalid_score[0m: 0.667900]
+[1;34mvalid result[0m: 
+recall@5 : 0.7965    recall@10 : 0.8588    recall@20 : 0.9102    mrr@5 : 0.6595    mrr@10 : 0.6679    mrr@20 : 0.6715    ndcg@5 : 0.6939    ndcg@10 : 0.7142    ndcg@20 : 0.7272    hit@5 : 0.7965    hit@10 : 0.8588    hit@20 : 0.9102
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 54 training[0m [[1;34mtime[0m: 42.27s, [1;34mtrain loss[0m: 12.6362]
+[1;32mepoch 55 training[0m [[1;34mtime[0m: 42.01s, [1;34mtrain loss[0m: 12.8649]
+[1;32mepoch 55 evaluating[0m [[1;34mtime[0m: 289.40s, [1;34mvalid_score[0m: 0.668400]
+[1;34mvalid result[0m: 
+recall@5 : 0.7966    recall@10 : 0.8588    recall@20 : 0.9102    mrr@5 : 0.66    mrr@10 : 0.6684    mrr@20 : 0.672    ndcg@5 : 0.6943    ndcg@10 : 0.7146    ndcg@20 : 0.7276    hit@5 : 0.7966    hit@10 : 0.8588    hit@20 : 0.9102
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 56 training[0m [[1;34mtime[0m: 41.91s, [1;34mtrain loss[0m: 12.2896]
+[1;32mepoch 57 training[0m [[1;34mtime[0m: 42.34s, [1;34mtrain loss[0m: 12.7582]
+[1;32mepoch 57 evaluating[0m [[1;34mtime[0m: 292.15s, [1;34mvalid_score[0m: 0.669300]
+[1;34mvalid result[0m: 
+recall@5 : 0.7966    recall@10 : 0.8591    recall@20 : 0.9107    mrr@5 : 0.6608    mrr@10 : 0.6693    mrr@20 : 0.6729    ndcg@5 : 0.6949    ndcg@10 : 0.7153    ndcg@20 : 0.7283    hit@5 : 0.7966    hit@10 : 0.8591    hit@20 : 0.9107
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 58 training[0m [[1;34mtime[0m: 42.08s, [1;34mtrain loss[0m: 12.4480]
+[1;32mepoch 59 training[0m [[1;34mtime[0m: 42.67s, [1;34mtrain loss[0m: 12.4339]
+[1;32mepoch 59 evaluating[0m [[1;34mtime[0m: 292.65s, [1;34mvalid_score[0m: 0.670000]
+[1;34mvalid result[0m: 
+recall@5 : 0.7972    recall@10 : 0.8591    recall@20 : 0.9108    mrr@5 : 0.6617    mrr@10 : 0.67    mrr@20 : 0.6736    ndcg@5 : 0.6957    ndcg@10 : 0.7158    ndcg@20 : 0.7289    hit@5 : 0.7972    hit@10 : 0.8591    hit@20 : 0.9108
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 60 training[0m [[1;34mtime[0m: 42.04s, [1;34mtrain loss[0m: 12.8703]
+[1;32mepoch 61 training[0m [[1;34mtime[0m: 41.88s, [1;34mtrain loss[0m: 12.6614]
+[1;32mepoch 61 evaluating[0m [[1;34mtime[0m: 289.52s, [1;34mvalid_score[0m: 0.670100]
+[1;34mvalid result[0m: 
+recall@5 : 0.7976    recall@10 : 0.8597    recall@20 : 0.9107    mrr@5 : 0.6617    mrr@10 : 0.6701    mrr@20 : 0.6737    ndcg@5 : 0.6958    ndcg@10 : 0.716    ndcg@20 : 0.729    hit@5 : 0.7976    hit@10 : 0.8597    hit@20 : 0.9107
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 62 training[0m [[1;34mtime[0m: 42.33s, [1;34mtrain loss[0m: 12.9016]
+[1;32mepoch 63 training[0m [[1;34mtime[0m: 42.65s, [1;34mtrain loss[0m: 12.2229]
+[1;32mepoch 63 evaluating[0m [[1;34mtime[0m: 292.64s, [1;34mvalid_score[0m: 0.670500]
+[1;34mvalid result[0m: 
+recall@5 : 0.7979    recall@10 : 0.8596    recall@20 : 0.9108    mrr@5 : 0.6622    mrr@10 : 0.6705    mrr@20 : 0.6741    ndcg@5 : 0.6963    ndcg@10 : 0.7163    ndcg@20 : 0.7293    hit@5 : 0.7979    hit@10 : 0.8596    hit@20 : 0.9108
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 64 training[0m [[1;34mtime[0m: 42.11s, [1;34mtrain loss[0m: 12.8506]
+[1;32mepoch 65 training[0m [[1;34mtime[0m: 42.31s, [1;34mtrain loss[0m: 12.6017]
+[1;32mepoch 65 evaluating[0m [[1;34mtime[0m: 295.17s, [1;34mvalid_score[0m: 0.670600]
+[1;34mvalid result[0m: 
+recall@5 : 0.7977    recall@10 : 0.8597    recall@20 : 0.9108    mrr@5 : 0.6622    mrr@10 : 0.6706    mrr@20 : 0.6741    ndcg@5 : 0.6962    ndcg@10 : 0.7164    ndcg@20 : 0.7293    hit@5 : 0.7977    hit@10 : 0.8597    hit@20 : 0.9108
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 66 training[0m [[1;34mtime[0m: 42.70s, [1;34mtrain loss[0m: 12.1257]
+[1;32mepoch 67 training[0m [[1;34mtime[0m: 42.03s, [1;34mtrain loss[0m: 11.9729]
+[1;32mepoch 67 evaluating[0m [[1;34mtime[0m: 290.96s, [1;34mvalid_score[0m: 0.671000]
+[1;34mvalid result[0m: 
+recall@5 : 0.7981    recall@10 : 0.8597    recall@20 : 0.9109    mrr@5 : 0.6627    mrr@10 : 0.671    mrr@20 : 0.6746    ndcg@5 : 0.6967    ndcg@10 : 0.7167    ndcg@20 : 0.7297    hit@5 : 0.7981    hit@10 : 0.8597    hit@20 : 0.9109
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 68 training[0m [[1;34mtime[0m: 42.58s, [1;34mtrain loss[0m: 12.6782]
+[1;32mepoch 69 training[0m [[1;34mtime[0m: 42.63s, [1;34mtrain loss[0m: 11.9555]
+[1;32mepoch 69 evaluating[0m [[1;34mtime[0m: 293.10s, [1;34mvalid_score[0m: 0.671300]
+[1;34mvalid result[0m: 
+recall@5 : 0.7984    recall@10 : 0.8601    recall@20 : 0.9115    mrr@5 : 0.663    mrr@10 : 0.6713    mrr@20 : 0.6749    ndcg@5 : 0.697    ndcg@10 : 0.717    ndcg@20 : 0.7301    hit@5 : 0.7984    hit@10 : 0.8601    hit@20 : 0.9115
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 70 training[0m [[1;34mtime[0m: 41.64s, [1;34mtrain loss[0m: 11.9337]
+[1;32mepoch 71 training[0m [[1;34mtime[0m: 41.86s, [1;34mtrain loss[0m: 11.8132]
+[1;32mepoch 71 evaluating[0m [[1;34mtime[0m: 290.18s, [1;34mvalid_score[0m: 0.672400]
+[1;34mvalid result[0m: 
+recall@5 : 0.7988    recall@10 : 0.8605    recall@20 : 0.9113    mrr@5 : 0.6641    mrr@10 : 0.6724    mrr@20 : 0.676    ndcg@5 : 0.6979    ndcg@10 : 0.718    ndcg@20 : 0.7309    hit@5 : 0.7988    hit@10 : 0.8605    hit@20 : 0.9113
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 72 training[0m [[1;34mtime[0m: 42.64s, [1;34mtrain loss[0m: 11.9547]
+[1;32mepoch 73 training[0m [[1;34mtime[0m: 42.53s, [1;34mtrain loss[0m: 12.1586]
+[1;32mepoch 73 evaluating[0m [[1;34mtime[0m: 289.80s, [1;34mvalid_score[0m: 0.672600]
+[1;34mvalid result[0m: 
+recall@5 : 0.7993    recall@10 : 0.8605    recall@20 : 0.9114    mrr@5 : 0.6643    mrr@10 : 0.6726    mrr@20 : 0.6762    ndcg@5 : 0.6982    ndcg@10 : 0.7181    ndcg@20 : 0.731    hit@5 : 0.7993    hit@10 : 0.8605    hit@20 : 0.9114
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 74 training[0m [[1;34mtime[0m: 42.68s, [1;34mtrain loss[0m: 12.1608]
+[1;32mepoch 75 training[0m [[1;34mtime[0m: 42.14s, [1;34mtrain loss[0m: 11.6903]
+[1;32mepoch 75 evaluating[0m [[1;34mtime[0m: 291.11s, [1;34mvalid_score[0m: 0.673100]
+[1;34mvalid result[0m: 
+recall@5 : 0.7995    recall@10 : 0.8608    recall@20 : 0.9113    mrr@5 : 0.6649    mrr@10 : 0.6731    mrr@20 : 0.6767    ndcg@5 : 0.6987    ndcg@10 : 0.7186    ndcg@20 : 0.7314    hit@5 : 0.7995    hit@10 : 0.8608    hit@20 : 0.9113
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 76 training[0m [[1;34mtime[0m: 42.90s, [1;34mtrain loss[0m: 12.0797]
+[1;32mepoch 77 training[0m [[1;34mtime[0m: 42.47s, [1;34mtrain loss[0m: 12.2188]
+[1;32mepoch 77 evaluating[0m [[1;34mtime[0m: 286.99s, [1;34mvalid_score[0m: 0.673600]
+[1;34mvalid result[0m: 
+recall@5 : 0.7995    recall@10 : 0.8612    recall@20 : 0.9116    mrr@5 : 0.6652    mrr@10 : 0.6736    mrr@20 : 0.6771    ndcg@5 : 0.699    ndcg@10 : 0.719    ndcg@20 : 0.7318    hit@5 : 0.7995    hit@10 : 0.8612    hit@20 : 0.9116
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+[1;32mepoch 78 training[0m [[1;34mtime[0m: 42.06s, [1;34mtrain loss[0m: 11.7555]
+[1;32mepoch 79 training[0m [[1;34mtime[0m: 41.40s, [1;34mtrain loss[0m: 12.0535]
+[1;32mepoch 79 evaluating[0m [[1;34mtime[0m: 287.43s, [1;34mvalid_score[0m: 0.674200]
+[1;34mvalid result[0m: 
+recall@5 : 0.8001    recall@10 : 0.861    recall@20 : 0.9117    mrr@5 : 0.666    mrr@10 : 0.6742    mrr@20 : 0.6778    ndcg@5 : 0.6997    ndcg@10 : 0.7195    ndcg@20 : 0.7323    hit@5 : 0.8001    hit@10 : 0.861    hit@20 : 0.9117
+[1;34mSaving current[0m: outputs/saved/FPMC-Feb-03-2026_17-32-19.pth
+Loading model structure and parameters from outputs/saved/FPMC-Feb-03-2026_17-32-19.pth

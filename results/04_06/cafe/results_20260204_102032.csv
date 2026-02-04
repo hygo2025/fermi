@@ -1,0 +1,2 @@
+model,dataset,best_valid_score,timestamp,recall@5,recall@10,recall@20,mrr@5,mrr@10,mrr@20,ndcg@5,ndcg@10,ndcg@20,hit@5,hit@10,hit@20
+FOSSIL,realestate,0.8894,20260204_102032,0.1553,0.2424,0.344,0.0716,0.0831,0.0901,0.0922,0.1203,0.1459,0.1553,0.2424,0.344
