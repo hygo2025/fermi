@@ -4,7 +4,7 @@ embedding_size: 64
 
 alpha: 0.5
 reg_weights: [0.001, 0.001]
-split_to: 4096
+split_to: 65536
 
 loss_type: 'BPR'
 learning_rate: 0.001

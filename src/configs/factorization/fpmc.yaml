@@ -11,7 +11,7 @@ train_neg_sample_args:
 
 reg_weights: [0.001, 0.001, 0.001]
 
-# Gradient clipping para estabilidade numérica com AMP
+# Se der erro, remover daqui pra baixo
 clip_grad_norm:
   max_norm: 5.0
 

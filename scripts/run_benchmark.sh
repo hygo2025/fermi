@@ -3,12 +3,10 @@ set -euo pipefail
 
 
 MODELS=(
-    "FISM" #n
-    "FDSA" #n
-    "NextItNet" #n
     "TransRec" #n
     "SRGNN" #n
     "GCSAN" #n
+    "FISM" #n
 )
 
 MODELS_ALL=(
@@ -21,7 +19,6 @@ MODELS_ALL=(
     "FPMC" #n -no cafe
     "BERT4Rec" #n -no cafe
     "Caser"
-    "FDSA" #n
     "GCSAN" #n
     "GRU4Rec"
     "NARM"
