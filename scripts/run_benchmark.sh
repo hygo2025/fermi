@@ -3,8 +3,8 @@ set -euo pipefail
 
 
 MODELS=(
-    "TransRec"
-    "SRGNN"
+    "SRGNN" # Rodando na janela
+    "TransRec" # Rodando no cafe
     "GCSAN"
     "FISM"
     "FPMC"
@@ -17,14 +17,14 @@ MODELS_ALL=(
     "Pop"
     "Random"
     "FISM" #n
-    "FOSSIL" #n -no cafe
+    "FOSSIL"
     "FPMC" #n -no cafe
     "BERT4Rec" #n -no cafe
     "Caser"
     "GCSAN" #n
     "GRU4Rec"
     "NARM"
-    "NextItNet" #n
+    "NextItNet"
     "SASRec"
     "SHAN"
     "SRGNN" #n
