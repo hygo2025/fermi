@@ -1,10 +1,14 @@
 model: Caser
 
-embedding_size: 64
+# Faster config for benchmark (Caser only)
+train_batch_size: 4096
+eval_batch_size: 4096
 
-filter_sizes: [2, 3, 4]
-n_v: 4
-n_h: 16
+embedding_size: 32
+
+filter_sizes: [2, 3]
+n_v: 2
+n_h: 8
 
 dropout_prob: 0.4
 reg_weight: 0.0001
@@ -13,7 +17,10 @@ loss_type: 'BPR'
 
 train_neg_sample_args:
   distribution: 'uniform'
-  sample_num: 5
+  sample_num: 1
   alpha: 1.0
   dynamic: false
   candidate_num: 0
+
+# Disable TensorBoard for this benchmark run
+tensorboard: false
