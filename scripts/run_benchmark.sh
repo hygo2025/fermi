@@ -3,10 +3,14 @@ set -euo pipefail
 
 
 MODELS=(
-    "TransRec" #n
-    "SRGNN" #n
-    "GCSAN" #n
-    "FISM" #n
+    "NextItNet" # rodando
+    "FOSSIL"    # rodando
+    "TransRec"
+    "SRGNN"
+    "GCSAN"
+    "FISM"
+    "FPMC"
+    "BERT4Rec"
 )
 
 MODELS_ALL=(
