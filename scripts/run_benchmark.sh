@@ -3,8 +3,6 @@ set -euo pipefail
 
 
 MODELS=(
-    "NextItNet" # rodando
-    "FOSSIL"    # rodando
     "TransRec"
     "SRGNN"
     "GCSAN"

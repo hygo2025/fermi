@@ -1,0 +1,108 @@
+command line args [--model NextItNet] will not be used in RecBole
+[1;35mLoad filtered dataset from[0m: [outputs/saved/realestate-SequentialDataset.pth]
+[1;35mSaving split dataloaders into[0m: [outputs/saved/realestate-for-NextItNet-dataloader.pth]
+[1;35m[Training]: [0m[1;36mtrain_batch_size[0m = [1;33m[2048][0m[1;36m train_neg_sample_args[0m: [1;33m[{'distribution': 'none', 'sample_num': 'none', 'alpha': 'none', 'dynamic': False, 'candidate_num': 0}][0m
+[1;35m[Evaluation]: [0m[1;36meval_batch_size[0m = [1;33m[2048][0m[1;36m eval_args[0m: [1;33m[{'split': {'LS': 'valid_and_test'}, 'order': 'TO', 'group_by': 'user', 'mode': {'valid': 'uni100', 'test': 'full'}}][0m
+[1;32mepoch 0 training[0m [[1;34mtime[0m: 154.85s, [1;34mtrain loss[0m: 20771.4145]
+[1;32mepoch 1 training[0m [[1;34mtime[0m: 154.37s, [1;34mtrain loss[0m: 20644.7085]
+[1;32mepoch 1 evaluating[0m [[1;34mtime[0m: 455.98s, [1;34mvalid_score[0m: 0.160400]
+[1;34mvalid result[0m: 
+recall@5 : 0.2546    recall@10 : 0.3821    recall@20 : 0.5511    mrr@5 : 0.1436    mrr@10 : 0.1604    mrr@20 : 0.1719    ndcg@5 : 0.171    ndcg@10 : 0.212    ndcg@20 : 0.2545    hit@5 : 0.2546    hit@10 : 0.3821    hit@20 : 0.5511
+[1;34mSaving current[0m: outputs/saved/NextItNet-Feb-04-2026_09-49-30.pth
+[1;32mepoch 2 training[0m [[1;34mtime[0m: 154.07s, [1;34mtrain loss[0m: 20633.6104]
+[1;32mepoch 3 training[0m [[1;34mtime[0m: 154.26s, [1;34mtrain loss[0m: 20624.1474]
+[1;32mepoch 3 evaluating[0m [[1;34mtime[0m: 457.10s, [1;34mvalid_score[0m: 0.161100]
+[1;34mvalid result[0m: 
+recall@5 : 0.2558    recall@10 : 0.3833    recall@20 : 0.5528    mrr@5 : 0.1443    mrr@10 : 0.1611    mrr@20 : 0.1727    ndcg@5 : 0.1718    ndcg@10 : 0.2128    ndcg@20 : 0.2555    hit@5 : 0.2558    hit@10 : 0.3833    hit@20 : 0.5528
+[1;34mSaving current[0m: outputs/saved/NextItNet-Feb-04-2026_09-49-30.pth
+[1;32mepoch 4 training[0m [[1;34mtime[0m: 152.21s, [1;34mtrain loss[0m: 20616.2868]
+[1;32mepoch 5 training[0m [[1;34mtime[0m: 154.04s, [1;34mtrain loss[0m: 20609.8428]
+[1;32mepoch 5 evaluating[0m [[1;34mtime[0m: 547.97s, [1;34mvalid_score[0m: 0.161400]
+[1;34mvalid result[0m: 
+recall@5 : 0.2559    recall@10 : 0.3841    recall@20 : 0.5536    mrr@5 : 0.1445    mrr@10 : 0.1614    mrr@20 : 0.173    ndcg@5 : 0.172    ndcg@10 : 0.2132    ndcg@20 : 0.2559    hit@5 : 0.2559    hit@10 : 0.3841    hit@20 : 0.5536
+[1;34mSaving current[0m: outputs/saved/NextItNet-Feb-04-2026_09-49-30.pth
+[1;32mepoch 6 training[0m [[1;34mtime[0m: 156.66s, [1;34mtrain loss[0m: 20604.2997]
+[1;32mepoch 7 training[0m [[1;34mtime[0m: 202.06s, [1;34mtrain loss[0m: 20599.5962]
+[1;32mepoch 7 evaluating[0m [[1;34mtime[0m: 507.90s, [1;34mvalid_score[0m: 0.161400]
+[1;34mvalid result[0m: 
+recall@5 : 0.2562    recall@10 : 0.3848    recall@20 : 0.5542    mrr@5 : 0.1445    mrr@10 : 0.1614    mrr@20 : 0.173    ndcg@5 : 0.172    ndcg@10 : 0.2134    ndcg@20 : 0.256    hit@5 : 0.2562    hit@10 : 0.3848    hit@20 : 0.5542
+[1;34mSaving current[0m: outputs/saved/NextItNet-Feb-04-2026_09-49-30.pth
+[1;32mepoch 8 training[0m [[1;34mtime[0m: 243.50s, [1;34mtrain loss[0m: 20596.0762]
+[1;32mepoch 9 training[0m [[1;34mtime[0m: 157.62s, [1;34mtrain loss[0m: 20593.3109]
+[1;32mepoch 9 evaluating[0m [[1;34mtime[0m: 474.54s, [1;34mvalid_score[0m: 0.161600]
+[1;34mvalid result[0m: 
+recall@5 : 0.2564    recall@10 : 0.3847    recall@20 : 0.5539    mrr@5 : 0.1447    mrr@10 : 0.1616    mrr@20 : 0.1733    ndcg@5 : 0.1723    ndcg@10 : 0.2136    ndcg@20 : 0.2562    hit@5 : 0.2564    hit@10 : 0.3847    hit@20 : 0.5539
+[1;34mSaving current[0m: outputs/saved/NextItNet-Feb-04-2026_09-49-30.pth
+[1;32mepoch 10 training[0m [[1;34mtime[0m: 153.01s, [1;34mtrain loss[0m: 20591.0144]
+[1;32mepoch 11 training[0m [[1;34mtime[0m: 152.95s, [1;34mtrain loss[0m: 20588.9406]
+[1;32mepoch 11 evaluating[0m [[1;34mtime[0m: 533.05s, [1;34mvalid_score[0m: 0.161700]
+[1;34mvalid result[0m: 
+recall@5 : 0.2565    recall@10 : 0.3847    recall@20 : 0.5541    mrr@5 : 0.1448    mrr@10 : 0.1617    mrr@20 : 0.1733    ndcg@5 : 0.1724    ndcg@10 : 0.2136    ndcg@20 : 0.2562    hit@5 : 0.2565    hit@10 : 0.3847    hit@20 : 0.5541
+[1;34mSaving current[0m: outputs/saved/NextItNet-Feb-04-2026_09-49-30.pth
+[1;32mepoch 12 training[0m [[1;34mtime[0m: 153.45s, [1;34mtrain loss[0m: 20587.4186]
+[1;32mepoch 13 training[0m [[1;34mtime[0m: 157.39s, [1;34mtrain loss[0m: 20585.8507]
+[1;32mepoch 13 evaluating[0m [[1;34mtime[0m: 546.25s, [1;34mvalid_score[0m: 0.161900]
+[1;34mvalid result[0m: 
+recall@5 : 0.2571    recall@10 : 0.3851    recall@20 : 0.5541    mrr@5 : 0.145    mrr@10 : 0.1619    mrr@20 : 0.1735    ndcg@5 : 0.1727    ndcg@10 : 0.2138    ndcg@20 : 0.2564    hit@5 : 0.2571    hit@10 : 0.3851    hit@20 : 0.5541
+[1;34mSaving current[0m: outputs/saved/NextItNet-Feb-04-2026_09-49-30.pth
+[1;32mepoch 14 training[0m [[1;34mtime[0m: 204.70s, [1;34mtrain loss[0m: 20584.3285]
+[1;32mepoch 15 training[0m [[1;34mtime[0m: 152.62s, [1;34mtrain loss[0m: 20582.8459]
+[1;32mepoch 15 evaluating[0m [[1;34mtime[0m: 459.28s, [1;34mvalid_score[0m: 0.161800]
+[1;34mvalid result[0m: 
+recall@5 : 0.2567    recall@10 : 0.3851    recall@20 : 0.5544    mrr@5 : 0.1449    mrr@10 : 0.1618    mrr@20 : 0.1734    ndcg@5 : 0.1725    ndcg@10 : 0.2138    ndcg@20 : 0.2564    hit@5 : 0.2567    hit@10 : 0.3851    hit@20 : 0.5544
+[1;32mepoch 16 training[0m [[1;34mtime[0m: 152.39s, [1;34mtrain loss[0m: 20581.4460]
+[1;32mepoch 17 training[0m [[1;34mtime[0m: 155.18s, [1;34mtrain loss[0m: 20580.3236]
+[1;32mepoch 17 evaluating[0m [[1;34mtime[0m: 455.03s, [1;34mvalid_score[0m: 0.161900]
+[1;34mvalid result[0m: 
+recall@5 : 0.2572    recall@10 : 0.3851    recall@20 : 0.5542    mrr@5 : 0.145    mrr@10 : 0.1619    mrr@20 : 0.1735    ndcg@5 : 0.1727    ndcg@10 : 0.2138    ndcg@20 : 0.2564    hit@5 : 0.2572    hit@10 : 0.3851    hit@20 : 0.5542
+[1;34mSaving current[0m: outputs/saved/NextItNet-Feb-04-2026_09-49-30.pth
+[1;32mepoch 18 training[0m [[1;34mtime[0m: 152.32s, [1;34mtrain loss[0m: 20579.1326]
+[1;32mepoch 19 training[0m [[1;34mtime[0m: 154.07s, [1;34mtrain loss[0m: 20578.0837]
+[1;32mepoch 19 evaluating[0m [[1;34mtime[0m: 580.91s, [1;34mvalid_score[0m: 0.161900]
+[1;34mvalid result[0m: 
+recall@5 : 0.2572    recall@10 : 0.3845    recall@20 : 0.5543    mrr@5 : 0.1451    mrr@10 : 0.1619    mrr@20 : 0.1735    ndcg@5 : 0.1728    ndcg@10 : 0.2137    ndcg@20 : 0.2565    hit@5 : 0.2572    hit@10 : 0.3845    hit@20 : 0.5543
+[1;34mSaving current[0m: outputs/saved/NextItNet-Feb-04-2026_09-49-30.pth
+[1;32mepoch 20 training[0m [[1;34mtime[0m: 152.25s, [1;34mtrain loss[0m: 20576.8838]
+[1;32mepoch 21 training[0m [[1;34mtime[0m: 155.32s, [1;34mtrain loss[0m: 20575.8898]
+[1;32mepoch 21 evaluating[0m [[1;34mtime[0m: 453.65s, [1;34mvalid_score[0m: 0.162000]
+[1;34mvalid result[0m: 
+recall@5 : 0.2569    recall@10 : 0.3851    recall@20 : 0.5549    mrr@5 : 0.1451    mrr@10 : 0.162    mrr@20 : 0.1736    ndcg@5 : 0.1727    ndcg@10 : 0.2139    ndcg@20 : 0.2567    hit@5 : 0.2569    hit@10 : 0.3851    hit@20 : 0.5549
+[1;34mSaving current[0m: outputs/saved/NextItNet-Feb-04-2026_09-49-30.pth
+[1;32mepoch 22 training[0m [[1;34mtime[0m: 151.57s, [1;34mtrain loss[0m: 20575.1281]
+[1;32mepoch 23 training[0m [[1;34mtime[0m: 151.10s, [1;34mtrain loss[0m: 20574.4928]
+[1;32mepoch 23 evaluating[0m [[1;34mtime[0m: 450.63s, [1;34mvalid_score[0m: 0.161800]
+[1;34mvalid result[0m: 
+recall@5 : 0.257    recall@10 : 0.3849    recall@20 : 0.5546    mrr@5 : 0.145    mrr@10 : 0.1618    mrr@20 : 0.1734    ndcg@5 : 0.1726    ndcg@10 : 0.2137    ndcg@20 : 0.2565    hit@5 : 0.257    hit@10 : 0.3849    hit@20 : 0.5546
+[1;32mepoch 24 training[0m [[1;34mtime[0m: 153.21s, [1;34mtrain loss[0m: 20574.1422]
+[1;32mepoch 25 training[0m [[1;34mtime[0m: 151.53s, [1;34mtrain loss[0m: 20573.9968]
+[1;32mepoch 25 evaluating[0m [[1;34mtime[0m: 453.07s, [1;34mvalid_score[0m: 0.161900]
+[1;34mvalid result[0m: 
+recall@5 : 0.257    recall@10 : 0.385    recall@20 : 0.5545    mrr@5 : 0.145    mrr@10 : 0.1619    mrr@20 : 0.1735    ndcg@5 : 0.1726    ndcg@10 : 0.2138    ndcg@20 : 0.2565    hit@5 : 0.257    hit@10 : 0.385    hit@20 : 0.5545
+[1;32mepoch 26 training[0m [[1;34mtime[0m: 152.06s, [1;34mtrain loss[0m: 20574.0908]
+[1;32mepoch 27 training[0m [[1;34mtime[0m: 152.52s, [1;34mtrain loss[0m: 20574.0750]
+[1;32mepoch 27 evaluating[0m [[1;34mtime[0m: 450.37s, [1;34mvalid_score[0m: 0.162400]
+[1;34mvalid result[0m: 
+recall@5 : 0.257    recall@10 : 0.3852    recall@20 : 0.554    mrr@5 : 0.1455    mrr@10 : 0.1624    mrr@20 : 0.1739    ndcg@5 : 0.173    ndcg@10 : 0.2142    ndcg@20 : 0.2567    hit@5 : 0.257    hit@10 : 0.3852    hit@20 : 0.554
+[1;34mSaving current[0m: outputs/saved/NextItNet-Feb-04-2026_09-49-30.pth
+[1;32mepoch 28 training[0m [[1;34mtime[0m: 152.65s, [1;34mtrain loss[0m: 20574.1465]
+[1;32mepoch 29 training[0m [[1;34mtime[0m: 151.90s, [1;34mtrain loss[0m: 20574.3797]
+[1;32mepoch 29 evaluating[0m [[1;34mtime[0m: 449.26s, [1;34mvalid_score[0m: 0.161900]
+[1;34mvalid result[0m: 
+recall@5 : 0.257    recall@10 : 0.3855    recall@20 : 0.5546    mrr@5 : 0.145    mrr@10 : 0.1619    mrr@20 : 0.1735    ndcg@5 : 0.1727    ndcg@10 : 0.214    ndcg@20 : 0.2565    hit@5 : 0.257    hit@10 : 0.3855    hit@20 : 0.5546
+[1;32mepoch 30 training[0m [[1;34mtime[0m: 152.79s, [1;34mtrain loss[0m: 20574.5341]
+[1;32mepoch 31 training[0m [[1;34mtime[0m: 154.33s, [1;34mtrain loss[0m: 20574.6641]
+[1;32mepoch 31 evaluating[0m [[1;34mtime[0m: 452.41s, [1;34mvalid_score[0m: 0.161800]
+[1;34mvalid result[0m: 
+recall@5 : 0.2574    recall@10 : 0.3848    recall@20 : 0.5542    mrr@5 : 0.1451    mrr@10 : 0.1618    mrr@20 : 0.1735    ndcg@5 : 0.1728    ndcg@10 : 0.2138    ndcg@20 : 0.2564    hit@5 : 0.2574    hit@10 : 0.3848    hit@20 : 0.5542
+[1;32mepoch 32 training[0m [[1;34mtime[0m: 152.94s, [1;34mtrain loss[0m: 20574.7305]
+[1;32mepoch 33 training[0m [[1;34mtime[0m: 152.23s, [1;34mtrain loss[0m: 20574.9247]
+[1;32mepoch 33 evaluating[0m [[1;34mtime[0m: 453.42s, [1;34mvalid_score[0m: 0.161800]
+[1;34mvalid result[0m: 
+recall@5 : 0.2569    recall@10 : 0.3849    recall@20 : 0.5546    mrr@5 : 0.1449    mrr@10 : 0.1618    mrr@20 : 0.1734    ndcg@5 : 0.1725    ndcg@10 : 0.2137    ndcg@20 : 0.2564    hit@5 : 0.2569    hit@10 : 0.3849    hit@20 : 0.5546
+[1;32mepoch 34 training[0m [[1;34mtime[0m: 153.88s, [1;34mtrain loss[0m: 20575.0012]
+[1;32mepoch 35 training[0m [[1;34mtime[0m: 153.31s, [1;34mtrain loss[0m: 20575.0978]
+[1;32mepoch 35 evaluating[0m [[1;34mtime[0m: 453.61s, [1;34mvalid_score[0m: 0.162100]
+[1;34mvalid result[0m: 
+recall@5 : 0.2567    recall@10 : 0.3853    recall@20 : 0.5549    mrr@5 : 0.1451    mrr@10 : 0.1621    mrr@20 : 0.1737    ndcg@5 : 0.1727    ndcg@10 : 0.214    ndcg@20 : 0.2567    hit@5 : 0.2567    hit@10 : 0.3853    hit@20 : 0.5549
+Finished training, best eval result in epoch 27
+Loading model structure and parameters from outputs/saved/NextItNet-Feb-04-2026_09-49-30.pth
