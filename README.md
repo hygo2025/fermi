@@ -84,10 +84,8 @@ make help          # Ver todos comandos
 make clean         # Limpar cache e logs
 make format        # Formatar código
 ```
-ItemKNN
-#Janela
-MODELS="Caser STAMP NARM GCSAN BERT4Rec" make benchmark 
-#Cafe
-MODELS="TransRec NextItNet GRU4Rec SASRec SRGNN" make benchmark
-#Mesa
-MODELS="BPR FISM FPMC FOSSIL" make benchmark
+MODELS="Caser ItemKNN GCSAN " make benchmark
+MODELS=" SRGNN" make benchmark
+MODELS="BERT4Rec " make benchmark
+
+FOSSIL SASRec TransRec  FISM 

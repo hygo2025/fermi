@@ -20,3 +20,7 @@ train_neg_sample_args:
   alpha: 1.0
   dynamic: false
   candidate_num: 0
+
+learning_rate: 0.001
+train_batch_size: 4096
+eval_batch_size: 8192
