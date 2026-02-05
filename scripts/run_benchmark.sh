@@ -5,7 +5,6 @@ set -euo pipefail
 DEFAULT_MODELS=(
     "BERT4Rec" #n Rodando
     "TransRec" #n Rodnado
-    "FISM"
     "GCSAN"
     "SRGNN"
 )
@@ -15,7 +14,6 @@ MODELS_ALL=(
     "ItemKNN"
     "Pop"
     "Random"
-    "FISM"
     "FOSSIL"
     "FPMC"
     "BERT4Rec"
