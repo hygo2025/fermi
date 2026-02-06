@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install prepare-raw-data data benchmark tune api clean format
+.PHONY: help install prepare-raw-data data benchmark tune eval-only api clean format
 
 COLOR_RESET   = \033[0m
 COLOR_CYAN    = \033[36m
@@ -57,6 +57,16 @@ benchmark-queue: ## Run a queue of models. Usage: MODELS="A B C" make benchmark-
 		exit 1; \
 	fi
 	@MODELS="$(MODELS)" ./scripts/run_benchmark_queue.sh
+
+eval-only: ## Evaluate a saved checkpoint. MODEL=... CHECKPOINT=... EVAL_BATCH_SIZE=...
+	@if [ -z "$(MODEL)" ] || [ -z "$(CHECKPOINT)" ]; then \
+		echo "[ERROR] MODEL and CHECKPOINT are required."; \
+		echo "[INFO] Usage: make eval-only MODEL=TransRec CHECKPOINT=outputs/saved/TransRec-....pth EVAL_BATCH_SIZE=1"; \
+		exit 1; \
+	fi
+	@EVAL_BATCH_SIZE_ARG="$(if $(EVAL_BATCH_SIZE),--eval-batch-size $(EVAL_BATCH_SIZE),)"; \
+	WANDB_GROUP_ARG="$(if $(WANDB_GROUP),--wandb-group $(WANDB_GROUP),)"; \
+	python src/eval_only.py --model $(MODEL) --checkpoint $(CHECKPOINT) $$EVAL_BATCH_SIZE_ARG $$WANDB_GROUP_ARG
 
 # -----------------------------------------------------------------------------
 ##@ Hyperparameter Tuning
