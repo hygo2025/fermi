@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install prepare-raw-data data benchmark tune eval-only api clean format
+.PHONY: help install prepare-raw-data data benchmark tune eval-only results api clean format
 
 COLOR_RESET   = \033[0m
 COLOR_CYAN    = \033[36m
@@ -67,6 +67,12 @@ eval-only: ## Evaluate a saved checkpoint. MODEL=... CHECKPOINT=... EVAL_BATCH_S
 	@EVAL_BATCH_SIZE_ARG="$(if $(EVAL_BATCH_SIZE),--eval-batch-size $(EVAL_BATCH_SIZE),)"; \
 	WANDB_GROUP_ARG="$(if $(WANDB_GROUP),--wandb-group $(WANDB_GROUP),)"; \
 	python src/eval_only.py --model $(MODEL) --checkpoint $(CHECKPOINT) $$EVAL_BATCH_SIZE_ARG $$WANDB_GROUP_ARG
+
+results: ## Generate results tables and plots from W&B. Optional: GROUP=..., OUT_DIR=..., PRIMARY_METRIC=...
+	@GROUP_ARG="$(if $(GROUP),--group $(GROUP),)"; \
+	OUT_DIR_ARG="$(if $(OUT_DIR),--out-dir $(OUT_DIR),)"; \
+	PRIMARY_ARG="$(if $(PRIMARY_METRIC),--primary-metric $(PRIMARY_METRIC),)"; \
+	python scripts/results.py $$GROUP_ARG $$OUT_DIR_ARG $$PRIMARY_ARG
 
 # -----------------------------------------------------------------------------
 ##@ Hyperparameter Tuning

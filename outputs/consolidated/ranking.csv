@@ -1,0 +1,15 @@
+model,dataset,run_name,test_mrr@10
+Pop,realestate,Pop_20260204_185933,0.1768
+FOSSIL,realestate,FOSSIL_20260205_130223,0.083
+ItemKNN,realestate,ItemKNN_20260205_185958,0.0805
+GRU4Rec,realestate,GRU4Rec_20260205_130226,0.0706
+BPR,realestate,BPR_20260204_193446,0.0688
+NARM,realestate,NARM_20260205_171213,0.0564
+SASRec,realestate,Eval_SASRec_20260206_074813,0.0549
+STAMP,realestate,STAMP_20260204_194348,0.0547
+TransRec,realestate,Eval_TransRec_20260205_231754,0.0505
+FPMC,realestate,FPMC_20260205_082357,0.039
+Random,realestate,Random_20260204_184122,0.029
+Caser,realestate,Caser_20260205_225550,0.0028
+NextItNet,realestate,NextItNet_20260204_223444,0.001
+BERT4Rec,realestate,BERT4Rec_20260206_053231,
