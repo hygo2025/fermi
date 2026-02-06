@@ -31,7 +31,8 @@ raw_data:
   # Output
   output_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole
   base_path: /home/hygo2025/Documents/data
-  
+
+# mg rodou assim: "2024-04-01"  "2024-06-01"
 # Data preparation parameters
 data_preparation:
   start_date: "2024-04-01"
