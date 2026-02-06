@@ -86,6 +86,6 @@ make format        # Formatar código
 ```
 MODELS="  GCSAN " make benchmark
 MODELS=" SRGNN" make benchmark
-MODELS="BERT4Rec " make benchmark
+MODELS=" " make benchmark
 
-SASRec Caser BERT4Rec
+BERT4Rec SASRec  Caser

@@ -51,6 +51,13 @@ benchmark: ## Run benchmark. Optional: MODEL=...
 		WANDB_RUN_GROUP="$$GROUP_NAME" ./scripts/run_benchmark.sh; \
 	fi
 
+benchmark-queue: ## Run a queue of models. Usage: MODELS="A B C" make benchmark-queue
+	@if [ -z "$(MODELS)" ]; then \
+		echo "[ERROR] MODELS is required. Example: MODELS=\"SASRec SRGNN\" make benchmark-queue"; \
+		exit 1; \
+	fi
+	@MODELS="$(MODELS)" ./scripts/run_benchmark_queue.sh
+
 eval-only: ## Evaluate a saved checkpoint. MODEL=... CHECKPOINT=... EVAL_BATCH_SIZE=...
 	@if [ -z "$(MODEL)" ] || [ -z "$(CHECKPOINT)" ]; then \
 		echo "[ERROR] MODEL and CHECKPOINT are required."; \
