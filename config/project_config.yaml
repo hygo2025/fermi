@@ -36,7 +36,7 @@ raw_data:
 # Data preparation parameters
 data_preparation:
   start_date: "2024-03-01"
-  end_date: "2024-07-01"  # 60 dias de dados
+  end_date: "2024-05-01"  # 60 dias de dados
   min_session_length: 2    # Mínimo de interações por sessão
   max_session_length: 50   # Máximo de interações por sessão
   min_item_freq: 5         # Mínimo de vezes que um item deve aparecer
@@ -147,9 +147,16 @@ wandb_group: ""
 tensorboard: false
 
 # -----------------------------------------------------------------------------
+# CANONICAL ID (LISTINGS)
+# -----------------------------------------------------------------------------
+canonical_id:
+  geohash_precision: 7
+
+# -----------------------------------------------------------------------------
 # OUTPUT PATHS
 # -----------------------------------------------------------------------------
 output:
   results_dir: outputs/results
+  model_export_dir: outputs/models
   logs_dir: outputs/logs
   tensorboard_dir: log_tensorboard

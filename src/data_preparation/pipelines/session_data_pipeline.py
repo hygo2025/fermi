@@ -98,8 +98,8 @@ class SessionDataPipeline:
         # target_cities = ['Vitória', 'Serra', 'Vila Velha', 'Cariacica', 'Viana', 'Guarapari', 'Fundão']
         # listings = listings.filter(F.col('city').isin(target_cities))
 
-        target_states = ['Espírito Santo']
-        listings = listings.filter(F.col('state').isin(target_states))
+        ##target_states = ['Espírito Santo']
+        #listings = listings.filter(F.col('state').isin(target_states))
 
         listings_after = listings.count()
 
@@ -177,29 +177,31 @@ class SessionDataPipeline:
         return df_clean
 
     def filter_sessions_by_length(self, df, min_length: int, max_length: int):
-        """Filtra sessões por comprimento"""
-        log(f" Filtrando sessões ({min_length}-{max_length} interações)...")
+        """Filtra sessões por comprimento, truncando sessões longas"""
+        log(f" Filtrando sessões ({min_length}-{max_length} interações), truncando as longas...")
 
         # Conta tamanho das sessões
         session_sizes = df.groupBy('user_id').agg(
             F.count('*').alias('session_size')
         )
 
-        # Filtra sessões válidas
-        valid_sessions = session_sizes.filter(
-            (F.col('session_size') >= min_length) &
-            (F.col('session_size') <= max_length)
-        )
+        # Join para adicionar tamanho da sessão
+        df_with_size = df.join(session_sizes, on='user_id', how='inner')
 
-        # Join para manter apenas sessões válidas
-        df_filtered = df.join(
-            valid_sessions.select('user_id'),
-            on='user_id',
-            how='inner'
+        # Remove sessões muito curtas
+        df_filtered = df_with_size.filter(F.col('session_size') >= min_length)
+
+        # Trunca sessões longas mantendo os eventos mais recentes
+        window_spec = Window.partitionBy('user_id').orderBy(F.col('timestamp').desc())
+        df_filtered = df_filtered.withColumn('rn', F.row_number().over(window_spec))
+        df_filtered = df_filtered.filter(
+            (F.col('session_size') <= max_length) | (F.col('rn') <= max_length)
         )
+        df_filtered = df_filtered.drop('rn', 'session_size')
+        df_filtered = df_filtered.orderBy('user_id', 'timestamp')
 
         sessions_before = session_sizes.count()
-        sessions_after = valid_sessions.count()
+        sessions_after = df_filtered.select('user_id').distinct().count()
         events_before = df.count()
         events_after = df_filtered.count()
 
