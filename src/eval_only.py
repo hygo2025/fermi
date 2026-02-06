@@ -105,6 +105,11 @@ def main():
         test_data, model_file=str(args.checkpoint), show_progress=True
     )
 
+    if config["log_wandb"]:
+        import wandb
+        if wandb.run is not None:
+            wandb.log({f"test_{k}": v for k, v in result.items()})
+
     log(f"Resultados (test): {result}")
 
 

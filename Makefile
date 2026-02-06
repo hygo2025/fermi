@@ -103,7 +103,7 @@ clean: ## Remove cache, logs and checkpoints
 	find . -type d -name "*.egg-info" -exec rm -rf {} + 2>/dev/null || true
 	rm -rf outputs/results/* 2>/dev/null || true
 	rm -rf outputs/logs/* 2>/dev/null || true
-	rm -rf outputs/saved/* 2>/dev/null || true
+	rm -rf outputs/saved/realestate-SequentialDataset.pth* 2>/dev/null || true
 	rm -rf log_tensorboard/* 2>/dev/null || true
 	rm -rf log/* 2>/dev/null || true
 
