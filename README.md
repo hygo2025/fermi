@@ -84,8 +84,8 @@ make help          # Ver todos comandos
 make clean         # Limpar cache e logs
 make format        # Formatar código
 ```
-MODELS="Caser  GCSAN " make benchmark
+MODELS="  GCSAN " make benchmark
 MODELS=" SRGNN" make benchmark
-MODELS="BERT4Rec " make benchmark
+MODELS=" " make benchmark
 
-FOSSIL SASRec TransRec  ItemKNN
+BERT4Rec SASRec  Caser
