@@ -89,3 +89,6 @@ MODELS=" SRGNN" make benchmark
 MODELS=" " make benchmark
 
 BERT4Rec SASRec  Caser
+
+POLL_SECONDS=60 MODELS="SASRec NextItNet GRU4Rec FPMC FOSSIL BERT4Rec" make benchmark-queue
+POLL_SECONDS=60 MODELS="TransRec Caser NARM LightGCN BPR ItemKNN Pop Random" make benchmark-queue
