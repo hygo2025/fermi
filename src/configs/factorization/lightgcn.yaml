@@ -1,0 +1,16 @@
+model: LightGCN
+
+embedding_size: 64
+n_layers: 3
+reg_weight: 0.00001
+
+loss_type: 'BPR'
+
+train_neg_sample_args:
+  distribution: 'uniform'
+  sample_num: 5
+  alpha: 1.0
+  dynamic: false
+  candidate_num: 0
+
+learning_rate: 0.001

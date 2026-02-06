@@ -3,7 +3,7 @@ from pyspark.sql import SparkSession
 
 def make_spark(
         memory_storage_fraction: float = 0.2,
-        local_dir: str = "/mnt/hdd/hygo2025/tmp"
+        local_dir: str = "/tmp"
 ) -> SparkSession:
     return (
         SparkSession.builder

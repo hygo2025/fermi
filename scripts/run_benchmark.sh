@@ -15,17 +15,14 @@ MODELS_ALL=(
     "Pop"
     "Random"
     "FOSSIL"
+    "LightGCN"
     "FPMC"
     "BERT4Rec"
     "Caser"
-    "GCSAN" #n
     "GRU4Rec"
     "NARM"
     "NextItNet"
     "SASRec"
-    "SHAN"
-    "SRGNN"
-    "STAMP"
     "TransRec"
     )
 

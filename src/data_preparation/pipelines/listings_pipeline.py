@@ -178,6 +178,8 @@ def run_listings_pipeline(spark: SparkSession):
     config = get_config()
     raw_path = config['raw_data']['listings_raw_path'] + "/*.csv.gz"
     all_raw_listings = read_csv_data(spark, raw_path, multiline=True)
+    target_states = ['Espírito Santo']
+    all_raw_listings = all_raw_listings.filter(F.col('state').isin(target_states))
 
     # 1. Limpeza de dados
     cleaned_listings = clean_data(all_raw_listings)
