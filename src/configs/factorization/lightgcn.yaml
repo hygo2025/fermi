@@ -14,3 +14,6 @@ train_neg_sample_args:
   candidate_num: 0
 
 learning_rate: 0.001
+
+enable_amp: false
+enable_scaler: false

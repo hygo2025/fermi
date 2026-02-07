@@ -90,13 +90,15 @@ MODELS=" " make benchmark
 
 BERT4Rec SASRec  Caser
 
-POLL_SECONDS=60 MODELS="SASRec NextItNet GRU4Rec FPMC FOSSIL BERT4Rec" make benchmark-queue
-POLL_SECONDS=60 MODELS="TransRec Caser NARM LightGCN BPR ItemKNN Pop Random" make benchmark-queue
+    "LightGCN"
+    "BERT4Rec"  - rodando 16
+    "Caser"     - rodando 16
+    "GRU4Rec"   - rodando 17
+    "NextItNet" - rodando 17
+    "GCSAN"
+    "SRGNN"
 
-POLL_SECONDS=60 MODELS="GRU4Rec BERT4Rec GCSAN" make benchmark-queue
-POLL_SECONDS=60 MODELS="Caser  LightGCN SRGNN" make benchmark-queue
-
-MODELS="SASRec" make benchmark - Rodando na 17
+MODELS="SASRec" make benchmark - ok
 MODELS="Random" make benchmark - ok
 MODELS="Pop" make benchmark - ok
 MODELS="ItemKNN" make benchmark - ok
@@ -104,3 +106,7 @@ MODELS="BPR" make benchmark - Rodando na 16
 MODELS="NARM" make benchmark - Rodando na 16
 MODELS="FOSSIL" make benchmark - ok
 MODELS="FPMC" make benchmark - Rodando na 16
+MODELS="Caser" make benchmark - Rodando na 16
+MODELS="GRU4Rec" make benchmark - Rodando na 17
+MODELS="BERT4Rec" make benchmark - Rodando na 16
+MODELS="LightGCN" make benchmark - Rodando na 16
