@@ -35,8 +35,8 @@ raw_data:
 # mg rodou assim: "2024-04-01"  "2024-06-01"
 # Data preparation parameters
 data_preparation:
-  start_date: "2024-03-01"
-  end_date: "2024-05-01"  # 60 dias de dados
+  start_date: "2024-02-01"
+  end_date: "2024-08-01"  # 60 dias de dados
   min_session_length: 2    # Mínimo de interações por sessão
   max_session_length: 50   # Máximo de interações por sessão
   min_item_freq: 5         # Mínimo de vezes que um item deve aparecer
