@@ -4,7 +4,7 @@ import os
 import sys
 from datetime import datetime
 from pathlib import Path
-from typing import List, Optional
+from typing import Optional
 import yaml
 
 import pandas as pd
@@ -80,9 +80,7 @@ class BenchmarkRunner:
         config_dict = {**self.project_config, **model_config}
         config_dict['dataset'] = dataset_name
         config_dict['data_path'] = self.project_config['data_path']
-        
-        model_output_dir = self.output_dir / model_name
-        model_output_dir.mkdir(parents=True, exist_ok=True)
+
         # Use shared checkpoint_dir from project_config.yaml for dataset cache
         # Model checkpoints will be saved with unique names
         config_dict['show_progress'] = True
@@ -95,7 +93,7 @@ class BenchmarkRunner:
         
         return config_dict
 
-    def run_single_model(self, model_name: str, dataset_name: str) -> dict:
+    def run_single_model(self, model_name: str, dataset_name: str, run_evaluate: bool = False) -> dict:
         log(f"{'=' * 80}")
         log(f"Running: {model_name} | Dataset: {dataset_name}")
         log(f"{'=' * 80}")
@@ -135,23 +133,25 @@ class BenchmarkRunner:
                 torch.cuda.empty_cache()
                 log(f"GPU memory after training: {torch.cuda.memory_allocated(0)/1e9:.2f} GB")
 
-            log("Evaluating...")
-            # Clear GPU cache before evaluation
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
-                log(f"GPU memory before eval: {torch.cuda.memory_allocated(0)/1e9:.2f} GB / {torch.cuda.get_device_properties(0).total_memory/1e9:.2f} GB")
-            
-            test_result = trainer.evaluate(test_data, show_progress=True)
-            
-            # Clear GPU cache after evaluation
-            if torch.cuda.is_available():
-                torch.cuda.empty_cache()
+            test_result = {}
+            if run_evaluate:
+                log("Evaluating...")
+                # Clear GPU cache before evaluation
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+                    log(f"GPU memory before eval: {torch.cuda.memory_allocated(0)/1e9:.2f} GB / {torch.cuda.get_device_properties(0).total_memory/1e9:.2f} GB")
 
-            # Log test metrics to W&B
-            if config['log_wandb']:
-                import wandb
-                if wandb.run is not None:
-                    wandb.log({f'test_{k}': v for k, v in test_result.items()})
+                test_result = trainer.evaluate(test_data, show_progress=True)
+
+                # Clear GPU cache after evaluation
+                if torch.cuda.is_available():
+                    torch.cuda.empty_cache()
+
+                # Log test metrics to W&B
+                if config['log_wandb']:
+                    import wandb
+                    if wandb.run is not None:
+                        wandb.log({f'test_{k}': v for k, v in test_result.items()})
 
             # Format results
             results = {
@@ -179,43 +179,24 @@ class BenchmarkRunner:
                 'timestamp': self.timestamp
             }
 
-    def run(self, models: List[str], dataset: str):
-        """Executa benchmark para lista de modelos"""
+    def run_single(self, model_name: str, dataset: str, run_evaluate: bool = False):
+        """Executa benchmark para um único modelo"""
         log(f"{'=' * 80}")
         log(f"Dataset: {dataset}")
-        log(f"Modelos: {models}")
+        log(f"Modelo: {model_name}")
         log(f"Output base: {self.output_dir}")
         log(f"{'=' * 80}")
 
-        # Se rodar múltiplos modelos, cria subdir por modelo
-        # Se rodar 1 modelo, usa dir direto
-        if len(models) > 1:
-            base_output = self.output_dir
-        else:
-            # Modelo único: renomeia output_dir para incluir nome do modelo
-            base_dir = Path(self.project_config['output']['results_dir'])
-            self.output_dir = base_dir / f"{self.timestamp}_{models[0]}"
-            self.output_dir.mkdir(parents=True, exist_ok=True)
-            base_output = self.output_dir.parent
+        results_file = self.output_dir / f'results_{self.timestamp}.csv'
 
-        results_file = base_output / f'results_{self.timestamp}.csv'
-        all_results = []
-
-        for i, model_name in enumerate(models, 1):
-            log(f"[{i}/{len(models)}] Processando: {model_name}")
-
-            result = self.run_single_model(model_name, dataset)
-            all_results.append(result)
-
-            # Save incremental
-            df = pd.DataFrame(all_results)
-            df.to_csv(results_file, index=False)
-            log(f"Resultado salvo: {results_file}")
+        result = self.run_single_model(model_name, dataset, run_evaluate=run_evaluate)
+        df = pd.DataFrame([result])
+        df.to_csv(results_file, index=False)
+        log(f"Resultado salvo: {results_file}")
 
         log(f"{'=' * 80}")
         log(f"BENCHMARK COMPLETO!")
         log(f"{'=' * 80}")
-        log(f"Total de modelos executados: {len(all_results)}")
         log(f"Resultados salvos em: {results_file}")
         log(f"{'=' * 80}")
 
@@ -242,6 +223,11 @@ def main():
         type=str,
         help='Diretório de output customizado'
     )
+    parser.add_argument(
+        '--evaluate',
+        action='store_true',
+        help='Executa avaliação após o treino (default: false)'
+    )
 
     args = parser.parse_args()
 
@@ -267,7 +253,7 @@ def main():
 
     # Run benchmark for single model
     runner = BenchmarkRunner(args.output)
-    runner.run([args.model], dataset)
+    runner.run_single(args.model, dataset, run_evaluate=args.evaluate)
 
 
 if __name__ == '__main__':

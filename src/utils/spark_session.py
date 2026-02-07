@@ -1,3 +1,4 @@
+import os
 from pyspark.sql import SparkSession
 
 
@@ -5,6 +6,7 @@ def make_spark(
         memory_storage_fraction: float = 0.2,
         local_dir: str = "/tmp"
 ) -> SparkSession:
+    local_dir = os.environ.get("SPARK_LOCAL_DIR", local_dir)
     return (
         SparkSession.builder
         .appName("spark")

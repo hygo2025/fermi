@@ -224,6 +224,27 @@ def save_events(spark: SparkSession, events: DataFrame) -> None:
 
     log("Eventos salvos com sucesso.")
 
+def filter_interaction_events(df):
+    log(" Filtrando eventos de interação...")
+
+    interaction_types = [
+        'ListingRendered',  # User viewed listing detail
+        # 'RankingRendered',      # User viewed listing in ranking
+        'GalleryClicked',       # User clicked on gallery/image
+        'RankingClicked',  # User clicked item in ranking
+        'LeadPanelClicked',  # User clicked contact panel
+        'LeadClicked',  # User initiated contact
+        'FavoriteClicked',  # User favorited item
+        'ShareClicked',  # User shared item
+    ]
+
+    df_filtered = df.filter(F.col('event_type').isin(interaction_types))
+
+    total_before = df.count()
+    total_after = df_filtered.count()
+    log(f"    {total_after:_} eventos de interação ({total_after / total_before * 100:.2f}%)")
+    log(f"    Tipos mantidos: {interaction_types}")
+    return df_filtered
 
 def run_events_pipeline(spark: SparkSession):
     log("Executando pipeline completo de eventos...")
@@ -231,6 +252,7 @@ def run_events_pipeline(spark: SparkSession):
     listings = spark.read.option("mergeSchema", "true").parquet(config['raw_data']['listings_processed_path'])
 
     events = process_raw_events(spark=spark)
+    events = filter_interaction_events(events)
     user_sessions = resolve_user_identities(events=events)
     joined = join_events_with_sessions(events=events, users=user_sessions, listings=listings)
     events = create_numeric_keys(events=joined)
