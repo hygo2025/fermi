@@ -1,0 +1,23 @@
+model: GCSAN
+
+embedding_size: 64
+hidden_size: 64
+inner_size: 256
+
+step: 1
+
+n_layers: 1
+n_heads: 1
+weight: 0.6
+
+dropout_prob: 0.3
+reg_weight: 0.00001
+
+loss_type: 'BPR'
+
+train_neg_sample_args:
+  distribution: 'uniform'
+  sample_num: 5
+  alpha: 1.0
+  dynamic: false
+  candidate_num: 0

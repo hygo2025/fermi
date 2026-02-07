@@ -16,7 +16,7 @@ def main():
     
     try:
         log("Step 1/3: Processing listings...")
-        #run_listings_pipeline(spark=spark)
+        run_listings_pipeline(spark=spark)
         
         log("Step 2/3: Processing user events...")
         run_events_pipeline(spark=spark)

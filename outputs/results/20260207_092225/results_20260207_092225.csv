@@ -1,0 +1,2 @@
+model,dataset,error,timestamp
+SASRec,realestate,"torch.nn.utils.clip_grad_norm_() argument after ** must be a mapping, not float",20260207_092225
