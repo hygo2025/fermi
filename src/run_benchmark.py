@@ -10,6 +10,16 @@ import yaml
 import pandas as pd
 import torch
 
+
+import scipy.sparse as sp
+
+if not hasattr(sp.dok_matrix, "_update"):
+    def _update(self, data_dict):
+        for k, v in data_dict.items():
+            self[k] = v
+
+
+    sp.dok_matrix._update = _update
 # Configure PyTorch CUDA memory allocator to reduce fragmentation
 os.environ.setdefault('PYTORCH_CUDA_ALLOC_CONF', 'expandable_segments:True')
 

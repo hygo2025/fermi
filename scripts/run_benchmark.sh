@@ -24,6 +24,8 @@ MODELS_ALL=(
     "NextItNet"
     "SASRec"
     "TransRec"
+    "GCSAN"
+    "SRGNN"
     )
 
 if [[ $# -gt 0 ]]; then

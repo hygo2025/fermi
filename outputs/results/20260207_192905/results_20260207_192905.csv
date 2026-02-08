@@ -1,0 +1,2 @@
+model,dataset,error,timestamp
+LightGCN,realestate,"""addmm_sparse_cuda"" not implemented for 'Half'",20260207_192905
