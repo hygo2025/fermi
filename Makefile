@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install prepare-raw-data data benchmark tune eval-only results api clean format
+.PHONY: help install prepare-raw-data data benchmark tune eval-only eval-batch results api clean format
 
 COLOR_RESET   = \033[0m
 COLOR_CYAN    = \033[36m
@@ -63,6 +63,12 @@ eval-only: ## Evaluate a saved checkpoint. MODEL=... CHECKPOINT=... EVAL_BATCH_S
 	@EVAL_BATCH_SIZE_ARG="$(if $(EVAL_BATCH_SIZE),--eval-batch-size $(EVAL_BATCH_SIZE),)"; \
 	WANDB_GROUP_ARG="$(if $(WANDB_GROUP),--wandb-group $(WANDB_GROUP),)"; \
 	python src/eval_only.py --model $(MODEL) --checkpoint $(CHECKPOINT) $$EVAL_BATCH_SIZE_ARG $$WANDB_GROUP_ARG
+
+eval-batch: ## Evaluate a batch from queue file. QUEUE=... NO_WANDB=1 DONE_FILE=...
+	@QUEUE_FILE="$(if $(QUEUE),$(QUEUE),config/eval_queue.yaml)"; \
+	NO_WANDB_ARG="$(if $(NO_WANDB),--no-wandb,)"; \
+	DONE_FILE_ARG="$(if $(DONE_FILE),--done-file $(DONE_FILE),)"; \
+	python src/eval_only.py --queue-file $$QUEUE_FILE $$NO_WANDB_ARG $$DONE_FILE_ARG
 
 results: ## Generate results tables and plots from W&B. Optional: GROUP=..., OUT_DIR=..., PRIMARY_METRIC=...
 	@GROUP_ARG="$(if $(GROUP),--group $(GROUP),)"; \
