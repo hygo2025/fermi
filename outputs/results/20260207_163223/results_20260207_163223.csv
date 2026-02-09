@@ -1,0 +1,2 @@
+model,dataset,best_valid_score,timestamp
+GRU4Rec,realestate,0.8678,20260207_163223

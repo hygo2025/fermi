@@ -90,23 +90,19 @@ MODELS=" " make benchmark
 
 BERT4Rec SASRec  Caser
 
-    "LightGCN"
-    "BERT4Rec"  - rodando 16
-    "Caser"     - rodando 16
-    "GRU4Rec"   - rodando 17
-    "NextItNet" - rodando 17
-    "GCSAN"
-    "SRGNN"
+MODELS="BPR" make benchmark       - Rodando - Baixado - Médio Rápido
+MODELS="ItemKNN" make benchmark   - Rodando - Baixado - Médio Rápido
+MODELS="Pop" make benchmark       - Rodando - Baixado - Muito Rápido
+MODELS="Random" make benchmark    - Rodando - Baixado - Muito Rápido
+MODELS="FOSSIL" make benchmark    - Rodando - Baixado - Médio Rápido
+MODELS="FPMC" make benchmark      - Rodando - Baixado - Médio Rápido
+MODELS="GRU4Rec" make benchmark   - Rodando - Baixado - Médio Rápido
+MODELS="NARM" make benchmark      - Rodando - Baixado - Médio Rápido
+MODELS="LightGCN" make benchmark  - Rodando - Baixado         - Lento
 
-MODELS="SASRec" make benchmark - ok
-MODELS="Random" make benchmark - ok
-MODELS="Pop" make benchmark - ok
-MODELS="ItemKNN" make benchmark - ok
-MODELS="BPR" make benchmark - Rodando na 16
-MODELS="NARM" make benchmark - Rodando na 16
-MODELS="FOSSIL" make benchmark - ok
-MODELS="FPMC" make benchmark - Rodando na 16
-MODELS="Caser" make benchmark - Rodando na 16
-MODELS="GRU4Rec" make benchmark - Rodando na 17
-MODELS="BERT4Rec" make benchmark - Rodando na 16
-MODELS="LightGCN" make benchmark - Rodando na 16
+MODELS="NextItNet" make benchmark - Rodando  17
+MODELS="SASRec" make benchmark    - Rodando  16
+MODELS="TransRec" make benchmark  - Rodando  16
+MODELS="Caser" make benchmark     - Rodando  54
+MODELS="BERT4Rec" make benchmark  - Rodando  17
+
