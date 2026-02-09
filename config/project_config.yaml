@@ -6,7 +6,7 @@
 # -----------------------------------------------------------------------------
 # DATA CONFIGURATION
 # -----------------------------------------------------------------------------
-dataset: realestate_05
+dataset: realestate
 data_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole
 
 raw_data:
