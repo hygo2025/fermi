@@ -90,19 +90,21 @@ MODELS=" " make benchmark
 
 BERT4Rec SASRec  Caser
 
-MODELS="BPR" make benchmark       - Rodando - Baixado - Médio Rápido
-MODELS="ItemKNN" make benchmark   - Rodando - Baixado - Médio Rápido
-MODELS="Pop" make benchmark       - Rodando - Baixado - Muito Rápido
-MODELS="Random" make benchmark    - Rodando - Baixado - Muito Rápido
-MODELS="FOSSIL" make benchmark    - Rodando - Baixado - Médio Rápido
-MODELS="FPMC" make benchmark      - Rodando - Baixado - Médio Rápido
-MODELS="GRU4Rec" make benchmark   - Rodando - Baixado - Médio Rápido
-MODELS="NARM" make benchmark      - Rodando - Baixado - Médio Rápido
-MODELS="LightGCN" make benchmark  - Rodando - Baixado         - Lento
+MODELS="BPR" make benchmark       - Rodando 16 - Baixado
+MODELS="ItemKNN" make benchmark   - Rodando 16 - Baixado
+MODELS="Pop" make benchmark       - Rodando 16 - Baixado
+MODELS="Random" make benchmark    - Rodando 16 - Baixado
+MODELS="FOSSIL" make benchmark    - Rodando 16 - Baixado
+MODELS="FPMC" make benchmark      - Rodando 16 - Baixado
+MODELS="TransRec" make benchmark  - Rodando 17 - Baixado
+MODELS="GRU4Rec" make benchmark   - Rodando 16
+MODELS="NARM" make benchmark      - Rodando 16
+MODELS="LightGCN" make benchmark  - Rodando 16
+MODELS="NextItNet" make benchmark - Rodando 16
 
-MODELS="NextItNet" make benchmark - Rodando  17
-MODELS="SASRec" make benchmark    - Rodando  16
-MODELS="TransRec" make benchmark  - Rodando  16
-MODELS="Caser" make benchmark     - Rodando  54
-MODELS="BERT4Rec" make benchmark  - Rodando  17
+MODELS="SASRec" make benchmark    - Rodando 17
 
+MODELS="BERT4Rec" make benchmark  - Rodando  
+MODELS="Caser" make benchmark     - Rodando 54 (04-05) 
+
+rsync -avzhe ssh hygo2025@172.20.72.54:/home/hygo2025/experimentos/ /home/hygo2025/Documents/experimentos/
