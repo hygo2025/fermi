@@ -10,6 +10,15 @@ from typing import Optional, Tuple
 import torch
 import yaml
 
+import scipy.sparse as sp
+
+if not hasattr(sp.dok_matrix, "_update"):
+    def _update(self, data_dict):
+        for k, v in data_dict.items():
+            self[k] = v
+
+    sp.dok_matrix._update = _update
+
 from recbole.config import Config
 from recbole.data import create_dataset, data_preparation
 from recbole.trainer import Trainer

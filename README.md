@@ -103,24 +103,25 @@ MODELS="NARM" make benchmark      - Rodando 16 - Baixado
 MODELS="LightGCN" make benchmark  - Rodando 16 - Baixado
 MODELS="SASRec" make benchmark    - Rodando 17 - Baixado
 MODELS="NextItNet" make benchmark - Rodando 16 - Baixado
-MODELS="BERT4Rec" make benchmark  - Rodando 17
+MODELS="BERT4Rec" make benchmark  - Rodando 17 - Baixado
 MODELS="Caser" make benchmark     - Rodando 16 
 
 06-07
 MODELS="BPR" make benchmark       - Rodando 54 - Baixado
-MODELS="ItemKNN" make benchmark   - Rodando 54
+MODELS="ItemKNN" make benchmark   - Rodando 54 - Baixado
 MODELS="Pop" make benchmark       - Rodando 54 - Baixado
 MODELS="Random" make benchmark    - Rodando 54 - Baixado
 MODELS="FOSSIL" make benchmark    - Rodando 54 - Baixado
 MODELS="FPMC" make benchmark      - Rodando 54 - Baixado
-MODELS="TransRec" make benchmark  - 
+MODELS="TransRec" make benchmark  - Rodando 17 - Baixado
 MODELS="GRU4Rec" make benchmark   - Rodando 54 - Baixado
 MODELS="NARM" make benchmark      - Rodando 54 - Baixado
-MODELS="LightGCN" make benchmark  - 
-MODELS="SASRec" make benchmark    - 
+MODELS="LightGCN" make benchmark  - Rodando 17 - Baixado
+MODELS="SASRec" make benchmark    - Rodando 17
 MODELS="NextItNet" make benchmark - 
 MODELS="BERT4Rec" make benchmark  - 
-MODELS="Caser" make benchmark     -  
+MODELS="Caser" make benchmark     -  Rodando 54
 
 
 POLL_SECONDS=60 MODELS="Pop Random FOSSIL FPMC BPR NARM GRU4Rec ItemKNN" make benchmark-queue
+POLL_SECONDS=60 MODELS="TransRec LightGCN SASRec NextItNet BERT4Rec Caser" make benchmark-queue
