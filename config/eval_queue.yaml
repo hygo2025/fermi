@@ -104,91 +104,98 @@ experiments:
   data_path: /home/hygo2025/Documents/experimentos/mg/04-05
   dataset: realestate
   model: BERT4Rec
-  wandb_config: ''
+  wandb_config: wandb:boz7stwc
 - id: 04-05/BPR-Feb-08-2026_10-01-46
   enabled: false
   checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/BPR-Feb-08-2026_10-01-46.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/04-05
   dataset: realestate
   model: BPR
-  wandb_config: ''
+  wandb_config: wandb:hgj3kgxb
+- id: 04-05/Caser-Feb-09-2026_00-32-58
+  enabled: false
+  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/Caser-Feb-09-2026_00-32-58.pth
+  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+  dataset: realestate
+  model: Caser
+  wandb_config: wandb:7gsaxvo9
 - id: 04-05/FOSSIL-Feb-08-2026_10-07-11
   enabled: false
   checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/FOSSIL-Feb-08-2026_10-07-11.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/04-05
   dataset: realestate
   model: FOSSIL
-  wandb_config: ''
+  wandb_config: wandb:m42kj1ex
 - id: 04-05/FPMC-Feb-08-2026_18-36-12
   enabled: false
   checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/FPMC-Feb-08-2026_18-36-12.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/04-05
   dataset: realestate
   model: FPMC
-  wandb_config: ''
+  wandb_config: wandb:rfjg9muv
 - id: 04-05/GRU4Rec-Feb-08-2026_18-42-37
   enabled: false
   checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/GRU4Rec-Feb-08-2026_18-42-37.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/04-05
   dataset: realestate
   model: GRU4Rec
-  wandb_config: ''
+  wandb_config: wandb:xttw1489
 - id: 04-05/ItemKNN-Feb-08-2026_10-11-31
   enabled: false
   checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/ItemKNN-Feb-08-2026_10-11-31.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/04-05
   dataset: realestate
   model: ItemKNN
-  wandb_config: ''
+  wandb_config: wandb:x72kn4ly
 - id: 04-05/LightGCN-Feb-08-2026_18-38-18
   enabled: false
   checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/LightGCN-Feb-08-2026_18-38-18.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/04-05
   dataset: realestate
   model: LightGCN
-  wandb_config: ''
+  wandb_config: wandb:mlnbtni9
 - id: 04-05/NARM-Feb-08-2026_18-42-33
   enabled: false
   checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/NARM-Feb-08-2026_18-42-33.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/04-05
   dataset: realestate
   model: NARM
-  wandb_config: ''
+  wandb_config: wandb:x5g29buh
 - id: 04-05/NextItNet-Feb-08-2026_23-27-54
   enabled: false
   checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/NextItNet-Feb-08-2026_23-27-54.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/04-05
   dataset: realestate
   model: NextItNet
-  wandb_config: ''
+  wandb_config: wandb:7pemihl3
 - id: 04-05/Pop-Feb-08-2026_10-08-01
   enabled: false
   checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/Pop-Feb-08-2026_10-08-01.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/04-05
   dataset: realestate
   model: Pop
-  wandb_config: ''
+  wandb_config: wandb:wkobtadl
 - id: 04-05/Random-Feb-08-2026_10-02-13
   enabled: false
   checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/Random-Feb-08-2026_10-02-13.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/04-05
   dataset: realestate
   model: Random
-  wandb_config: ''
+  wandb_config: wandb:gvjvzahf
 - id: 04-05/SASRec-Feb-08-2026_23-29-49
   enabled: false
   checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/SASRec-Feb-08-2026_23-29-49.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/04-05
   dataset: realestate
   model: SASRec
-  wandb_config: ''
+  wandb_config: wandb:9icgvtee
 - id: 04-05/TransRec-Feb-08-2026_23-30-02
   enabled: false
   checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/TransRec-Feb-08-2026_23-30-02.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/04-05
   dataset: realestate
   model: TransRec
-  wandb_config: ''
+  wandb_config: wandb:6bkukfep
 - id: 05-06/BPR-Feb-09-2026_09-30-55
   enabled: false
   checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/BPR-Feb-09-2026_09-30-55.pth
