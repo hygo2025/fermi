@@ -90,6 +90,7 @@ MODELS=" " make benchmark
 
 BERT4Rec SASRec  Caser
 
+05-06
 MODELS="BPR" make benchmark       - Rodando 16 - Baixado
 MODELS="ItemKNN" make benchmark   - Rodando 16 - Baixado
 MODELS="Pop" make benchmark       - Rodando 16 - Baixado
@@ -101,18 +102,25 @@ MODELS="GRU4Rec" make benchmark   - Rodando 16 - Baixado
 MODELS="NARM" make benchmark      - Rodando 16 - Baixado
 MODELS="LightGCN" make benchmark  - Rodando 16 - Baixado
 MODELS="SASRec" make benchmark    - Rodando 17 - Baixado
-MODELS="NextItNet" make benchmark - Rodando 16
+MODELS="NextItNet" make benchmark - Rodando 16 - Baixado
 MODELS="BERT4Rec" make benchmark  - Rodando 17
-MODELS="Caser" make benchmark     - Rodando 54 (04-05) 16 (05-06)
+MODELS="Caser" make benchmark     - Rodando 16 
 
-rsync -avzhe ssh hygo2025@172.20.72.54:/home/hygo2025/experimentos/ /home/hygo2025/Documents/experimentos/
+06-07
+MODELS="BPR" make benchmark       - Rodando 54 - Baixado
+MODELS="ItemKNN" make benchmark   - Rodando 54
+MODELS="Pop" make benchmark       - Rodando 54 - Baixado
+MODELS="Random" make benchmark    - Rodando 54 - Baixado
+MODELS="FOSSIL" make benchmark    - Rodando 54 - Baixado
+MODELS="FPMC" make benchmark      - Rodando 54 - Baixado
+MODELS="TransRec" make benchmark  - 
+MODELS="GRU4Rec" make benchmark   - Rodando 54 - Baixado
+MODELS="NARM" make benchmark      - Rodando 54 - Baixado
+MODELS="LightGCN" make benchmark  - 
+MODELS="SASRec" make benchmark    - 
+MODELS="NextItNet" make benchmark - 
+MODELS="BERT4Rec" make benchmark  - 
+MODELS="Caser" make benchmark     -  
 
-
-MODELS="TransRec" make benchmark  - Rodando 17 - Baixado
-MODELS="LightGCN" make benchmark  - Rodando 16 - Baixado
-MODELS="SASRec" make benchmark    - Rodando 17 - Baixado
-MODELS="NextItNet" make benchmark - Rodando 16
-MODELS="BERT4Rec" make benchmark  - Rodando 17
-MODELS="Caser" make benchmark     - Rodando 54 (04-05) 16 (05-06)
 
 POLL_SECONDS=60 MODELS="Pop Random FOSSIL FPMC BPR NARM GRU4Rec ItemKNN" make benchmark-queue

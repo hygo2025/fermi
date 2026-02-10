@@ -348,6 +348,7 @@ def _generate_queue(experiments_root: Path, months: list[str], output_path: Path
                     "dataset_save_path": "",
                     "run_full": True,
                     "run_uni100": True,
+                    "eval_batch_size": None,
                     "wandb_config": "",
                 }
             )
@@ -399,6 +400,7 @@ def _run_batch(args):
         inter_path = Path(inter_path) if inter_path else None
         dataset_save_path = exp.get("dataset_save_path") or None
         dataset_save_path = Path(dataset_save_path) if dataset_save_path else None
+        exp_eval_batch_size = exp.get("eval_batch_size")
         dataset_name = exp.get("dataset", "realestate")
         model_name = exp.get("model") or _parse_model_name(checkpoint_path)
 
@@ -506,7 +508,7 @@ def _run_batch(args):
                 base_config=base_config,
                 dataset_name=dataset_name,
                 eval_mode=mode,
-                eval_batch_size=args.eval_batch_size,
+                eval_batch_size=exp_eval_batch_size if exp_eval_batch_size is not None else args.eval_batch_size,
                 device=args.device,
                 wandb_group=eval_group,
                 disable_wandb=args.no_wandb,
