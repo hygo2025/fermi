@@ -107,3 +107,5 @@ MODELS="BERT4Rec" make benchmark  - Rodando 17
 MODELS="Caser" make benchmark     - Rodando 54 (04-05) 16 (05-06)
 
 rsync -avzhe ssh hygo2025@172.20.72.54:/home/hygo2025/experimentos/ /home/hygo2025/Documents/experimentos/
+
+
