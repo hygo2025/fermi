@@ -90,19 +90,37 @@ MODELS=" " make benchmark
 
 BERT4Rec SASRec  Caser
 
-MODELS="BPR" make benchmark       - Rodando - Baixado - Médio Rápido
-MODELS="ItemKNN" make benchmark   - Rodando - Baixado - Médio Rápido
-MODELS="Pop" make benchmark       - Rodando - Baixado - Muito Rápido
-MODELS="Random" make benchmark    - Rodando - Baixado - Muito Rápido
-MODELS="FOSSIL" make benchmark    - Rodando - Baixado - Médio Rápido
-MODELS="FPMC" make benchmark      - Rodando - Baixado - Médio Rápido
-MODELS="GRU4Rec" make benchmark   - Rodando - Baixado - Médio Rápido
-MODELS="NARM" make benchmark      - Rodando - Baixado - Médio Rápido
-MODELS="LightGCN" make benchmark  - Rodando - Baixado         - Lento
+05-06
+MODELS="BPR" make benchmark       - Rodando 16 - Baixado
+MODELS="ItemKNN" make benchmark   - Rodando 16 - Baixado
+MODELS="Pop" make benchmark       - Rodando 16 - Baixado
+MODELS="Random" make benchmark    - Rodando 16 - Baixado
+MODELS="FOSSIL" make benchmark    - Rodando 16 - Baixado
+MODELS="FPMC" make benchmark      - Rodando 16 - Baixado
+MODELS="TransRec" make benchmark  - Rodando 17 - Baixado
+MODELS="GRU4Rec" make benchmark   - Rodando 16 - Baixado
+MODELS="NARM" make benchmark      - Rodando 16 - Baixado
+MODELS="LightGCN" make benchmark  - Rodando 16 - Baixado
+MODELS="SASRec" make benchmark    - Rodando 17 - Baixado
+MODELS="NextItNet" make benchmark - Rodando 16 - Baixado
+MODELS="BERT4Rec" make benchmark  - Rodando 17
+MODELS="Caser" make benchmark     - Rodando 16 
 
-MODELS="NextItNet" make benchmark - Rodando  17
-MODELS="SASRec" make benchmark    - Rodando  16
-MODELS="TransRec" make benchmark  - Rodando  16
-MODELS="Caser" make benchmark     - Rodando  54
-MODELS="BERT4Rec" make benchmark  - Rodando  17
+06-07
+MODELS="BPR" make benchmark       - Rodando 54 - Baixado
+MODELS="ItemKNN" make benchmark   - Rodando 54
+MODELS="Pop" make benchmark       - Rodando 54 - Baixado
+MODELS="Random" make benchmark    - Rodando 54 - Baixado
+MODELS="FOSSIL" make benchmark    - Rodando 54 - Baixado
+MODELS="FPMC" make benchmark      - Rodando 54 - Baixado
+MODELS="TransRec" make benchmark  - 
+MODELS="GRU4Rec" make benchmark   - Rodando 54 - Baixado
+MODELS="NARM" make benchmark      - Rodando 54 - Baixado
+MODELS="LightGCN" make benchmark  - 
+MODELS="SASRec" make benchmark    - 
+MODELS="NextItNet" make benchmark - 
+MODELS="BERT4Rec" make benchmark  - 
+MODELS="Caser" make benchmark     -  
 
+
+POLL_SECONDS=60 MODELS="Pop Random FOSSIL FPMC BPR NARM GRU4Rec ItemKNN" make benchmark-queue

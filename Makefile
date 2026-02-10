@@ -1,5 +1,5 @@
 .DEFAULT_GOAL := help
-.PHONY: help install prepare-raw-data data benchmark tune eval-only results api clean format
+.PHONY: help install prepare-raw-data data benchmark tune eval-only eval-batch results api clean format
 
 COLOR_RESET   = \033[0m
 COLOR_CYAN    = \033[36m
@@ -70,30 +70,17 @@ eval-only: ## Evaluate a saved checkpoint. MODEL=... CHECKPOINT=... EVAL_BATCH_S
 	WANDB_GROUP_ARG="$(if $(WANDB_GROUP),--wandb-group $(WANDB_GROUP),)"; \
 	python src/eval_only.py --model $(MODEL) --checkpoint $(CHECKPOINT) $$EVAL_BATCH_SIZE_ARG $$WANDB_GROUP_ARG
 
+eval-batch: ## Evaluate a batch from queue file. QUEUE=... NO_WANDB=1 DONE_FILE=...
+	@QUEUE_FILE="$(if $(QUEUE),$(QUEUE),config/eval_queue.yaml)"; \
+	NO_WANDB_ARG="$(if $(NO_WANDB),--no-wandb,)"; \
+	DONE_FILE_ARG="$(if $(DONE_FILE),--done-file $(DONE_FILE),)"; \
+	python src/eval_only.py --queue-file $$QUEUE_FILE $$NO_WANDB_ARG $$DONE_FILE_ARG
+
 results: ## Generate results tables and plots from W&B. Optional: GROUP=..., OUT_DIR=..., PRIMARY_METRIC=...
 	@GROUP_ARG="$(if $(GROUP),--group $(GROUP),)"; \
 	OUT_DIR_ARG="$(if $(OUT_DIR),--out-dir $(OUT_DIR),)"; \
 	PRIMARY_ARG="$(if $(PRIMARY_METRIC),--primary-metric $(PRIMARY_METRIC),)"; \
 	python scripts/results.py $$GROUP_ARG $$OUT_DIR_ARG $$PRIMARY_ARG
-
-# -----------------------------------------------------------------------------
-##@ Hyperparameter Tuning
-# -----------------------------------------------------------------------------
-tune: ## Run hyperparameter tuning. MODEL=... or empty for all
-	@if [ -n "$(MODEL)" ]; then \
-		DATASET_ARG="$(if $(DATASET),--dataset $(DATASET),)"; \
-		ALGO_ARG="$(if $(ALGO),--algo $(ALGO),)"; \
-		MAX_EVALS_ARG="$(if $(MAX_EVALS),--max-evals $(MAX_EVALS),)"; \
-		EARLY_STOP_ARG="$(if $(EARLY_STOP),--early-stop $(EARLY_STOP),)"; \
-		COOLDOWN_ARG="$(if $(COOLDOWN),--cooldown $(COOLDOWN),)"; \
-		OUTPUT_ARG="$(if $(OUTPUT),--output $(OUTPUT),)"; \
-		echo "[INFO] Running tuning for $(MODEL) $$MAX_EVALS_ARG $$ALGO_ARG $$COOLDOWN_ARG"; \
-		python src/hyperparameter_tuning.py --model $(MODEL) $$DATASET_ARG $$ALGO_ARG $$MAX_EVALS_ARG $$EARLY_STOP_ARG $$COOLDOWN_ARG $$OUTPUT_ARG; \
-	else \
-		echo "[INFO] No MODEL specified, running tune_remaining_models.sh for all models"; \
-		echo "[INFO] MAX_EVALS=$(or $(MAX_EVALS),150), ALGO=$(or $(ALGO),bayes), COOLDOWN=$(or $(COOLDOWN),60)"; \
-		MAX_EVALS=$(or $(MAX_EVALS),150) ALGO=$(or $(ALGO),bayes) COOLDOWN=$(or $(COOLDOWN),60) DATASET=$(DATASET) ./scripts/tune_remaining_models.sh; \
-	fi
 
 # -----------------------------------------------------------------------------
 ##@ API Server

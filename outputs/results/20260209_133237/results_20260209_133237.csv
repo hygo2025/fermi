@@ -1,0 +1,6 @@
+model,dataset,best_valid_score,timestamp
+<<<<<<<< HEAD:outputs/results/20260209_093128/results_20260209_093128.csv
+Random,realestate,0.0287,20260209_093128
+========
+SASRec,realestate,0.8724,20260209_133237
+>>>>>>>> f061fed5662274968fe0a4c1f1316a3372430057:outputs/results/20260209_133237/results_20260209_133237.csv

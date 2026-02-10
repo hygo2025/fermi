@@ -1,0 +1,2 @@
+model,dataset,best_valid_score,timestamp
+BERT4Rec,realestate,0.8169,20260209_200201
