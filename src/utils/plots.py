@@ -30,7 +30,7 @@ def plot_cdf(df,
 
     # Configurações de Texto
     plt.title(title, fontsize=14, pad=15)
-    plt.xlabel('Quantidade de Eventos (Até X)', fontsize=12)
+    plt.xlabel('Quantidade de Eventos', fontsize=12)
     plt.ylabel('Proporção Acumulada de Sessões (%)', fontsize=12)
 
     # Configurações de Eixos

@@ -1,86 +1,87 @@
+[2026-02-10 17:16:48] Loading events from outputs/data/sessions.csv...
+[2026-02-10 17:17:42] 17_651_727 events loaded
+[2026-02-10 17:17:47] Total events loaded: 17_651_727
+[2026-02-10 17:17:48] Calculating session statistics...
+
 ==================================================
-[2026-01-23 18:07:48]
+[2026-02-10 17:36:34] 
 --- Primeiras 5 sessões ---
                      inicio_sessao  ... duracao_segundos
-session_id                          ...
-S_1000     2024-04-20 15:43:29.363  ...         1_270.01
-S_10003    2024-04-22 19:45:32.405  ...           699.11
-S_10009    2024-04-22 16:35:09.270  ...           231.84
-S_10013    2024-04-21 23:10:37.047  ...           116.73
-S_1003     2024-04-20 17:49:29.102  ...           102.03
+session_id                          ...                 
+S_0        2024-04-18 06:36:52.021  ...            92.31
+S_1        2024-04-18 06:32:29.454  ...        10_391.28
+S_100      2024-04-17 21:36:27.593  ...           351.88
+S_10000    2024-03-20 21:11:31.912  ...           132.18
+S_10002    2024-03-20 22:11:17.389  ...            46.35
 
 [5 rows x 7 columns]
 
 ==================================================
-[2026-01-23 18:07:48]
---- Estatísticas de Eventos por Sessão ---
-count   2_197_420.00
-mean            4.99
-std             4.55
+[2026-02-10 17:36:37] 
+--- Session Event Statistics ---
+count   3_434_476.00
+mean            5.14
+std             4.90
 min             0.00
 25%             2.00
 50%             3.00
 75%             6.00
 90%            10.00
-99%            24.00
+99%            25.00
 max            50.00
 Name: qtd_eventos, dtype: float64
 
 ==================================================
-[2026-01-23 18:07:48]
+[2026-02-10 17:36:41] 
 Gerando gráfico CDF geral...
 Gráfico salvo em: outputs/cdf/cdf_sessoes_geral.svg
 
 ==================================================
-[2026-01-23 18:07:50]
+[2026-02-10 17:36:47] 
 --- Análise por tipo de usuário ---
-[2026-01-23 18:07:50] Total de sessões anônimas: 1_812_979
-[2026-01-23 18:07:50] Total de sessões logadas: 384_441
-[2026-01-23 18:07:51] Sessões anônimas após filtro: 1_811_998
-[2026-01-23 18:07:51] Sessões logadas após filtro: 383_941
+[2026-02-10 17:36:47] Total de sessões anônimas: 2_970_229
+[2026-02-10 17:36:47] Total de sessões logadas: 464_247
+[2026-02-10 17:36:47] Sessões anônimas após filtro: 2_968_966
+[2026-02-10 17:36:47] Sessões logadas após filtro: 463_539
 
 ==================================================
-[2026-01-23 18:07:51]
+[2026-02-10 17:36:47] 
 --- Estatísticas - Usuários Anônimos ---
-count   1_812_979.00
-mean            4.71
-std             4.05
+count   2_970_229.00
+mean            4.89
+std             4.37
 min             0.00
 25%             2.00
 50%             3.00
 75%             6.00
-90%             9.00
-99%            21.00
+90%            10.00
+99%            22.00
 max            50.00
 Name: qtd_eventos, dtype: float64
 
 ==================================================
-[2026-01-23 18:07:51]
+[2026-02-10 17:36:47] 
 --- Estatísticas - Usuários Logados ---
-count   384_441.00
-mean          6.29
-std           6.21
+count   464_247.00
+mean          6.73
+std           7.25
 min           0.00
 25%           2.00
 50%           4.00
 75%           8.00
-90%          13.00
-99%          33.00
+90%          14.00
+99%          42.00
 max          50.00
 Name: qtd_eventos, dtype: float64
 
 ==================================================
-[2026-01-23 18:07:51]
+[2026-02-10 17:36:47] 
 Gerando CDF para usuários anônimos...
 Gráfico salvo em: outputs/cdf/cdf_sessoes_anonimos.svg
 
 ==================================================
-[2026-01-23 18:07:52]
+[2026-02-10 17:36:50] 
 Gerando CDF para usuários logados...
 Gráfico salvo em: outputs/cdf/cdf_sessoes_logados.svg
-[2026-01-23 18:07:53]
+[2026-02-10 17:36:52] 
 Análise concluída! Gráficos salvos em outputs/cdf/
-
-Process finished with exit code 0
-
-V-SKNN, STAN, V-STAN
