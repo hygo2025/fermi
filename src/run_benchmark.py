@@ -102,7 +102,13 @@ class BenchmarkRunner:
         
         return config_dict
 
-    def run_single_model(self, model_name: str, dataset_name: str, run_evaluate: bool = False) -> dict:
+    def run_single_model(
+        self,
+        model_name: str,
+        dataset_name: str,
+        run_evaluate: bool = False,
+        resume_checkpoint: str = None,
+    ) -> dict:
         log(f"{'=' * 80}")
         log(f"Running: {model_name} | Dataset: {dataset_name}")
         log(f"{'=' * 80}")
@@ -131,6 +137,13 @@ class BenchmarkRunner:
                 model = get_model(model_name)(config, train_data.dataset).to(config['device'])
             log("Initializing trainer...")
             trainer = Trainer(config, model)
+
+            if resume_checkpoint:
+                resume_path = Path(resume_checkpoint)
+                if not resume_path.exists():
+                    raise FileNotFoundError(f"Resume checkpoint not found: {resume_path}")
+                log(f"Resuming from checkpoint: {resume_path}")
+                trainer.resume_checkpoint(str(resume_path))
 
             log("Training...")
             best_valid_score, best_valid_result = trainer.fit(
@@ -188,7 +201,13 @@ class BenchmarkRunner:
                 'timestamp': self.timestamp
             }
 
-    def run_single(self, model_name: str, dataset: str, run_evaluate: bool = False):
+    def run_single(
+        self,
+        model_name: str,
+        dataset: str,
+        run_evaluate: bool = False,
+        resume_checkpoint: str = None,
+    ):
         """Executa benchmark para um único modelo"""
         log(f"{'=' * 80}")
         log(f"Dataset: {dataset}")
@@ -198,7 +217,12 @@ class BenchmarkRunner:
 
         results_file = self.output_dir / f'results_{self.timestamp}.csv'
 
-        result = self.run_single_model(model_name, dataset, run_evaluate=run_evaluate)
+        result = self.run_single_model(
+            model_name,
+            dataset,
+            run_evaluate=run_evaluate,
+            resume_checkpoint=resume_checkpoint,
+        )
         df = pd.DataFrame([result])
         df.to_csv(results_file, index=False)
         log(f"Resultado salvo: {results_file}")
@@ -237,6 +261,11 @@ def main():
         action='store_true',
         help='Executa avaliação após o treino (default: false)'
     )
+    parser.add_argument(
+        '--resume',
+        type=str,
+        help='Caminho para checkpoint .pth para retomar treino'
+    )
 
     args = parser.parse_args()
 
@@ -262,7 +291,12 @@ def main():
 
     # Run benchmark for single model
     runner = BenchmarkRunner(args.output)
-    runner.run_single(args.model, dataset, run_evaluate=args.evaluate)
+    runner.run_single(
+        args.model,
+        dataset,
+        run_evaluate=args.evaluate,
+        resume_checkpoint=args.resume,
+    )
 
 
 if __name__ == '__main__':
