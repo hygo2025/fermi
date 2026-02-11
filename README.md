@@ -117,9 +117,9 @@ MODELS="TransRec" make benchmark  - Rodando 17 - Baixado
 MODELS="GRU4Rec" make benchmark   - Rodando 54 - Baixado
 MODELS="NARM" make benchmark      - Rodando 54 - Baixado
 MODELS="LightGCN" make benchmark  - Rodando 17 - Baixado
-MODELS="SASRec" make benchmark    - Rodando 17
-MODELS="NextItNet" make benchmark - 
-MODELS="BERT4Rec" make benchmark  - 
+MODELS="SASRec" make benchmark    - Rodando 17 - Baixado
+MODELS="NextItNet" make benchmark - Rodando 17 - Baixado
+MODELS="BERT4Rec" make benchmark  - Rodando 17 - Baixado
 MODELS="Caser" make benchmark     -  Rodando 54
 
 

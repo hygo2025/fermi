@@ -276,8 +276,12 @@ def _evaluate_once(
         config_dict["log_wandb"] = False
 
     config_dict["eval_args"] = deepcopy(config_dict.get("eval_args", {}))
-    config_dict["eval_args"].setdefault("mode", {})
+    mode_cfg = config_dict["eval_args"].get("mode", {})
+    if isinstance(mode_cfg, str):
+        mode_cfg = {"test": mode_cfg}
+    config_dict["eval_args"]["mode"] = mode_cfg
     if eval_mode == "full":
+        print(config_dict["eval_args"])
         config_dict["eval_args"]["mode"]["test"] = "full"
     elif eval_mode == "uni100":
         config_dict["eval_args"]["mode"]["test"] = "uni100"
