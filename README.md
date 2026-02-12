@@ -120,8 +120,38 @@ MODELS="LightGCN" make benchmark  - Rodando 17 - Baixado
 MODELS="SASRec" make benchmark    - Rodando 17 - Baixado
 MODELS="NextItNet" make benchmark - Rodando 17 - Baixado
 MODELS="BERT4Rec" make benchmark  - Rodando 17 - Baixado
-MODELS="Caser" make benchmark     -  Rodando 54
+MODELS="Caser" make benchmark     - Rodando 54
 
 
-POLL_SECONDS=60 MODELS="Pop Random FOSSIL FPMC BPR NARM GRU4Rec ItemKNN" make benchmark-queue
-POLL_SECONDS=60 MODELS="TransRec LightGCN SASRec NextItNet BERT4Rec Caser" make benchmark-queue
+03-05
+MODELS="BPR" make benchmark       - 
+MODELS="ItemKNN" make benchmark   - 
+MODELS="Pop" make benchmark       - 
+MODELS="Random" make benchmark    - 
+MODELS="FOSSIL" make benchmark    - 
+MODELS="FPMC" make benchmark      - 
+MODELS="TransRec" make benchmark  - 
+MODELS="GRU4Rec" make benchmark   - 
+MODELS="NARM" make benchmark      - 
+MODELS="LightGCN" make benchmark  - 
+MODELS="SASRec" make benchmark    - 
+MODELS="NextItNet" make benchmark - 
+MODELS="BERT4Rec" make benchmark  - 
+MODELS="Caser" make benchmark     - 
+
+
+
+rsync -avzh \
+  hygo2025@172.20.72.17:/home/hygo2025/Documents/data/processed_data/events/ \
+  /home/hygo2025/Documents/data/processed_data/events/
+
+rsync -avzh -e "ssh -F /dev/null -o StrictHostKeyChecking=accept-new" \
+  hygo2025@172.20.72.17:/home/hygo2025/Development/projects/fermi/outputs/data/recbole/ \
+  /home/hygo2025/Development/projects/fermi/outputs/data/recbole/
+
+model:Caser
+eval_batch_size: 64
+model: SASRec
+eval_batch_size: 2048
+model: TransRec
+eval_batch_size: 64
