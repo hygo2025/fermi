@@ -131,7 +131,7 @@ experiments:
   model: FOSSIL
   wandb_config: wandb:m42kj1ex
 - id: 04-05/FPMC-Feb-08-2026_18-36-12
-  enabled: truetrue
+  enabled: true
   checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/FPMC-Feb-08-2026_18-36-12.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/04-05
   dataset: realestate
@@ -202,45 +202,3 @@ experiments:
   model: TransRec
   wandb_config: wandb:6bkukfep
   eval_batch_size: 64
-- id: 05-06/BPR-Feb-09-2026_09-30-55
-  enabled: false
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/BPR-Feb-09-2026_09-30-55.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
-  dataset: realestate
-  model: BPR
-  wandb_config: ''
-- id: 05-06/FOSSIL-Feb-09-2026_09-33-17
-  enabled: false
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/FOSSIL-Feb-09-2026_09-33-17.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
-  dataset: realestate
-  model: FOSSIL
-  wandb_config: ''
-- id: 05-06/FPMC-Feb-09-2026_09-43-30
-  enabled: false
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/FPMC-Feb-09-2026_09-43-30.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
-  dataset: realestate
-  model: FPMC
-  wandb_config: ''
-- id: 05-06/ItemKNN-Feb-09-2026_09-40-38
-  enabled: false
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/ItemKNN-Feb-09-2026_09-40-38.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
-  dataset: realestate
-  model: ItemKNN
-  wandb_config: ''
-- id: 05-06/Pop-Feb-09-2026_09-31-48
-  enabled: false
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/Pop-Feb-09-2026_09-31-48.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
-  dataset: realestate
-  model: Pop
-  wandb_config: ''
-- id: 05-06/Random-Feb-09-2026_09-31-54
-  enabled: false
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/Random-Feb-09-2026_09-31-54.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
-  dataset: realestate
-  model: Random
-  wandb_config: ''
