@@ -248,7 +248,7 @@ experiments:
   run_uni100: true
   wandb_config: wandb:imy8qlhy
 - id: 05-06/Caser-Feb-11-2026_18-24-13
-  enabled: true
+  enabled: false
   checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/Caser-Feb-11-2026_18-24-13.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/05-06
   dataset: realestate
