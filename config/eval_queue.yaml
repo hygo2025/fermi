@@ -247,15 +247,15 @@ experiments:
   run_uni100: true
   wandb_config: wandb:imy8qlhy
 - id: 05-06/Caser-Feb-11-2026_18-24-13
-  enabled: false
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/Caser-Feb-11-2026_18-24-13.pth
+  enabled: true
+  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/Caser-Feb-15-2026_19-37-06.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/05-06
   dataset: realestate
   model: Caser
   run_full: true
   run_uni100: true
   eval_batch_size: 64
-  wandb_config: wandb:jq7rdjy1
+  wandb_config: wandb:2ytutt4m
 - id: 05-06/BERT4Rec-Feb-09-2026_20-03-03
   enabled: true
   checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/BERT4Rec-Feb-09-2026_20-03-03.pth
