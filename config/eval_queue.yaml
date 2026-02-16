@@ -8,11 +8,11 @@ experiments:
   wandb_config: wandb:e24khj12
 - id: 03-04/BPR-Feb-12-2026_18-10-45
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/BPR-Feb-12-2026_18-10-45.pth
+  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/BPR-Feb-15-2026_16-26-40.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/03-04
   dataset: realestate
   model: BPR
-  wandb_config: wandb:7gagu43c
+  wandb_config: wandb:0qijk4zy
 - id: 03-04/Caser-Feb-13-2026_09-33-51
   enabled: true
   eval_batch_size: 64
@@ -65,18 +65,18 @@ experiments:
   wandb_config: wandb:klwl44x7
 - id: 03-04/NextItNet-Feb-12-2026_18-14-25
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/NextItNet-Feb-12-2026_18-14-25.pth
+  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/NextItNet-Feb-15-2026_16-31-42.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/03-04
   dataset: realestate
   model: NextItNet
-  wandb_config: wandb:khqebv0k
+  wandb_config: wandb:jxhcjgkf
 - id: 03-04/Pop-Feb-12-2026_18-52-22
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/Pop-Feb-12-2026_18-52-22.pth
+  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/Pop-Feb-15-2026_16-26-27.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/03-04
   dataset: realestate
   model: Pop
-  wandb_config: wandb:mc9biig7
+  wandb_config: wandb:4gp6u81b
 - id: 03-04/Random-Feb-12-2026_18-59-53
   enabled: true
   checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/Random-Feb-12-2026_18-59-53.pth
