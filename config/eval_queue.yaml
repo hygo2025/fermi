@@ -338,7 +338,7 @@ experiments:
   model: BPR
   run_full: true
   run_uni100: true
-  wandb_config: wandb:9rqrc2an
+  wandb_config: wandb:u3jadgok
 - id: 06-07/SASRec-Feb-10-2026_15-09-50
   enabled: true
   checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/SASRec-Feb-10-2026_15-09-50.pth
