@@ -330,9 +330,9 @@ experiments:
   run_uni100: true
   eval_batch_size: 64
   wandb_config: wandb:axmxh411
-- id: 06-07/BPR-Feb-10-2026_01-01-24
+- id: 06-07/BPR-Feb-18-2026_14-40-33
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/BPR-Feb-10-2026_01-01-24.pth
+  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/BPR-Feb-18-2026_14-40-33.pth
   data_path: /home/hygo2025/Documents/experimentos/mg/06-07
   dataset: realestate
   model: BPR
