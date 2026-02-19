@@ -1,4 +1,22 @@
 experiments:
+- id: 06-07/LightGCN-Feb-18-2026_21-39-47
+  enabled: true
+  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/LightGCN-Feb-18-2026_21-39-47.pth
+  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
+  dataset: realestate
+  model: LightGCN
+  run_full: true
+  run_uni100: true
+  wandb_config: wandb:cgr7fe6e
+- id: 06-07/ItemKNN-Feb-18-2026_21-44-49
+  enabled: true
+  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/ItemKNN-Feb-18-2026_21-44-49.pth
+  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
+  dataset: realestate
+  model: ItemKNN
+  run_full: true
+  run_uni100: true
+  wandb_config: wandb:1elav5y1
 - id: 06-07/BPR-Feb-18-2026_19-29-36.pth
   enabled: true
   checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/BPR-Feb-18-2026_19-29-36.pth
@@ -367,15 +385,7 @@ experiments:
   run_full: true
   run_uni100: true
   wandb_config: wandb:4jhn858x
-- id: 06-07/LightGCN-Feb-10-2026_10-29-32
-  enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/LightGCN-Feb-10-2026_10-29-32.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
-  dataset: realestate
-  model: LightGCN
-  run_full: true
-  run_uni100: true
-  wandb_config: wandb:ijhos5gi
+
 - id: 06-07/BERT4Rec-Feb-11-2026_01-45-54
   enabled: true
   checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/BERT4Rec-Feb-11-2026_01-45-54.pth
@@ -423,15 +433,6 @@ experiments:
   run_full: true
   run_uni100: true
   wandb_config: wandb:24as5qb7
-- id: 06-07/ItemKNN-Feb-10-2026_07-49-31
-  enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/ItemKNN-Feb-10-2026_07-49-31.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
-  dataset: realestate
-  model: ItemKNN
-  run_full: true
-  run_uni100: true
-  wandb_config: wandb:ncud5kd3
 - id: 06-07/Pop-Feb-11-2026_13-48-42
   enabled: true
   checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/Pop-Feb-11-2026_13-48-42.pth
