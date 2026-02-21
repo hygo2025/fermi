@@ -54,11 +54,13 @@ outputs/results/**/*.json
 outputs/results/**/*.png
 outputs/results/**/*.md
 outputs/results/**/*.pth
+outputs/results/**/*.csv
 outputs/data/**/*.csv
 log/
 
 premissas.txt
 **/*.pth
+**/*.log
 results_primeiro_tunning
 results_primeiro_tunning/*
 wandb
