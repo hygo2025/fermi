@@ -8,6 +8,33 @@ experiments:
   run_full: true
   run_uni100: true
   wandb_config: wandb:9so7guuu
+- id: 04-05/STAMP-Feb-21-2026_13-49-29
+  enabled: true
+  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/STAMP-Feb-21-2026_13-49-29.pth
+  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+  dataset: realestate
+  model: STAMP
+  run_full: true
+  run_uni100: true
+  wandb_config: wandb:mx85semp
+#- id: 05-06/STAMP-xxx.pth
+#  enabled: true
+#  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/STAMP-xxx.pth
+#  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+#  dataset: realestate
+#  model: STAMP
+#  run_full: true
+#  run_uni100: true
+#  wandb_config: wandb:xxx
+#- id: 06-07/STAMP-xxx.pth
+#  enabled: true
+#  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/STAMP-xxx.pth
+#  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+#  dataset: realestate
+#  model: STAMP
+#  run_full: true
+#  run_uni100: true
+#  wandb_config: wandb:xxx
 
 
 
