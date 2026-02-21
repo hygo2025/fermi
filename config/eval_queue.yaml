@@ -1,4 +1,16 @@
 experiments:
+- id: 03-04/STAMP-Feb-20-2026_19-38-00.pth
+  enabled: true
+  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/STAMP-Feb-20-2026_19-38-00.pth
+  data_path: /home/hygo2025/Documents/experimentos/mg/03-04
+  dataset: realestate
+  model: STAMP
+  run_full: true
+  run_uni100: true
+  wandb_config: wandb:9so7guuu
+
+
+
 - id: 06-07/LightGCN-Feb-18-2026_21-39-47
   enabled: true
   checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/LightGCN-Feb-18-2026_21-39-47.pth
