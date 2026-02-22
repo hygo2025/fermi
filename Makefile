@@ -43,7 +43,7 @@ data: ## Prepare dataset for RecBole
 #@GROUP_NAME="run_$(shell date +%m-%d_%H-%M)"; \
 # -----------------------------------------------------------------------------
 benchmark: ## Run benchmark. Optional: MODEL=... RESUME=...
-	@GROUP_NAME="run_05-06"; \
+	@GROUP_NAME="run_06-07"; \
 	echo "[INFO] W&B Group: $$GROUP_NAME"; \
 	if [ -n "$(MODEL)" ]; then \
 		WANDB_RUN_GROUP="$$GROUP_NAME" RESUME="$(RESUME)" ./scripts/run_benchmark.sh "$(MODEL)"; \
