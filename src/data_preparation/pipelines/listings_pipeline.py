@@ -9,10 +9,7 @@ from src.utils import log
 
 
 def create_canonical_id(df: DataFrame) -> DataFrame:
-    """
-    Creates canonical ID for grouping physically identical properties.
-    Uses fingerprint based on: location (geohash), area, bedrooms, unit_type.
-    """
+
     config = get_config()
     geohash_precision = int(config.get("canonical_id", {}).get("geohash_precision", 7))
     geohash_udf = F.udf(
@@ -30,7 +27,7 @@ def create_canonical_id(df: DataFrame) -> DataFrame:
         )
     )
 
-    # Fallback: usar zip_code se lat/lon forem nulos
+
     df = df.withColumn(
         "geo_key",
         coalesce(
@@ -40,17 +37,17 @@ def create_canonical_id(df: DataFrame) -> DataFrame:
         )
     )
 
-    # 2. Bucketizar área útil em intervalos de 10m²
-    # Fórmula: (usable_areas / 10).cast("int") * 10
+
+
     df = df.withColumn(
         "area_bucket",
         coalesce(
             ((col("usable_areas") / 10).cast("int") * 10).cast("string"),
-            lit("-1")  # Nulos viram -1
+            lit("-1")
         )
     )
 
-    # 3. Tratar tipologia (bedrooms, suites, unit_type)
+
     df = df.withColumn(
         "bedrooms_normalized",
         coalesce(col("bedrooms").cast("string"), lit("0"))
@@ -61,7 +58,7 @@ def create_canonical_id(df: DataFrame) -> DataFrame:
         coalesce(col("unit_type"), lit("UNKNOWN"))
     )
 
-    # 4. Gerar fingerprint concatenando todos os componentes
+
     df = df.withColumn(
         "fingerprint",
         concat_ws(
@@ -73,13 +70,13 @@ def create_canonical_id(df: DataFrame) -> DataFrame:
         )
     )
 
-    # 5. Criar canonical_listing_id como MD5 do fingerprint
+
     df = df.withColumn(
         "canonical_listing_id",
         md5(col("fingerprint"))
     )
 
-    # Remover colunas auxiliares
+
     df = df.drop(
         "geo_hash", "geo_key",
         "area_bucket", "bedrooms_normalized",
@@ -108,15 +105,7 @@ def clean_data(df: DataFrame) -> DataFrame:
 
 
 def deduplicate_and_map_ids(df: DataFrame) -> tuple[DataFrame, DataFrame]:
-    """
-    Deduplicação e criação de mapeamentos:
-    1. Filtra apenas listings ACTIVE
 
-    3. Cria mapeamento: anonymized_listing_id -> listing_id_numeric + canonical_listing_id
-
-    Returns:
-        tuple: (df_enriquecido, tabela_mapeamento)
-    """
     df_active = df.filter(F.col("status") == "ACTIVE")
 
     window_spec = Window.partitionBy("anonymized_listing_id").orderBy(F.col("updated_at").desc())
@@ -127,13 +116,13 @@ def deduplicate_and_map_ids(df: DataFrame) -> tuple[DataFrame, DataFrame]:
     )
 
     distinct_canonical = latest_df.select("canonical_listing_id").distinct()
-    id_window = Window.orderBy("canonical_listing_id")  # Ordenação determinística
+    id_window = Window.orderBy("canonical_listing_id")
     canonical_to_numeric = distinct_canonical.withColumn(
         "listing_id_numeric",
         F.row_number().over(id_window)
     )
 
-    # 2. Criar tabela de mapeamento completa: anonymized -> canonical -> numeric
+
     mapping_table = (
         latest_df
         .select("anonymized_listing_id", "canonical_listing_id")
@@ -141,7 +130,7 @@ def deduplicate_and_map_ids(df: DataFrame) -> tuple[DataFrame, DataFrame]:
         .join(canonical_to_numeric, "canonical_listing_id", "inner")
     )
 
-    # 3. Enriquecer df final com listing_id_numeric
+
     enriched_df = latest_df.join(
         mapping_table.select("anonymized_listing_id", "listing_id_numeric"),
         "anonymized_listing_id",
@@ -179,17 +168,17 @@ def run_listings_pipeline(spark: SparkSession):
     config = get_config()
     raw_path = config['raw_data']['listings_raw_path'] + "/*.csv.gz"
     all_raw_listings = read_csv_data(spark, raw_path, multiline=True)
-    # target_states = ['Minas Gerais']
-    # all_raw_listings = all_raw_listings.filter(F.col('state').isin(target_states))
 
-    # 1. Limpeza de dados
+
+
+
     cleaned_listings = clean_data(all_raw_listings)
 
-    # 2. Criar ID canônico (agrupamento de imóveis similares)
+
     log("Criando canonical_listing_id para diminuir cold start...")
     canonicalized_listings = create_canonical_id(cleaned_listings)
 
-    # 3. Deduplicação e mapeamento de IDs
+
     final_df, mapping_table = deduplicate_and_map_ids(canonicalized_listings)
 
     save_results(final_df, mapping_table)

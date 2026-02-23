@@ -1,7 +1,7 @@
 model: Random
 
 epochs: 1
-enable_scaler: false  # Random model doesn't use gradients
+enable_scaler: false
 
 eval_args:
  mode: uni100

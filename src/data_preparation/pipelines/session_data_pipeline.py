@@ -16,7 +16,7 @@ class SessionDataPipeline:
         project_config = get_config()
         self.recbole_format = recbole_format
 
-        # Build pipeline config
+
         raw_data_config = project_config['raw_data']
         data_prep_config = project_config['data_preparation']
 
@@ -34,7 +34,7 @@ class SessionDataPipeline:
         self.spark = spark
 
     def load_events(self, start_date: str, end_date: str):
-        """Carrega eventos brutos do período especificado"""
+
         events_path = self.config['events_path']
 
         log(f" Carregando eventos: {start_date} → {end_date}")
@@ -42,7 +42,7 @@ class SessionDataPipeline:
 
         df = self.spark.read.parquet(events_path)
 
-        # Filtros básicos
+
         df = df.filter(
             (F.col('dt') >= start_date) &
             (F.col('dt') <= end_date)
@@ -61,14 +61,14 @@ class SessionDataPipeline:
         log(" Filtrando eventos de interação...")
 
         interaction_types = [
-            'ListingRendered',  # User viewed listing detail
-            # 'RankingRendered',      # User viewed listing in ranking
-            # 'GalleryClicked',       # User clicked on gallery/image
-            'RankingClicked',  # User clicked item in ranking
-            'LeadPanelClicked',  # User clicked contact panel
-            'LeadClicked',  # User initiated contact
-            'FavoriteClicked',  # User favorited item
-            'ShareClicked',  # User shared item
+            'ListingRendered',
+
+
+            'RankingClicked',
+            'LeadPanelClicked',
+            'LeadClicked',
+            'FavoriteClicked',
+            'ShareClicked',
         ]
 
         df_filtered = df.filter(F.col('event_type').isin(interaction_types))
@@ -81,7 +81,7 @@ class SessionDataPipeline:
         return df_filtered
 
     def filter_by_location(self, df):
-        """Filtra eventos por localização"""
+
         listings_path = self.config.get('listings_path')
 
         if not listings_path:
@@ -90,22 +90,22 @@ class SessionDataPipeline:
 
         log(" Filtrando por localização...")
 
-        # Carrega listings
+
         listings = self.spark.read.option("mergeSchema", "true").parquet(listings_path)
         listings_before = listings.count()
 
-        # Filtra cidades da Grande Vitória/ES
-        # target_cities = ['Vitória', 'Serra', 'Vila Velha', 'Cariacica', 'Viana', 'Guarapari', 'Fundão']
-        # listings = listings.filter(F.col('city').isin(target_cities))
 
-        ##target_states = ['Espírito Santo']
-        #listings = listings.filter(F.col('state').isin(target_states))
+
+
+
+
+
 
         listings_after = listings.count()
 
         log(f"    {listings_before:_} listings → {listings_after:_} nas localizacoes alvo")
 
-        # Join com eventos (left_semi = mantém apenas eventos de listings válidos)
+
         events_before = df.count()
         df = df.join(
             listings.select('listing_id_numeric'),
@@ -119,57 +119,49 @@ class SessionDataPipeline:
         return df
 
     def prepare_sessions(self, df, recbole_format=False):
-        """
-        Prepara sessões removendo APENAS repetições consecutivas (A->A),
-        mas mantendo retornos (A->B->A).
-        
-        Args:
-            df: DataFrame com eventos brutos
-            recbole_format: Se True, retorna apenas colunas user_id, item_id, timestamp.
-                          Se False, mantém todas as colunas originais.
-        """
+
         log(" Preparando sessões com deduplicação consecutiva...")
 
-        # 1. Criar colunas auxiliares (preservando todas originais)
+
         df = df.withColumn('original_user_id', F.col('user_id'))
         df = df.withColumn('user_id', F.col('session_id'))
         df = df.withColumn('item_id', F.col('listing_id'))
         df = df.withColumn('timestamp', F.unix_timestamp(F.col('event_ts')))
-        
-        # Filtrar registros com valores nulos essenciais
+
+
         df = df.filter(
             F.col('user_id').isNotNull() &
             F.col('item_id').isNotNull() &
             F.col('timestamp').isNotNull()
         )
 
-        # 2. Definir Janela para olhar o item anterior
-        
+
+
         df = df.withColumn("tie_breaker", F.monotonically_increasing_id())
 
         window_spec = Window.partitionBy("user_id").orderBy("timestamp", "tie_breaker")
 
-        # 3. Criar coluna com o item anterior (Lag)
+
         df = df.withColumn("prev_item_id", F.lag("item_id").over(window_spec))
 
-        # 4. Filtrar: Manter apenas se o item atual for DIFERENTE do anterior
-        
+
+
         df_clean = df.filter(
             (F.col("item_id") != F.col("prev_item_id")) |
             (F.col("prev_item_id").isNull())
         )
 
-        # 5. Remover colunas auxiliares
+
         df_clean = df_clean.drop("prev_item_id", "tie_breaker")
 
-        # 6. Aplicar seleção de colunas se formato RecBole
+
         if recbole_format:
             df_clean = df_clean.select('user_id', 'item_id', 'timestamp')
 
-        # Ordenação final para garantir a sequência
+
         df_clean = df_clean.orderBy('user_id', 'timestamp')
 
-        # Log de impacto
+
         count_before = df.count()
         count_after = df_clean.count()
         log(f"    Deduplicação: {count_before:_} -> {count_after:_} interações (Mantidos retornos A->B->A)")
@@ -177,21 +169,21 @@ class SessionDataPipeline:
         return df_clean
 
     def filter_sessions_by_length(self, df, min_length: int, max_length: int):
-        """Filtra sessões por comprimento, truncando sessões longas"""
+
         log(f" Filtrando sessões ({min_length}-{max_length} interações), truncando as longas...")
 
-        # Conta tamanho das sessões
+
         session_sizes = df.groupBy('user_id').agg(
             F.count('*').alias('session_size')
         )
 
-        # Join para adicionar tamanho da sessão
+
         df_with_size = df.join(session_sizes, on='user_id', how='inner')
 
-        # Remove sessões muito curtas
+
         df_filtered = df_with_size.filter(F.col('session_size') >= min_length)
 
-        # Trunca sessões longas mantendo os eventos mais recentes
+
         window_spec = Window.partitionBy('user_id').orderBy(F.col('timestamp').desc())
         df_filtered = df_filtered.withColumn('rn', F.row_number().over(window_spec))
         df_filtered = df_filtered.filter(
@@ -211,20 +203,20 @@ class SessionDataPipeline:
         return df_filtered
 
     def filter_rare_items(self, df, min_support: int):
-        """Remove itens com menos de min_support ocorrências"""
+
         log(f" Filtrando itens raros (mín. {min_support} ocorrências)...")
 
-        # Conta ocorrências de itens
+
         item_counts = df.groupBy('item_id').agg(
             F.count('*').alias('item_count')
         )
 
-        # Filtra itens válidos
+
         valid_items = item_counts.filter(
             F.col('item_count') >= min_support
         )
 
-        # Join para manter apenas itens válidos
+
         df_filtered = df.join(
             valid_items.select('item_id'),
             on='item_id',
@@ -242,31 +234,31 @@ class SessionDataPipeline:
         return df_filtered
 
     def run(self):
-        """Executa pipeline completo"""
-        # 1. Carrega eventos
+
+
         df = self.load_events(
             self.config['start_date'],
             self.config['end_date']
         )
 
-        # 2. Filtra por localização (se configurado)
+
         df = self.filter_by_location(df)
 
-        # 3. Filtra eventos de interação
+
         df = self.filter_interaction_events(df)
 
         df = self.prepare_sessions(df, recbole_format=self.recbole_format)
 
-        # 5. Filtra sessões por comprimento
+
         min_session_len = self.config.get('min_session_length', 2)
         max_session_len = self.config.get('max_session_length', 50)
         df = self.filter_sessions_by_length(df, min_session_len, max_session_len)
 
-        # 6. Filtra itens raros
+
         min_item_support = self.config.get('min_item_freq', 2)
         df = self.filter_rare_items(df, min_item_support)
 
-        # 7. Re-filtra sessões (após remover itens raros, algumas sessões podem ter ficado curtas)
+
         df = self.filter_sessions_by_length(df, min_session_len, max_session_len)
 
         return df

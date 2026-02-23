@@ -26,7 +26,7 @@ from recbole.trainer import Trainer
 from src.utils import log
 from src.utils.enviroment import get_config
 
-# Monkey-patch torch.load (PyTorch 2.6+ compatibility)
+
 _original_torch_load = torch.load
 
 
@@ -211,7 +211,7 @@ def _resolve_wandb_run(api, project: str, run_ref: str):
         if run.name == run_ref:
             return run
 
-    # Fallback: scan for name match
+
     runs = api.runs(project)
     for run in runs:
         if run.name == run_ref:
@@ -470,7 +470,7 @@ def _run_batch(args):
                 base_config["save_dataset"] = False
                 dataset_save_path = candidate
             else:
-                # Heuristic fallback when MODEL_TYPE is missing
+
                 seq_candidate = exp_dir / f"{dataset_name}-SequentialDataset.pth"
                 base_candidate = exp_dir / f"{dataset_name}-Dataset.pth"
                 sequential_models = {

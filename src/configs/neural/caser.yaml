@@ -1,6 +1,5 @@
 model: Caser
 
-# Faster config for benchmark (Caser only)
 train_batch_size: 2048
 eval_batch_size: 8192
 
@@ -22,5 +21,4 @@ train_neg_sample_args:
   dynamic: false
   candidate_num: 0
 
-# Disable TensorBoard for this benchmark run
 tensorboard: false

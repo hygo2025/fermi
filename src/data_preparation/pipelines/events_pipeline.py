@@ -45,7 +45,7 @@ def resolve_user_identities(events: DataFrame) -> DataFrame:
 
     num_partitions = 512
     collision_threshold = 7
-    #events = events.repartition(num_partitions, F.col("anonymized_listing_id"))
+
 
     grouped = events.groupBy("anonymized_anonymous_id").agg(
         F.collect_list("anonymized_user_id").alias("user_id_list")
@@ -139,29 +139,29 @@ def join_events_with_sessions(events: DataFrame, users: DataFrame, listings: Dat
 def create_numeric_keys(events: DataFrame) -> DataFrame:
     log("Iniciando criação de chaves numéricas...")
 
-    # user_id (usuário logado) → user_logged_numeric_id
+
     distinct_logged_users = events.select("user_id").distinct()
     logged_map = (
         distinct_logged_users
-        .withColumn("user_logged_numeric_id", 
+        .withColumn("user_logged_numeric_id",
                     F.concat(F.lit("U_"), F.monotonically_increasing_id()))
     )
     events = events.join(logged_map, "user_id", "left")
 
-    # anonymous_id → anonymous_numeric_id
+
     distinct_anonymous = events.select("anonymous_id").distinct()
     anonymous_map = (
         distinct_anonymous
-        .withColumn("anonymous_numeric_id", 
+        .withColumn("anonymous_numeric_id",
                     F.concat(F.lit("A_"), F.monotonically_increasing_id()))
     )
     events = events.join(anonymous_map, "anonymous_id", "left")
 
-    # anonymized_session_id → session_numeric_id
+
     distinct_sessions = events.select("anonymized_session_id").distinct()
     session_map = (
         distinct_sessions
-        .withColumn("session_numeric_id", 
+        .withColumn("session_numeric_id",
                     F.concat(F.lit("S_"), F.monotonically_increasing_id()))
     )
     events = events.join(session_map, "anonymized_session_id", "left")
@@ -188,7 +188,7 @@ def save_events(spark: SparkSession, events: DataFrame) -> None:
         )
     )
 
-    # Traz o mapeamento numérico de listings
+
     listing_map = (
         spark.read
         .parquet(listing_id_mapping_path)
@@ -228,14 +228,14 @@ def filter_interaction_events(df):
     log(" Filtrando eventos de interação...")
 
     interaction_types = [
-        'ListingRendered',  # User viewed listing detail
-        # 'RankingRendered',      # User viewed listing in ranking
-        'GalleryClicked',       # User clicked on gallery/image
-        'RankingClicked',  # User clicked item in ranking
-        'LeadPanelClicked',  # User clicked contact panel
-        'LeadClicked',  # User initiated contact
-        'FavoriteClicked',  # User favorited item
-        'ShareClicked',  # User shared item
+        'ListingRendered',
+
+        'GalleryClicked',
+        'RankingClicked',
+        'LeadPanelClicked',
+        'LeadClicked',
+        'FavoriteClicked',
+        'ShareClicked',
     ]
 
     df_filtered = df.filter(F.col('event_type').isin(interaction_types))

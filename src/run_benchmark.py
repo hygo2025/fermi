@@ -19,10 +19,10 @@ if not hasattr(sp.dok_matrix, "_update"):
             self[k] = v
     sp.dok_matrix._update = _update
 
-# Configure PyTorch CUDA memory allocator to reduce fragmentation
+
 os.environ.setdefault('PYTORCH_CUDA_ALLOC_CONF', 'expandable_segments:True')
 
-# Monkey-patch torch.load (PyTorch 2.6+ compatibility)
+
 _original_torch_load = torch.load
 
 
@@ -74,7 +74,7 @@ class BenchmarkRunner:
         )
 
     def _get_model_config(self, model_name: str, dataset_name: str) -> dict:
-        """Carrega config do modelo e merge com config do projeto"""
+
         config_base = Path('src/configs')
 
         for category in ['neural', 'baselines', 'factorization']:
@@ -90,16 +90,16 @@ class BenchmarkRunner:
         config_dict['dataset'] = dataset_name
         config_dict['data_path'] = self.project_config['data_path']
 
-        # Use shared checkpoint_dir from project_config.yaml for dataset cache
-        # Model checkpoints will be saved with unique names
+
+
         config_dict['show_progress'] = True
-        
+
         if config_dict.get('log_wandb', False):
             import os
             os.environ['WANDB_NAME'] = f"{model_name}_{self.timestamp}"
             if 'wandb_group' in config_dict and config_dict['wandb_group']:
                 os.environ['WANDB_RUN_GROUP'] = config_dict['wandb_group']
-        
+
         return config_dict
 
     def run_single_model(
@@ -149,8 +149,8 @@ class BenchmarkRunner:
             best_valid_score, best_valid_result = trainer.fit(
                 train_data, valid_data, show_progress=True
             )
-            
-            # Clear GPU cache after training
+
+
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
                 log(f"GPU memory after training: {torch.cuda.memory_allocated(0)/1e9:.2f} GB")
@@ -158,24 +158,24 @@ class BenchmarkRunner:
             test_result = {}
             if run_evaluate:
                 log("Evaluating...")
-                # Clear GPU cache before evaluation
+
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
                     log(f"GPU memory before eval: {torch.cuda.memory_allocated(0)/1e9:.2f} GB / {torch.cuda.get_device_properties(0).total_memory/1e9:.2f} GB")
 
                 test_result = trainer.evaluate(test_data, show_progress=True)
 
-                # Clear GPU cache after evaluation
+
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
 
-                # Log test metrics to W&B
+
                 if config['log_wandb']:
                     import wandb
                     if wandb.run is not None:
                         wandb.log({f'test_{k}': v for k, v in test_result.items()})
 
-            # Format results
+
             results = {
                 'model': model_name,
                 'dataset': dataset_name,
@@ -208,7 +208,7 @@ class BenchmarkRunner:
         run_evaluate: bool = False,
         resume_checkpoint: str = None,
     ):
-        """Executa benchmark para um único modelo"""
+
         log(f"{'=' * 80}")
         log(f"Dataset: {dataset}")
         log(f"Modelo: {model_name}")
@@ -269,7 +269,7 @@ def main():
 
     args = parser.parse_args()
 
-    # Validate model config exists
+
     config_base = Path('src/configs')
     model_found = False
     for category in MODEL_CONFIG_DIRS:
@@ -283,13 +283,13 @@ def main():
         log(f"Searched in: src/configs/{{neural,baselines,factorization}}/{args.model.lower()}.yaml")
         sys.exit(1)
 
-    # Load dataset from config if not specified
+
     if not args.dataset:
         dataset = get_config('dataset')
     else:
         dataset = args.dataset
 
-    # Run benchmark for single model
+
     runner = BenchmarkRunner(args.output)
     runner.run_single(
         args.model,

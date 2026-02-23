@@ -9,10 +9,8 @@ loss_type: 'CE'
 learning_rate: 0.01
 reg_weights: [0.001, 0.001]
 
-# FOSSIL com CE não precisa de negative sampling
 train_neg_sample_args: ~
 
-# Gradient clipping para estabilidade numérica com AMP
 clip_grad_norm:
   max_norm: 5.0
 

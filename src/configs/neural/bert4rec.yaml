@@ -21,7 +21,6 @@ initializer_range: 0.02
 
 loss_type: 'CE'
 
-# BERT4Rec usa masking - não precisa de negative sampling
 train_neg_sample_args: ~
 
 clip_grad_norm:

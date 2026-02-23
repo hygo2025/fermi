@@ -13,7 +13,7 @@ from recbole.trainer import Trainer
 from src.utils import log
 from src.utils.enviroment import get_config
 
-# Monkey-patch torch.load (PyTorch 2.6+ compatibility)
+
 _original_torch_load = torch.load
 
 

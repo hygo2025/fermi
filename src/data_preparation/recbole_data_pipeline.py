@@ -97,7 +97,7 @@ def main():
     args = parser.parse_args()
     spark = make_spark()
 
-    # Run pipeline
+
     pipeline = RecBoleDataPipeline(
         config={
             'output_path': args.output or raw_data_config['output_path'],

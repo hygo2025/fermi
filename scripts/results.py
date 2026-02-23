@@ -38,7 +38,7 @@ def main():
             "is_eval": str(run.name).startswith("Eval_"),
         }
 
-        # Keep only test_* metrics
+
         for k, v in summary.items():
             if isinstance(k, str) and k.startswith("test_"):
                 row[k] = v
@@ -57,23 +57,23 @@ def main():
         print("[INFO] No runs found for the specified group.")
         return
 
-    # Merge eval runs with training runs by model+dataset.
+
     metric_cols = [c for c in df.columns if c.startswith("test_")]
     merged_rows = []
     for (model, dataset), g in df.groupby(["model", "dataset"], dropna=False):
         eval_g = g[g["is_eval"]]
         train_g = g[~g["is_eval"]]
 
-        # Prefer eval metrics if available; fallback to training runs.
+
         source_g = eval_g if not eval_g.empty else train_g
         if source_g.empty:
             continue
 
-        # Use latest run by name sort as a simple heuristic.
+
         source_g = source_g.sort_values("run_name")
         best_row = source_g.iloc[-1].to_dict()
 
-        # If eval exists, copy eval metrics into base row.
+
         if not eval_g.empty:
             eval_latest = eval_g.sort_values("run_name").iloc[-1]
             for c in metric_cols:
@@ -85,7 +85,7 @@ def main():
             best_row["eval_run_name"] = None
             best_row["eval_run_id"] = None
 
-        # Track latest training run too
+
         if not train_g.empty:
             train_latest = train_g.sort_values("run_name").iloc[-1]
             best_row["train_run_name"] = train_latest["run_name"]
@@ -104,7 +104,7 @@ def main():
         merged_test_cols = [c for c in merged_df.columns if c.startswith("test_")]
         print(f"[INFO] test_* columns after merge: {sorted(merged_test_cols)}")
 
-    # Ranking table
+
     primary_metric = args.primary_metric
     if primary_metric not in merged_df.columns:
         lower_map = {c.lower(): c for c in merged_df.columns}
@@ -122,7 +122,7 @@ def main():
     else:
         print(f"[WARN] Primary metric not found: {args.primary_metric}")
 
-    # Heatmap: model x metric
+
     if metric_cols:
         import matplotlib.pyplot as plt
         import seaborn as sns
@@ -135,7 +135,7 @@ def main():
         plt.savefig(out_dir / "heatmap.png", dpi=200)
         plt.close()
 
-        # Boxplot: distribution by metric
+
         melt_df = merged_df.melt(
             id_vars=["model", "dataset", "run_name"],
             value_vars=metric_cols,
@@ -151,7 +151,7 @@ def main():
             plt.savefig(out_dir / "boxplot_metrics.png", dpi=200)
             plt.close()
 
-        # Ranking by topk
+
         topk_rows = []
         for col in metric_cols:
             if "@" in col:
