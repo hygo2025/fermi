@@ -1,17 +1,15 @@
-import pandas as pd
+import matplotlib.pyplot as plt
 import numpy as np
-from pathlib import Path
-from typing import List, Tuple, Dict
+import pandas as pd
+import seaborn as sns
 import yaml
 from geopy.distance import geodesic
-import matplotlib.pyplot as plt
-import seaborn as sns
+from pathlib import Path
 from recbole.quick_start import load_data_and_model
+from typing import List, Tuple, Dict
 
 
 class RecommendationAnalyzer:
-
-
     def __init__(self,
                  model_path: str,
                  listings_path: str,
@@ -28,15 +26,10 @@ class RecommendationAnalyzer:
         self._load_model()
 
     def _load_listings(self):
-
         print(f"  Loading listings from {self.listings_path}...")
         self.listings_df = pd.read_parquet(self.listings_path)
-
-
         self.listings_df['lat'] = pd.to_numeric(self.listings_df['lat_region'], errors='coerce')
         self.listings_df['lon'] = pd.to_numeric(self.listings_df['lon_region'], errors='coerce')
-
-
         self.item_to_listing = {}
         if 'listing_id_numeric' in self.listings_df.columns:
             for _, row in self.listings_df.iterrows():
@@ -47,33 +40,21 @@ class RecommendationAnalyzer:
         print(f"  Mapped {len(self.item_to_listing):,} items")
 
     def _load_model(self):
-
         print(f"  Loading model from {self.model_path}...")
-
-
-
         config_dict = {
             'data_path': self.data_path,
             'checkpoint_dir': str(self.model_path.parent)
         }
-
-
         import torch
         torch.serialization.add_safe_globals([set])
-
-
         import warnings
         with warnings.catch_warnings():
             warnings.filterwarnings("ignore", category=UserWarning)
-
-
             original_load = torch.load
             def safe_load(*args, **kwargs):
                 kwargs['weights_only'] = False
                 return original_load(*args, **kwargs)
-
             torch.load = safe_load
-
             try:
                 self.config, self.model, self.dataset, _, _, _ = load_data_and_model(
                     model_file=str(self.model_path)
@@ -84,71 +65,49 @@ class RecommendationAnalyzer:
         print(f"  Model loaded successfully")
 
     def get_recommendations(self, session_items: List[int], top_k: int = 20) -> List[Tuple[int, float]]:
-
         import torch
         from recbole.data.interaction import Interaction
-
-
         if torch.cuda.is_available():
             torch.cuda.empty_cache()
-
-
         if len(session_items) > 20:
             session_items = session_items[-20:]
-
-
         mapped_session_items = []
         item_field = self.config['ITEM_ID_FIELD']
 
         for orig_id in session_items:
             try:
-
                 internal_id = self.dataset.token2id(item_field, str(orig_id))
                 if internal_id is not None and internal_id != 0:
                     mapped_session_items.append(internal_id)
             except:
-
                 continue
 
         if not mapped_session_items:
-            print(f"⚠️  No valid items in session. Original IDs: {session_items}")
+            print(f"No valid items in session. Original IDs: {session_items}")
             return []
 
-
         device = next(self.model.parameters()).device
-
         try:
-
             user_id = 0
             item_seq = torch.tensor([mapped_session_items], dtype=torch.long).to(device)
             item_seq_len = torch.tensor([len(mapped_session_items)], dtype=torch.long).to(device)
-
-
             interaction = Interaction({
                 self.config['USER_ID_FIELD']: torch.tensor([user_id]).to(device),
                 item_field + self.config['LIST_SUFFIX']: item_seq,
                 self.config['ITEM_LIST_LENGTH_FIELD']: item_seq_len
             })
 
-
             self.model.eval()
             with torch.no_grad():
                 scores = self.model.full_sort_predict(interaction)
                 scores = scores.view(-1)
-
-
                 for item in mapped_session_items:
                     if 0 <= item < len(scores):
                         scores[item] = -float('inf')
-
-
                 topk_scores, topk_items = torch.topk(scores, min(top_k, len(scores)))
-
-
             recommendations = []
             for internal_id, score in zip(topk_items.cpu().numpy(), topk_scores.cpu().numpy()):
                 internal_id = int(internal_id)
-
                 try:
                     orig_id = int(self.dataset.id2token(item_field, internal_id))
                     if orig_id in self.item_to_listing:
@@ -157,24 +116,19 @@ class RecommendationAnalyzer:
                     continue
 
         except RuntimeError as e:
-
             if 'CUDA' in str(e) or 'cuDNN' in str(e) or 'assert' in str(e).lower():
-                print(f"⚠️  CUDA error, retrying on CPU: {e}")
-
+                print(f"CUDA error, retrying on CPU: {e}")
 
                 if torch.cuda.is_available():
                     torch.cuda.synchronize()
                     torch.cuda.empty_cache()
 
-
                 self.model = self.model.cpu()
                 device = torch.device('cpu')
-
 
                 user_id = 0
                 item_seq = torch.tensor([mapped_session_items], dtype=torch.long).to(device)
                 item_seq_len = torch.tensor([len(mapped_session_items)], dtype=torch.long).to(device)
-
 
                 interaction = Interaction({
                     self.config['USER_ID_FIELD']: torch.tensor([user_id]).to(device),
@@ -182,20 +136,15 @@ class RecommendationAnalyzer:
                     self.config['ITEM_LIST_LENGTH_FIELD']: item_seq_len
                 })
 
-
                 self.model.eval()
                 with torch.no_grad():
                     scores = self.model.full_sort_predict(interaction)
                     scores = scores.view(-1)
 
-
                     for item in mapped_session_items:
                         if 0 <= item < len(scores):
                             scores[item] = -float('inf')
-
-
                     topk_scores, topk_items = torch.topk(scores, min(top_k, len(scores)))
-
 
                 recommendations = []
                 for internal_id, score in zip(topk_items.cpu().numpy(), topk_scores.cpu().numpy()):
@@ -206,8 +155,6 @@ class RecommendationAnalyzer:
                             recommendations.append((orig_id, float(score)))
                     except:
                         continue
-
-
                 if torch.cuda.is_available():
                     try:
                         self.model = self.model.cuda()
@@ -215,16 +162,13 @@ class RecommendationAnalyzer:
                         pass
             else:
                 raise
-
         finally:
-
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
 
         return recommendations
 
     def calculate_distance(self, item1: int, item2: int) -> float:
-
         listing1 = self.item_to_listing.get(item1)
         listing2 = self.item_to_listing.get(item2)
 
@@ -243,16 +187,12 @@ class RecommendationAnalyzer:
             return None
 
     def compare_features(self, item1: int, item2: int) -> Dict[str, any]:
-
         listing1 = self.item_to_listing.get(item1)
         listing2 = self.item_to_listing.get(item2)
 
         if listing1 is None or listing2 is None:
             return {}
-
         comparison = {}
-
-
         numeric_fields = ['price', 'usable_areas', 'bedrooms', 'bathrooms',
                          'parking_spaces', 'suites']
 
@@ -285,24 +225,12 @@ class RecommendationAnalyzer:
         return comparison
 
     def analyze_session(self, session_items: List[int], top_k: int = 10):
-
-        print(f"\n{'='*80}")
-        print(f"ANÁLISE DE RECOMENDAÇÕES")
-        print(f"{'='*80}")
         print(f"\nSession: {session_items}")
         print(f"  {len(session_items)} itens viewed")
-
-
-        print(f"\nGerando top-{top_k} recommendations...")
         recommendations = self.get_recommendations(session_items, top_k)
-
-
         results = []
-
         for rank, (rec_item, score) in enumerate(recommendations, 1):
             print(f"\n[{rank}] Item {rec_item} (score: {score:.4f})")
-
-
             distances = []
             for sess_item in session_items:
                 dist = self.calculate_distance(sess_item, rec_item)
@@ -347,10 +275,7 @@ class RecommendationAnalyzer:
 
         import matplotlib.pyplot as plt
         import matplotlib.patches as mpatches
-
         fig, ax = plt.subplots(figsize=figsize)
-
-
         session_coords = []
         session_cities = []
 
@@ -374,40 +299,27 @@ class RecommendationAnalyzer:
                     rec_coords.append((lat, lon))
                     rec_scores.append(score)
                     rec_cities.append(listing.get('city', 'N/A'))
-
-
         if session_coords:
             session_lats, session_lons = zip(*session_coords)
             ax.scatter(session_lons, session_lats,
                       c='blue', s=200, alpha=0.6,
                       marker='o', edgecolors='darkblue', linewidth=2,
                       label=f'Session ({len(session_coords)} itens)', zorder=3)
-
-
             for i, (lat, lon) in enumerate(session_coords):
                 ax.annotate(f"{session_cities[i][:10]}",
                            (lon, lat),
                            xytext=(5, 5), textcoords='offset points',
                            fontsize=8, alpha=0.7)
-
-
         if rec_coords:
             rec_lats, rec_lons = zip(*rec_coords)
-
-
             sizes = [100 + 500 * (s / max(rec_scores)) for s in rec_scores]
-
             scatter = ax.scatter(rec_lons, rec_lats,
                                c=rec_scores, cmap='Reds',
                                s=sizes, alpha=0.6,
                                marker='^', edgecolors='darkred', linewidth=1,
                                label=f'Recommendations ({len(rec_coords)} itens)', zorder=2)
-
-
             cbar = plt.colorbar(scatter, ax=ax)
             cbar.set_label('Score da Recomendação', rotation=270, labelpad=20)
-
-
             for i, (lat, lon) in enumerate(rec_coords[:5]):
                 ax.annotate(f"#{i+1} {rec_cities[i][:10]}",
                            (lon, lat),
@@ -416,13 +328,10 @@ class RecommendationAnalyzer:
                            bbox=dict(boxstyle='round,pad=0.3',
                                    facecolor='yellow', alpha=0.5))
 
-
         if session_coords and rec_coords:
             for sess_lat, sess_lon in session_coords:
-
                 min_dist = float('inf')
                 closest_rec = None
-
                 for rec_lat, rec_lon in rec_coords:
                     dist = np.sqrt((sess_lat - rec_lat)**2 + (sess_lon - rec_lon)**2)
                     if dist < min_dist:
@@ -498,9 +407,7 @@ class RecommendationAnalyzer:
                     })
 
         if not session_data and not rec_data:
-            print("⚠️ Nenhuma coordenada disponível para plotar")
             return
-
 
         all_lats = [d['lat'] for d in session_data + rec_data]
         all_lons = [d['lon'] for d in session_data + rec_data]
@@ -514,13 +421,8 @@ class RecommendationAnalyzer:
             tiles='OpenStreetMap',
             control_scale=True
         )
-
-
         folium.TileLayer('Esri.WorldImagery', name='Satélite').add_to(m)
-
-
         session_group = folium.FeatureGroup(name='Session Viewed', show=True)
-
         for data in session_data:
             popup_html = f"""
             <div style="font-family: Arial; width: 250px;">
@@ -535,7 +437,6 @@ class RecommendationAnalyzer:
                 <b>Tipo:</b> {data['type']}
             </div>
             """
-
             folium.CircleMarker(
                 location=[data['lat'], data['lon']],
                 radius=10,
@@ -546,8 +447,6 @@ class RecommendationAnalyzer:
                 fillOpacity=0.7,
                 weight=3
             ).add_to(session_group)
-
-
             folium.Marker(
                 location=[data['lat'], data['lon']],
                 icon=folium.DivIcon(html=f"""
@@ -557,27 +456,18 @@ class RecommendationAnalyzer:
                     </div>
                 """)
             ).add_to(session_group)
-
         session_group.add_to(m)
-
-
         rec_group = folium.FeatureGroup(name='🔺 Recommendations', show=True)
-
-
         if rec_data:
             max_score = max(d['score'] for d in rec_data)
             min_score = min(d['score'] for d in rec_data)
-
             for data in rec_data:
-
                 min_distance = float('inf')
                 for sess in session_data:
                     from geopy.distance import geodesic
                     dist = geodesic((sess['lat'], sess['lon']),
                                    (data['lat'], data['lon'])).km
                     min_distance = min(min_distance, dist)
-
-
                 if data['rank'] <= 3:
                     color = 'red'
                     icon = '⭐'
@@ -606,10 +496,7 @@ class RecommendationAnalyzer:
                     <b>Tipo:</b> {data['type']}
                 </div>
                 """
-
-
                 radius = 15 - (data['rank'] - 1) * 0.5
-
                 folium.CircleMarker(
                     location=[data['lat'], data['lon']],
                     radius=radius,
@@ -620,8 +507,6 @@ class RecommendationAnalyzer:
                     fillOpacity=0.7,
                     weight=2
                 ).add_to(rec_group)
-
-
                 if data['rank'] <= 5:
                     folium.Marker(
                         location=[data['lat'], data['lon']],
@@ -636,20 +521,14 @@ class RecommendationAnalyzer:
                     ).add_to(rec_group)
 
         rec_group.add_to(m)
-
-
         lines_group = folium.FeatureGroup(name='Conexões', show=False)
-
         for sess in session_data:
-
             distances = []
             for rec in rec_data[:10]:
                 from geopy.distance import geodesic
                 dist = geodesic((sess['lat'], sess['lon']),
                                (rec['lat'], rec['lon'])).km
                 distances.append((dist, rec))
-
-
             distances.sort(key=lambda x: x[0])
             for dist, rec in distances[:3]:
                 folium.PolyLine(
@@ -660,22 +539,11 @@ class RecommendationAnalyzer:
                     opacity=0.4,
                     popup=f"Distância: {dist:.2f} km"
                 ).add_to(lines_group)
-
         lines_group.add_to(m)
-
-
         folium.LayerControl(position='topright').add_to(m)
-
-
         plugins.MiniMap(toggle_display=True).add_to(m)
-
-
         plugins.MeasureControl(position='topleft').add_to(m)
-
-
         plugins.Fullscreen(position='topleft').add_to(m)
-
-
         legend_html = '''
         <div style="position: fixed;
                     bottom: 50px; right: 50px; width: 200px; height: auto;
@@ -690,7 +558,6 @@ class RecommendationAnalyzer:
         '''
         m.get_root().html.add_child(folium.Element(legend_html))
 
-
         if save_path is None:
             save_path = 'analysis_output/interactive_map.html'
 
@@ -698,16 +565,11 @@ class RecommendationAnalyzer:
         m.save(save_path)
 
         print(f"\nSuccess: Interactive map saved to: {save_path}")
-        print(f"  Abra no navegador para visualizar!")
-
         return m
 
     def generate_map_html(self, session_items: List[int], recommendations: List[Tuple[int, float]]) -> str:
-
         import folium
         from folium import plugins
-
-
         session_data = []
         rec_data = []
 
@@ -758,12 +620,10 @@ class RecommendationAnalyzer:
         center_lat = np.mean(all_lats)
         center_lon = np.mean(all_lons)
 
-
         m = folium.Map(
             location=[center_lat, center_lon],
             zoom_start=11
         )
-
 
         for idx, data in enumerate(session_data, 1):
             popup_html = f"""
@@ -778,13 +638,11 @@ class RecommendationAnalyzer:
                 <b>Area:</b> {data['area']:.0f} m²<br>
             </div>
             """
-
             layer = folium.FeatureGroup(
                 name=f"Sessão #{idx} - ID {data['item_id']}",
                 show=True
             )
             layer.add_to(m)
-
 
             folium.CircleMarker(
                 location=[data['lat'], data['lon']],
@@ -797,7 +655,6 @@ class RecommendationAnalyzer:
                 fillOpacity=0.8,
                 weight=2
             ).add_to(layer)
-
 
             folium.Marker(
                 location=[data['lat'], data['lon']],
@@ -813,17 +670,14 @@ class RecommendationAnalyzer:
                 """)
             ).add_to(layer)
 
-
         if rec_data:
             for data in rec_data:
-
                 min_distance = float('inf')
                 for sess in session_data:
                     from geopy.distance import geodesic
                     dist = geodesic((sess['lat'], sess['lon']),
                                    (data['lat'], data['lon'])).km
                     min_distance = min(min_distance, dist)
-
                 popup_html = f"""
                 <div style="font-family: Arial; width: 280px;">
                     <h4 style="color: #d62728;">Recommendation #{data['rank']}</h4>
@@ -839,7 +693,6 @@ class RecommendationAnalyzer:
                     <b>Area:</b> {data['area']:.0f} m²<br>
                 </div>
                 """
-
 
                 if data['rank'] <= 3:
                     color = 'green'
@@ -860,7 +713,6 @@ class RecommendationAnalyzer:
                 )
                 layer.add_to(m)
 
-
                 folium.CircleMarker(
                     location=[data['lat'], data['lon']],
                     radius=12,
@@ -872,7 +724,6 @@ class RecommendationAnalyzer:
                     fillOpacity=0.8,
                     weight=2
                 ).add_to(layer)
-
 
                 folium.Marker(
                     location=[data['lat'], data['lon']],
@@ -890,13 +741,9 @@ class RecommendationAnalyzer:
 
         folium.LayerControl(collapsed=False).add_to(m)
 
-
         return m._repr_html_()
-
     def compare_session_vs_recommendations(self, session_items: List[int],
                                           recommendations: List[Tuple[int, float]]) -> pd.DataFrame:
-
-
         def get_stats(items):
             stats = {
                 'price': [],
@@ -1010,9 +857,6 @@ def main():
     comparison_df = analyzer.compare_session_vs_recommendations(args.session, recommendations)
     comparison_df.to_csv(output_dir / 'feature_comparison.csv', index=False)
 
-    print(f"\n{'='*80}")
-    print("RESUMO DA ANÁLISE")
-    print(f"{'='*80}")
     print(comparison_df.to_string(index=False))
     print(f"\nSuccess: Analysis saved to: {output_dir}")
 

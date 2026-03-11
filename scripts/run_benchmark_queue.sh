@@ -1,13 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# Run a queue of models, waiting for any existing run_benchmark.py to finish.
-#
-# Usage:
-#   MODELS="SASRec SRGNN GCSAN" scripts/run_benchmark_queue.sh
-#   WAIT_PATTERN="src/run_benchmark.py" POLL_SECONDS=60 MODELS="..." scripts/run_benchmark_queue.sh
-#
-
 WAIT_PATTERN="${WAIT_PATTERN:-src/run_benchmark.py}"
 POLL_SECONDS="${POLL_SECONDS:-60}"
 
@@ -29,7 +22,7 @@ current_model() {
     echo ""
     return
   fi
-  # Extract model name from: ... run_benchmark.py --model MODEL
+
   if [[ "${line}" =~ --model[[:space:]]+([^[:space:]]+) ]]; then
     echo "${BASH_REMATCH[1]}"
   else

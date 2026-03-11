@@ -10,10 +10,7 @@ from src.data_preparation.pipelines.events_pipeline import run_events_pipeline
 from src.utils import log
 
 def main():
-    log("="*60 + "")
-
     spark = make_spark()
-
     try:
         log("Step 1/3: Processing listings...")
         run_listings_pipeline(spark=spark)
@@ -29,7 +26,6 @@ def main():
 
     finally:
         spark.stop()
-
 
 if __name__ == "__main__":
     main()

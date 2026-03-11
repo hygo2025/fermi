@@ -58,9 +58,3 @@ outputs/results/**/*.csv
 outputs/data/**/*.csv
 log/
 
-premissas.txt
-**/*.pth
-**/*.log
-results_primeiro_tunning
-results_primeiro_tunning/*
-wandb

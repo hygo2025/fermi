@@ -1,17 +1,14 @@
 import argparse
 import logging
 import os
+import pandas as pd
+import scipy.sparse as sp
 import sys
+import torch
+import yaml
 from datetime import datetime
 from pathlib import Path
 from typing import Optional
-import yaml
-
-import pandas as pd
-import torch
-
-
-import scipy.sparse as sp
 
 if not hasattr(sp.dok_matrix, "_update"):
     def _update(self, data_dict):
@@ -89,17 +86,12 @@ class BenchmarkRunner:
         config_dict = {**self.project_config, **model_config}
         config_dict['dataset'] = dataset_name
         config_dict['data_path'] = self.project_config['data_path']
-
-
-
         config_dict['show_progress'] = True
-
         if config_dict.get('log_wandb', False):
             import os
             os.environ['WANDB_NAME'] = f"{model_name}_{self.timestamp}"
             if 'wandb_group' in config_dict and config_dict['wandb_group']:
                 os.environ['WANDB_RUN_GROUP'] = config_dict['wandb_group']
-
         return config_dict
 
     def run_single_model(
@@ -109,21 +101,16 @@ class BenchmarkRunner:
         run_evaluate: bool = False,
         resume_checkpoint: str = None,
     ) -> dict:
-        log(f"{'=' * 80}")
         log(f"Running: {model_name} | Dataset: {dataset_name}")
-        log(f"{'=' * 80}")
 
         try:
             config_dict = self._get_model_config(model_name, dataset_name)
-
             if model_name in CUSTOM_MODELS:
                 config = Config(model='GRU4Rec', config_dict=config_dict)
                 config['model'] = model_name
             else:
                 config = Config(model=model_name, config_dict=config_dict)
-
             init_seed(config['seed'], config['reproducibility'])
-
             log("Loading dataset...")
             dataset = create_dataset(config)
             train_data, valid_data, test_data = data_preparation(config, dataset)
@@ -149,33 +136,22 @@ class BenchmarkRunner:
             best_valid_score, best_valid_result = trainer.fit(
                 train_data, valid_data, show_progress=True
             )
-
-
             if torch.cuda.is_available():
                 torch.cuda.empty_cache()
                 log(f"GPU memory after training: {torch.cuda.memory_allocated(0)/1e9:.2f} GB")
-
             test_result = {}
             if run_evaluate:
                 log("Evaluating...")
-
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
                     log(f"GPU memory before eval: {torch.cuda.memory_allocated(0)/1e9:.2f} GB / {torch.cuda.get_device_properties(0).total_memory/1e9:.2f} GB")
-
                 test_result = trainer.evaluate(test_data, show_progress=True)
-
-
                 if torch.cuda.is_available():
                     torch.cuda.empty_cache()
-
-
                 if config['log_wandb']:
                     import wandb
                     if wandb.run is not None:
                         wandb.log({f'test_{k}': v for k, v in test_result.items()})
-
-
             results = {
                 'model': model_name,
                 'dataset': dataset_name,
@@ -183,10 +159,7 @@ class BenchmarkRunner:
                 'timestamp': self.timestamp,
                 **test_result
             }
-
             log(f" Resultados: {test_result}")
-
-
             return results
 
         except Exception as e:
@@ -208,12 +181,9 @@ class BenchmarkRunner:
         run_evaluate: bool = False,
         resume_checkpoint: str = None,
     ):
-
-        log(f"{'=' * 80}")
         log(f"Dataset: {dataset}")
         log(f"Modelo: {model_name}")
         log(f"Output base: {self.output_dir}")
-        log(f"{'=' * 80}")
 
         results_file = self.output_dir / f'results_{self.timestamp}.csv'
 
@@ -227,16 +197,10 @@ class BenchmarkRunner:
         df.to_csv(results_file, index=False)
         log(f"Resultado salvo: {results_file}")
 
-        log(f"{'=' * 80}")
-        log(f"BENCHMARK COMPLETO!")
-        log(f"{'=' * 80}")
-        log(f"Resultados salvos em: {results_file}")
-        log(f"{'=' * 80}")
-
 
 def main():
     parser = argparse.ArgumentParser(
-        description='Fermi Benchmark Runner - Executa um modelo específico',
+        description='Executa um modelo específico',
         formatter_class=argparse.RawDescriptionHelpFormatter,
     )
 
@@ -266,10 +230,7 @@ def main():
         type=str,
         help='Caminho para checkpoint .pth para retomar treino'
     )
-
     args = parser.parse_args()
-
-
     config_base = Path('src/configs')
     model_found = False
     for category in MODEL_CONFIG_DIRS:
@@ -277,19 +238,14 @@ def main():
         if config_file.exists():
             model_found = True
             break
-
     if not model_found:
         log(f"ERROR: Config not found for model '{args.model}'")
         log(f"Searched in: src/configs/{{neural,baselines,factorization}}/{args.model.lower()}.yaml")
         sys.exit(1)
-
-
     if not args.dataset:
         dataset = get_config('dataset')
     else:
         dataset = args.dataset
-
-
     runner = BenchmarkRunner(args.output)
     runner.run_single(
         args.model,
@@ -297,7 +253,6 @@ def main():
         run_evaluate=args.evaluate,
         resume_checkpoint=args.resume,
     )
-
 
 if __name__ == '__main__':
     main()

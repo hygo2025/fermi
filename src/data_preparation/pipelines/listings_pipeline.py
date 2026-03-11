@@ -1,11 +1,11 @@
-import pyspark.sql.functions as F
 import pygeohash as pgh
+import pyspark.sql.functions as F
 from pyspark.sql import DataFrame, SparkSession, Window
 from pyspark.sql.functions import col, md5, concat_ws, coalesce, lit
 
+from src.utils import log
 from src.utils.enviroment import get_config
 from src.utils.spark_utils import read_csv_data
-from src.utils import log
 
 
 def create_canonical_id(df: DataFrame) -> DataFrame:
@@ -36,9 +36,6 @@ def create_canonical_id(df: DataFrame) -> DataFrame:
             lit("UNKNOWN_GEO")
         )
     )
-
-
-
     df = df.withColumn(
         "area_bucket",
         coalesce(
@@ -46,19 +43,14 @@ def create_canonical_id(df: DataFrame) -> DataFrame:
             lit("-1")
         )
     )
-
-
     df = df.withColumn(
         "bedrooms_normalized",
         coalesce(col("bedrooms").cast("string"), lit("0"))
     )
-
     df = df.withColumn(
         "unit_type_normalized",
         coalesce(col("unit_type"), lit("UNKNOWN"))
     )
-
-
     df = df.withColumn(
         "fingerprint",
         concat_ws(
@@ -69,20 +61,15 @@ def create_canonical_id(df: DataFrame) -> DataFrame:
             col("unit_type_normalized")
         )
     )
-
-
     df = df.withColumn(
         "canonical_listing_id",
         md5(col("fingerprint"))
     )
-
-
     df = df.drop(
         "geo_hash", "geo_key",
         "area_bucket", "bedrooms_normalized",
         "unit_type_normalized", "fingerprint"
     )
-
     return df
 
 
@@ -105,32 +92,25 @@ def clean_data(df: DataFrame) -> DataFrame:
 
 
 def deduplicate_and_map_ids(df: DataFrame) -> tuple[DataFrame, DataFrame]:
-
     df_active = df.filter(F.col("status") == "ACTIVE")
-
     window_spec = Window.partitionBy("anonymized_listing_id").orderBy(F.col("updated_at").desc())
     latest_df = (
         df_active.withColumn("rank", F.row_number().over(window_spec))
         .filter(F.col("rank") == 1)
         .drop("rank")
     )
-
     distinct_canonical = latest_df.select("canonical_listing_id").distinct()
     id_window = Window.orderBy("canonical_listing_id")
     canonical_to_numeric = distinct_canonical.withColumn(
         "listing_id_numeric",
         F.row_number().over(id_window)
     )
-
-
     mapping_table = (
         latest_df
         .select("anonymized_listing_id", "canonical_listing_id")
         .distinct()
         .join(canonical_to_numeric, "canonical_listing_id", "inner")
     )
-
-
     enriched_df = latest_df.join(
         mapping_table.select("anonymized_listing_id", "listing_id_numeric"),
         "anonymized_listing_id",
@@ -138,7 +118,6 @@ def deduplicate_and_map_ids(df: DataFrame) -> tuple[DataFrame, DataFrame]:
     )
 
     return enriched_df, mapping_table
-
 
 def save_results(df_final: DataFrame, mapping_table: DataFrame):
     config = get_config()
@@ -168,18 +147,9 @@ def run_listings_pipeline(spark: SparkSession):
     config = get_config()
     raw_path = config['raw_data']['listings_raw_path'] + "/*.csv.gz"
     all_raw_listings = read_csv_data(spark, raw_path, multiline=True)
-
-
-
-
     cleaned_listings = clean_data(all_raw_listings)
-
-
     log("Criando canonical_listing_id para diminuir cold start...")
     canonicalized_listings = create_canonical_id(cleaned_listings)
-
-
     final_df, mapping_table = deduplicate_and_map_ids(canonicalized_listings)
-
     save_results(final_df, mapping_table)
     log("Listings pipeline concluído.")

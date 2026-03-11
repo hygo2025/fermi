@@ -1,24 +1,24 @@
 dataset: realestate
-data_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole
+data_path: /full_path_project_folder/outputs/data/recbole
 
 raw_data:
-  listings_raw_path: /home/hygo2025/Documents/data/listings
-  events_raw_path: /home/hygo2025/Documents/data/events
-  
-  events_processed_path: /home/hygo2025/Documents/data/processed_data/events
-  listings_processed_path: /home/hygo2025/Documents/data/processed_data/listings
-  sessions_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole/sessions_for_api.parquet
-  
-  listing_id_mapping_path: /home/hygo2025/Documents/data/processed_mapping/listing_id_mapping
-  user_id_mapping_path: /home/hygo2025/Documents/data/processed_mapping/user_id_mapping
-  session_id_mapping_path: /home/hygo2025/Documents/data/processed_mapping/session_id_mapping
-  user_sessions_path: /home/hygo2025/Documents/data/processed_mapping/user_sessions
-  
-  events_path: /home/hygo2025/Documents/data/processed_data/events
-  listings_path: /home/hygo2025/Documents/data/processed_data/listings
-  
-  output_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole
-  base_path: /home/hygo2025/Documents/data
+  listings_raw_path: /data_path/data/listings
+  events_raw_path: /data_path/data/events
+
+  events_processed_path: /data_path/data/processed_data/events
+  listings_processed_path: /data_path/data/processed_data/listings
+  sessions_path: /full_path_project_folder/outputs/data/recbole/sessions_for_api.parquet
+
+  listing_id_mapping_path: /data_path/data/processed_mapping/listing_id_mapping
+  user_id_mapping_path: /data_path/data/processed_mapping/user_id_mapping
+  session_id_mapping_path: /data_path/data/processed_mapping/session_id_mapping
+  user_sessions_path: /data_path/data/processed_mapping/user_sessions
+
+  events_path: /data_path/data/processed_data/events
+  listings_path: /data_path/data/processed_data/listings
+
+  output_path: /full_path_project_folder/outputs/data/recbole
+  base_path: /data_path/data
 
 data_preparation:
   start_date: "2024-06-01"
@@ -82,7 +82,7 @@ save_dataloaders: false
 show_progress: true
 
 log_wandb: true
-wandb_project: "fermi"
+wandb_project: "wandb_project"
 wandb_group: ""
 tensorboard: false
 

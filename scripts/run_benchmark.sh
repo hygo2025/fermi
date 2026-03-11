@@ -3,8 +3,8 @@ set -euo pipefail
 
 
 DEFAULT_MODELS=(
-    "BERT4Rec" #n Rodando
-    "TransRec" #n Rodnado
+    "BERT4Rec"
+    "TransRec"
     "GCSAN"
     "SRGNN"
 )
@@ -29,10 +29,8 @@ MODELS_ALL=(
     )
 
 if [[ $# -gt 0 ]]; then
-    # Explicit single-model override via CLI arg
     MODELS_LIST=("$1")
 elif [[ -n "${MODELS:-}" ]]; then
-    # Space-separated list via env var MODELS="A B C"
     IFS=' ' read -r -a MODELS_LIST <<< "$MODELS"
 else
     MODELS_LIST=("${DEFAULT_MODELS[@]}")

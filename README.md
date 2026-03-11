@@ -1,19 +1,14 @@
 # Session-Based Recommendation Benchmark
 
-Benchmark de recomendação baseada em sessões para plataforma de classificados imobiliários.
-
 ## Requisitos
 
 - Python 3.9+
-- Java 11+ (para PySpark)
+- Java 11+
 - 16GB+ RAM
-- GPU recomendada (treinamento de modelos neurais)
 
 ## Instalação
 
 ```bash
-git clone <repo-url>
-cd fermi
 pip install -e .
 ```
 
@@ -45,37 +40,9 @@ make data
 ### 2. Executar Benchmark
 
 ```bash
-# Todos os modelos
 make benchmark
-
-# Modelo específico
 make benchmark MODELS=GRU4Rec
 ```
-
-### 3. Hyperparameter Tuning
-
-```bash
-# Modelo específico
-make tune MODEL=GRU4Rec MAX_EVALS=20
-
-# Todos os modelos
-make tune
-```
-
-### 4. API Web
-
-```bash
-make api MODEL=GRU4Rec
-```
-
-Acesse: `http://localhost:8000`
-
-## Modelos Disponíveis
-
-**Neurais**: GRU4Rec, NARM, STAMP, SASRec, Caser, SRGNN, GCSAN, BERT4Rec  
-**Fatorização**: FPMC, FOSSIL  
-**KNN**: ItemKNN  
-**Baselines**: BPR, Pop, Random
 
 ## Comandos Úteis
 

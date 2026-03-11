@@ -2,15 +2,13 @@ import argparse
 import json
 import os
 import re
+import scipy.sparse as sp
+import torch
+import yaml
 from copy import deepcopy
 from datetime import datetime
 from pathlib import Path
 from typing import Optional, Tuple
-
-import torch
-import yaml
-
-import scipy.sparse as sp
 
 if not hasattr(sp.dok_matrix, "_update"):
     def _update(self, data_dict):
@@ -25,7 +23,6 @@ from recbole.trainer import Trainer
 
 from src.utils import log
 from src.utils.enviroment import get_config
-
 
 _original_torch_load = torch.load
 
@@ -233,7 +230,7 @@ def _ensure_data_path(
     if not source_inter.exists():
         raise FileNotFoundError(f"Missing .inter file at {source_inter}")
 
-    stage_root = Path("/tmp") / "fermi_eval_data" / exp_dir.name
+    stage_root = Path("/tmp") / "eval_data" / exp_dir.name
     stage_root.mkdir(parents=True, exist_ok=True)
     stage_inter = stage_root / f"{dataset}.inter"
     if not stage_inter.exists():
@@ -648,7 +645,7 @@ def main():
     )
     parser.add_argument(
         "--experiments-root",
-        default="/home/hygo2025/Documents/experimentos/mg",
+        default="path",
         help="Root directory with month folders (e.g., 03-04)",
     )
     parser.add_argument(
@@ -658,12 +655,12 @@ def main():
     )
     parser.add_argument(
         "--wandb-dir",
-        default="/home/hygo2025/Development/projects/fermi/wandb",
+        default="path",
         help="W&B directory containing run config.yaml files",
     )
     parser.add_argument(
         "--wandb-project",
-        default="hygo2025-ufes/fermi",
+        default="project",
         help="W&B project for remote run lookups (entity/project)",
     )
     parser.add_argument(

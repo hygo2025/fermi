@@ -1,7 +1,6 @@
 import argparse
-from pathlib import Path
-
 import pandas as pd
+from pathlib import Path
 
 from src.data_preparation.pipelines.session_data_pipeline import SessionDataPipeline
 from src.utils import log, make_spark
@@ -79,7 +78,6 @@ class RecBoleDataPipeline:
         sessions_api_file = Path(self.config['output_path']) / 'sessions_for_api.parquet'
         self.save_sessions_for_api(pdf, sessions_api_file)
 
-        log("" + "=" * 80)
         log(f"Dataset: {dataset_name}")
         log(f"Arquivo: {inter_file}")
         log("Próximo passo:")
@@ -96,7 +94,6 @@ def main():
     raw_data_config = project_config['raw_data']
     args = parser.parse_args()
     spark = make_spark()
-
 
     pipeline = RecBoleDataPipeline(
         config={

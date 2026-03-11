@@ -1,14 +1,13 @@
+import json
+import logging
+import pandas as pd
+import sys
 from fastapi import FastAPI, Request, Form, HTTPException
 from fastapi.responses import HTMLResponse, JSONResponse
 from fastapi.staticfiles import StaticFiles
 from fastapi.templating import Jinja2Templates
 from pathlib import Path
-import sys
-import logging
 from typing import List, Optional, Dict
-import json
-import pandas as pd
-
 
 sys.path.append(str(Path(__file__).parent.parent.parent))
 
@@ -20,46 +19,30 @@ logger = logging.getLogger(__name__)
 
 
 app = FastAPI(
-    title="Fermi Recommendation API",
-    description="Real Estate Recommendation System with Spatial Analysis",
+    title="Recommendation API",
+    description="Real Estate Recommendation",
     version="1.0.0"
 )
-
-
 templates = Jinja2Templates(directory=str(Path(__file__).parent / "templates"))
-
-
 analyzer: Optional[RecommendationAnalyzer] = None
-
-
 sessions_df: Optional[pd.DataFrame] = None
-
 
 @app.on_event("startup")
 async def startup_event():
-
     global analyzer, sessions_df
-
     try:
-
         args = parse_args()
-
-
         if args.model.endswith('.pth'):
             model_path = Path(args.model)
             if not model_path.exists():
                 raise FileNotFoundError(f"Model not found: {args.model}")
             latest_model = model_path
         else:
-
             models_dir = Path("outputs/saved")
             model_files = list(models_dir.glob(f"{args.model}-*.pth"))
-
             if not model_files:
                 raise FileNotFoundError(f"No {args.model} model found in {models_dir}/")
-
             latest_model = max(model_files, key=lambda p: p.stat().st_mtime)
-
         logger.info(f"Loading model: {latest_model}")
 
         from src.utils.enviroment import get_config
@@ -71,11 +54,8 @@ async def startup_event():
             data_path=config['data_path'],
             dataset_name=config['dataset']
         )
-
         logger.info(f"Model loaded successfully")
         logger.info(f"Total {len(analyzer.item_to_listing):,} listings available")
-
-
         sessions_path = config['raw_data'].get('sessions_path', config['raw_data']['events_processed_path'])
         logger.info(f"Loading sessions from: {sessions_path}")
         sessions_df = pd.read_parquet(sessions_path)
@@ -89,14 +69,12 @@ async def startup_event():
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request):
-
     from fastapi.responses import RedirectResponse
     return RedirectResponse(url="/sessions")
 
 
 @app.get("/api/health")
 async def health_check():
-
     return {
         "status": "healthy",
         "model_loaded": analyzer is not None,
@@ -106,25 +84,19 @@ async def health_check():
 
 @app.get("/api/items")
 async def get_items(limit: int = 100):
-
     if analyzer is None:
         raise HTTPException(status_code=503, detail="Model not loaded")
-
     item_ids = list(analyzer.item_to_listing.keys())[:limit]
     return {"items": item_ids, "total": len(analyzer.item_to_listing)}
 
 
 @app.get("/api/recommend")
 async def api_recommend(session_ids: str, top_k: int = 10):
-
     try:
         session_items = [int(x.strip()) for x in session_ids.split(",") if x.strip()]
-
         if not session_items:
             raise HTTPException(status_code=400, detail="No session IDs provided")
-
         recommendations = analyzer.get_recommendations(session_items, top_k=top_k)
-
         return {
             "session": session_items,
             "recommendations": [
@@ -154,8 +126,6 @@ async def list_sessions(
             "error.html",
             {"request": request, "error": "Sessions data not loaded"}
         )
-
-
     session_groups = sessions_df.groupby('session_id').agg({
         'user_id': 'first',
         'timestamp': ['min', 'max'],
@@ -169,26 +139,19 @@ async def list_sessions(
         .groupby('session_id')['item_id']
         .first()
     )
-
-
     valid_sort_columns = ['session_id', 'event_count', 'first_event', 'last_event']
     if sort_by not in valid_sort_columns:
         sort_by = 'first_event'
 
     ascending = (sort_order == 'asc')
     session_groups = session_groups.sort_values(sort_by, ascending=ascending)
-
-
     total_sessions = len(session_groups)
     total_pages = max(1, (total_sessions + per_page - 1) // per_page)
     page = max(1, min(page, total_pages))
 
     start_idx = (page - 1) * per_page
     end_idx = start_idx + per_page
-
     paginated_sessions = session_groups.iloc[start_idx:end_idx]
-
-
     sessions_list = []
     for _, row in paginated_sessions.iterrows():
         city = state = None
@@ -199,7 +162,6 @@ async def list_sessions(
             if listing:
                 city = listing.get('city')
                 state = listing.get('state') or listing.get('state_name')
-
         sessions_list.append({
             'session_id': session_id,
             'user_id': row['user_id'],
@@ -209,7 +171,6 @@ async def list_sessions(
             'first_event': row['first_event'].strftime('%Y-%m-%d %H:%M:%S'),
             'last_event': row['last_event'].strftime('%Y-%m-%d %H:%M:%S')
         })
-
     return templates.TemplateResponse(
         "sessions.html",
         {
@@ -225,8 +186,6 @@ async def list_sessions(
             "sort_order": sort_order
         }
     )
-
-
     session_stats = sessions_df.groupby('session_id').agg({
         'item_id': 'count',
         'timestamp': ['min', 'max']
@@ -256,7 +215,6 @@ async def list_sessions(
 
 @app.get("/session-search")
 async def session_search(session_id: str):
-
     from fastapi.responses import RedirectResponse
     return RedirectResponse(url=f"/session/{session_id}")
 
@@ -267,35 +225,22 @@ async def recommend_from_session(
     session_id: str,
     top_k: int = Form(10)
 ):
-
     try:
         if sessions_df is None or analyzer is None:
             return templates.TemplateResponse(
                 "error.html",
                 {"request": request, "error": "System not initialized"}
             )
-
-
         session_events = sessions_df[sessions_df['session_id'] == session_id].copy()
-
         if session_events.empty:
             return templates.TemplateResponse(
                 "error.html",
                 {"request": request, "error": f"Session {session_id} not found"}
             )
-
-
         session_items = session_events['item_id'].tolist()
-
         logger.info(f"Generating recommendations for session {session_id} with {len(session_items)} items")
-
-
         recommendations = analyzer.get_recommendations(session_items, top_k=top_k)
-
-
         map_html = analyzer.generate_map_html(session_items, recommendations)
-
-
         session_details = []
         for item_id in session_items:
             listing = analyzer.item_to_listing.get(item_id)
@@ -316,8 +261,6 @@ async def recommend_from_session(
                     'business': listing.get('business_type', 'N/A'),
                     'status': listing.get('status', 'N/A')
                 })
-
-
         rec_details = []
         for rank, (item_id, score) in enumerate(recommendations, 1):
             listing = analyzer.item_to_listing.get(item_id)
@@ -328,7 +271,6 @@ async def recommend_from_session(
                     dist = analyzer.calculate_distance(sess_id, item_id)
                     if dist is not None:
                         min_distance = min(min_distance, dist)
-
                 rec_details.append({
                     'rank': rank,
                     'id': item_id,
@@ -348,7 +290,6 @@ async def recommend_from_session(
                     'distance_km': f"{min_distance:.2f}" if min_distance != float('inf') else "N/A",
                     'status': listing.get('status', 'N/A')
                 })
-
         return templates.TemplateResponse(
             "session_recommendations.html",
             {
@@ -362,7 +303,6 @@ async def recommend_from_session(
                 "recommendations": rec_details
             }
         )
-
     except ValueError as e:
         return templates.TemplateResponse(
             "error.html",
@@ -384,39 +324,26 @@ async def session_detail(request: Request, session_id: str):
             "error.html",
             {"request": request, "error": "Sessions data not loaded"}
         )
-
-
     session_events = sessions_df[sessions_df['session_id'] == session_id].copy()
-
     if session_events.empty:
         return templates.TemplateResponse(
             "error.html",
             {"request": request, "error": f"Session {session_id} not found"}
         )
-
-
     session_events = session_events.sort_values('timestamp')
-
-
     session_item_ids = session_events['item_id'].tolist()
-
-
     import folium
-
-
     lats, lons = [], []
     for item_id in session_item_ids:
         listing = analyzer.item_to_listing.get(item_id)
         if listing and 'lat' in listing and 'lon' in listing:
             lats.append(listing['lat'])
             lons.append(listing['lon'])
-
     if lats and lons:
         center_lat = sum(lats) / len(lats)
         center_lon = sum(lons) / len(lons)
     else:
         center_lat, center_lon = -14.235, -51.925
-
     m = folium.Map(location=[center_lat, center_lon], zoom_start=11)
 
 
@@ -444,8 +371,6 @@ async def session_detail(request: Request, session_id: str):
                 fillOpacity=0.8,
                 weight=2
             ).add_to(m)
-
-
             folium.Marker(
                 location=[listing['lat'], listing['lon']],
                 icon=folium.DivIcon(html=f"""
@@ -461,8 +386,6 @@ async def session_detail(request: Request, session_id: str):
             ).add_to(m)
 
     map_html = m._repr_html_()
-
-
     viewed_listings = []
     for idx, event in session_events.iterrows():
         item_id = event['item_id']
@@ -501,7 +424,7 @@ async def session_detail(request: Request, session_id: str):
 def parse_args():
 
     import argparse
-    parser = argparse.ArgumentParser(description="Fermi Recommendation API")
+    parser = argparse.ArgumentParser(description="Recommendation API")
     parser.add_argument("--model", type=str, required=True,
                        help="Model name or path to .pth file (e.g., GRU4Rec or path/to/model.pth)")
     parser.add_argument("--host", type=str, default="0.0.0.0",

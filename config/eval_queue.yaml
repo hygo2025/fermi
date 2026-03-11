@@ -1,8 +1,8 @@
 experiments:
 - id: 03-04/STAMP-Feb-20-2026_19-38-00.pth
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/STAMP-Feb-20-2026_19-38-00.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/03-04
+  checkpoint: /exp_path/mg/03-04/STAMP-Feb-20-2026_19-38-00.pth
+  data_path: /exp_path/mg/03-04
   dataset: realestate
   model: STAMP
   run_full: true
@@ -10,8 +10,8 @@ experiments:
   wandb_config: wandb:9so7guuu
 - id: 04-05/STAMP-Feb-21-2026_13-49-29
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/STAMP-Feb-21-2026_13-49-29.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+  checkpoint: /exp_path/mg/04-05/STAMP-Feb-21-2026_13-49-29.pth
+  data_path: /exp_path/mg/04-05
   dataset: realestate
   model: STAMP
   run_full: true
@@ -19,8 +19,8 @@ experiments:
   wandb_config: wandb:mx85semp
 - id: 05-06/STAMP-Feb-21-2026_17-12-08
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/STAMP-Feb-21-2026_17-12-08.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
+  checkpoint: /exp_path/mg/05-06/STAMP-Feb-21-2026_17-12-08.pth
+  data_path: /exp_path/mg/05-06
   dataset: realestate
   model: STAMP
   run_full: true
@@ -28,8 +28,8 @@ experiments:
   wandb_config: wandb:k6snm5pg
 - id: 06-07/STAMP-Feb-21-2026_21-01-15
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/STAMP-Feb-21-2026_21-01-15.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
+  checkpoint: /exp_path/mg/06-07/STAMP-Feb-21-2026_21-01-15.pth
+  data_path: /exp_path/mg/06-07
   dataset: realestate
   model: STAMP
   run_full: true
@@ -37,8 +37,8 @@ experiments:
   wandb_config: wandb:7grbj6oh
 - id: 06-07/LightGCN-Feb-18-2026_21-39-47
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/LightGCN-Feb-18-2026_21-39-47.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
+  checkpoint: /exp_path/mg/06-07/LightGCN-Feb-18-2026_21-39-47.pth
+  data_path: /exp_path/mg/06-07
   dataset: realestate
   model: LightGCN
   run_full: true
@@ -46,8 +46,8 @@ experiments:
   wandb_config: wandb:cgr7fe6e
 - id: 06-07/ItemKNN-Feb-18-2026_21-44-49
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/ItemKNN-Feb-18-2026_21-44-49.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
+  checkpoint: /exp_path/mg/06-07/ItemKNN-Feb-18-2026_21-44-49.pth
+  data_path: /exp_path/mg/06-07
   dataset: realestate
   model: ItemKNN
   run_full: true
@@ -55,8 +55,8 @@ experiments:
   wandb_config: wandb:1elav5y1
 - id: 06-07/BPR-Feb-18-2026_19-29-36.pth
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/BPR-Feb-18-2026_19-29-36.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
+  checkpoint: /exp_path/mg/06-07/BPR-Feb-18-2026_19-29-36.pth
+  data_path: /exp_path/mg/06-07
   dataset: realestate
   model: BPR
   run_full: true
@@ -64,210 +64,210 @@ experiments:
   wandb_config: wandb:yrdniw05
 - id: 03-04/BERT4Rec-Feb-12-2026_18-10-40
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/BERT4Rec-Feb-12-2026_18-10-40.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/03-04
+  checkpoint: /exp_path/mg/03-04/BERT4Rec-Feb-12-2026_18-10-40.pth
+  data_path: /exp_path/mg/03-04
   dataset: realestate
   model: BERT4Rec
   wandb_config: wandb:e24khj12
 - id: 03-04/BPR-Feb-12-2026_18-10-45
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/BPR-Feb-15-2026_16-26-40.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/03-04
+  checkpoint: /exp_path/mg/03-04/BPR-Feb-15-2026_16-26-40.pth
+  data_path: /exp_path/mg/03-04
   dataset: realestate
   model: BPR
   wandb_config: wandb:0qijk4zy
 - id: 03-04/Caser-Feb-13-2026_09-33-51
   enabled: true
   eval_batch_size: 64
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/Caser-Feb-13-2026_09-33-51.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/03-04
+  checkpoint: /exp_path/mg/03-04/Caser-Feb-13-2026_09-33-51.pth
+  data_path: /exp_path/mg/03-04
   dataset: realestate
   model: Caser
   wandb_config: wandb:t8gk287c
 - id: 03-04/FOSSIL-Feb-12-2026_19-06-59
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/FOSSIL-Feb-12-2026_19-06-59.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/03-04
+  checkpoint: /exp_path/mg/03-04/FOSSIL-Feb-12-2026_19-06-59.pth
+  data_path: /exp_path/mg/03-04
   dataset: realestate
   model: FOSSIL
   wandb_config: wandb:pfuq02jg
 - id: 03-04/FPMC-Feb-12-2026_21-11-21
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/FPMC-Feb-12-2026_21-11-21.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/03-04
+  checkpoint: /exp_path/mg/03-04/FPMC-Feb-12-2026_21-11-21.pth
+  data_path: /exp_path/mg/03-04
   dataset: realestate
   model: FPMC
   wandb_config: wandb:6kewmfpu
 - id: 03-04/GRU4Rec-Feb-12-2026_22-18-56
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/GRU4Rec-Feb-12-2026_22-18-56.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/03-04
+  checkpoint: /exp_path/mg/03-04/GRU4Rec-Feb-12-2026_22-18-56.pth
+  data_path: /exp_path/mg/03-04
   dataset: realestate
   model: GRU4Rec
   wandb_config: wandb:fzipa6nv
 - id: 03-04/ItemKNN-Feb-13-2026_17-04-13
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/ItemKNN-Feb-13-2026_17-04-13.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/03-04
+  checkpoint: /exp_path/mg/03-04/ItemKNN-Feb-13-2026_17-04-13.pth
+  data_path: /exp_path/mg/03-04
   dataset: realestate
   model: ItemKNN
   wandb_config: wandb:jvq9ewfi
 - id: 03-04/LightGCN-Feb-13-2026_16-22-11
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/LightGCN-Feb-13-2026_16-22-11.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/03-04
+  checkpoint: /exp_path/mg/03-04/LightGCN-Feb-13-2026_16-22-11.pth
+  data_path: /exp_path/mg/03-04
   dataset: realestate
   model: LightGCN
   wandb_config: wandb:k20qhs0t
 - id: 03-04/NARM-Feb-13-2026_00-35-11
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/NARM-Feb-13-2026_00-35-11.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/03-04
+  checkpoint: /exp_path/mg/03-04/NARM-Feb-13-2026_00-35-11.pth
+  data_path: /exp_path/mg/03-04
   dataset: realestate
   model: NARM
   wandb_config: wandb:klwl44x7
 - id: 03-04/NextItNet-Feb-12-2026_18-14-25
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/NextItNet-Feb-15-2026_16-31-42.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/03-04
+  checkpoint: /exp_path/mg/03-04/NextItNet-Feb-15-2026_16-31-42.pth
+  data_path: /exp_path/mg/03-04
   dataset: realestate
   model: NextItNet
   wandb_config: wandb:jxhcjgkf
 - id: 03-04/Pop-Feb-12-2026_18-52-22
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/Pop-Feb-15-2026_16-26-27.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/03-04
+  checkpoint: /exp_path/mg/03-04/Pop-Feb-15-2026_16-26-27.pth
+  data_path: /exp_path/mg/03-04
   dataset: realestate
   model: Pop
   wandb_config: wandb:4gp6u81b
 - id: 03-04/Random-Feb-12-2026_18-59-53
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/Random-Feb-12-2026_18-59-53.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/03-04
+  checkpoint: /exp_path/mg/03-04/Random-Feb-12-2026_18-59-53.pth
+  data_path: /exp_path/mg/03-04
   dataset: realestate
   model: Random
   wandb_config: wandb:vy8lh0le
 - id: 03-04/SASRec-Feb-13-2026_08-48-05
   enabled: true
   eval_batch_size: 2048
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/SASRec-Feb-13-2026_08-48-05.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/03-04
+  checkpoint: /exp_path/mg/03-04/SASRec-Feb-13-2026_08-48-05.pth
+  data_path: /exp_path/mg/03-04
   dataset: realestate
   model: SASRec
   wandb_config: wandb:2r1gkstm
 - id: 03-04/TransRec-Feb-13-2026_16-54-07
   enabled: true
   eval_batch_size: 64
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/03-04/TransRec-Feb-13-2026_16-54-07.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/03-04
+  checkpoint: /exp_path/mg/03-04/TransRec-Feb-13-2026_16-54-07.pth
+  data_path: /exp_path/mg/03-04
   dataset: realestate
   model: TransRec
   wandb_config: wandb:661idk2e
 - id: 04-05/BERT4Rec-Feb-09-2026_00-35-08
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/BERT4Rec-Feb-09-2026_00-35-08.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+  checkpoint: /exp_path/mg/04-05/BERT4Rec-Feb-09-2026_00-35-08.pth
+  data_path: /exp_path/mg/04-05
   dataset: realestate
   model: BERT4Rec
   wandb_config: wandb:boz7stwc
 - id: 04-05/BPR-Feb-08-2026_10-01-46
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/BPR-Feb-08-2026_10-01-46.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+  checkpoint: /exp_path/mg/04-05/BPR-Feb-08-2026_10-01-46.pth
+  data_path: /exp_path/mg/04-05
   dataset: realestate
   model: BPR
   wandb_config: wandb:hgj3kgxb
 - id: 04-05/Caser-Feb-09-2026_00-32-58
   enabled: true
   eval_batch_size: 64
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/Caser-Feb-09-2026_00-32-58.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+  checkpoint: /exp_path/mg/04-05/Caser-Feb-09-2026_00-32-58.pth
+  data_path: /exp_path/mg/04-05
   dataset: realestate
   model: Caser
   wandb_config: wandb:7gsaxvo9
 - id: 04-05/FOSSIL-Feb-08-2026_10-07-11
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/FOSSIL-Feb-08-2026_10-07-11.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+  checkpoint: /exp_path/mg/04-05/FOSSIL-Feb-08-2026_10-07-11.pth
+  data_path: /exp_path/mg/04-05
   dataset: realestate
   model: FOSSIL
   wandb_config: wandb:m42kj1ex
 - id: 04-05/FPMC-Feb-08-2026_18-36-12
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/FPMC-Feb-08-2026_18-36-12.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+  checkpoint: /exp_path/mg/04-05/FPMC-Feb-08-2026_18-36-12.pth
+  data_path: /exp_path/mg/04-05
   dataset: realestate
   model: FPMC
   wandb_config: wandb:rfjg9muv
 - id: 04-05/GRU4Rec-Feb-08-2026_18-42-37
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/GRU4Rec-Feb-08-2026_18-42-37.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+  checkpoint: /exp_path/mg/04-05/GRU4Rec-Feb-08-2026_18-42-37.pth
+  data_path: /exp_path/mg/04-05
   dataset: realestate
   model: GRU4Rec
   wandb_config: wandb:xttw1489
 - id: 04-05/ItemKNN-Feb-08-2026_10-11-31
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/ItemKNN-Feb-08-2026_10-11-31.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+  checkpoint: /exp_path/mg/04-05/ItemKNN-Feb-08-2026_10-11-31.pth
+  data_path: /exp_path/mg/04-05
   dataset: realestate
   model: ItemKNN
   wandb_config: wandb:x72kn4ly
 - id: 04-05/LightGCN-Feb-08-2026_18-38-18
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/LightGCN-Feb-08-2026_18-38-18.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+  checkpoint: /exp_path/mg/04-05/LightGCN-Feb-08-2026_18-38-18.pth
+  data_path: /exp_path/mg/04-05
   dataset: realestate
   model: LightGCN
   wandb_config: wandb:mlnbtni9
 - id: 04-05/NARM-Feb-08-2026_18-42-33
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/NARM-Feb-08-2026_18-42-33.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+  checkpoint: /exp_path/mg/04-05/NARM-Feb-08-2026_18-42-33.pth
+  data_path: /exp_path/mg/04-05
   dataset: realestate
   model: NARM
   wandb_config: wandb:x5g29buh
 - id: 04-05/NextItNet-Feb-08-2026_23-27-54
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/NextItNet-Feb-08-2026_23-27-54.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+  checkpoint: /exp_path/mg/04-05/NextItNet-Feb-08-2026_23-27-54.pth
+  data_path: /exp_path/mg/04-05
   dataset: realestate
   model: NextItNet
   wandb_config: wandb:7pemihl3
 - id: 04-05/Pop-Feb-08-2026_10-08-01
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/Pop-Feb-08-2026_10-08-01.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+  checkpoint: /exp_path/mg/04-05/Pop-Feb-08-2026_10-08-01.pth
+  data_path: /exp_path/mg/04-05
   dataset: realestate
   model: Pop
   wandb_config: wandb:wkobtadl
 - id: 04-05/Random-Feb-08-2026_10-02-13
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/Random-Feb-08-2026_10-02-13.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+  checkpoint: /exp_path/mg/04-05/Random-Feb-08-2026_10-02-13.pth
+  data_path: /exp_path/mg/04-05
   dataset: realestate
   model: Random
   wandb_config: wandb:gvjvzahf
 - id: 04-05/SASRec-Feb-08-2026_23-29-49
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/SASRec-Feb-08-2026_23-29-49.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+  checkpoint: /exp_path/mg/04-05/SASRec-Feb-08-2026_23-29-49.pth
+  data_path: /exp_path/mg/04-05
   dataset: realestate
   model: SASRec
   eval_batch_size: 2048
   wandb_config: wandb:9icgvtee
 - id: 04-05/TransRec-Feb-08-2026_23-30-02
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/04-05/TransRec-Feb-08-2026_23-30-02.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/04-05
+  checkpoint: /exp_path/mg/04-05/TransRec-Feb-08-2026_23-30-02.pth
+  data_path: /exp_path/mg/04-05
   dataset: realestate
   model: TransRec
   wandb_config: wandb:6bkukfep
   eval_batch_size: 64
 - id: 05-06/Random-Feb-09-2026_09-31-54
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/Random-Feb-09-2026_09-31-54.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
+  checkpoint: /exp_path/mg/05-06/Random-Feb-09-2026_09-31-54.pth
+  data_path: /exp_path/mg/05-06
   dataset: realestate
   model: Random
   run_full: true
@@ -275,8 +275,8 @@ experiments:
   wandb_config: wandb:wr8gggn9
 - id: 05-06/Pop-Feb-09-2026_09-31-48
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/Pop-Feb-09-2026_09-31-48.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
+  checkpoint: /exp_path/mg/05-06/Pop-Feb-09-2026_09-31-48.pth
+  data_path: /exp_path/mg/05-06
   dataset: realestate
   model: Pop
   run_full: true
@@ -284,8 +284,8 @@ experiments:
   wandb_config: wandb:us9dfkft
 - id: 05-06/FPMC-Feb-09-2026_09-43-30
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/FPMC-Feb-09-2026_09-43-30.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
+  checkpoint: /exp_path/mg/05-06/FPMC-Feb-09-2026_09-43-30.pth
+  data_path: /exp_path/mg/05-06
   dataset: realestate
   model: FPMC
   run_full: true
@@ -293,8 +293,8 @@ experiments:
   wandb_config: wandb:rmcyl9ud
 - id: 05-06/NextItNet-Feb-09-2026_12-20-29
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/NextItNet-Feb-09-2026_12-20-29.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
+  checkpoint: /exp_path/mg/05-06/NextItNet-Feb-09-2026_12-20-29.pth
+  data_path: /exp_path/mg/05-06
   dataset: realestate
   model: NextItNet
   run_full: true
@@ -302,8 +302,8 @@ experiments:
   wandb_config: wandb:0zt9qx6b
 - id: 05-06/FOSSIL-Feb-09-2026_09-33-17
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/FOSSIL-Feb-09-2026_09-33-17.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
+  checkpoint: /exp_path/mg/05-06/FOSSIL-Feb-09-2026_09-33-17.pth
+  data_path: /exp_path/mg/05-06
   dataset: realestate
   model: FOSSIL
   run_full: true
@@ -311,8 +311,8 @@ experiments:
   wandb_config: wandb:imy8qlhy
 - id: 05-06/Caser-Feb-11-2026_18-24-13
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/Caser-Feb-15-2026_19-37-06.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
+  checkpoint: /exp_path/mg/05-06/Caser-Feb-15-2026_19-37-06.pth
+  data_path: /exp_path/mg/05-06
   dataset: realestate
   model: Caser
   run_full: true
@@ -321,8 +321,8 @@ experiments:
   wandb_config: wandb:2ytutt4m
 - id: 05-06/BERT4Rec-Feb-09-2026_20-03-03
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/BERT4Rec-Feb-09-2026_20-03-03.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
+  checkpoint: /exp_path/mg/05-06/BERT4Rec-Feb-09-2026_20-03-03.pth
+  data_path: /exp_path/mg/05-06
   dataset: realestate
   model: BERT4Rec
   run_full: true
@@ -330,8 +330,8 @@ experiments:
   wandb_config: wandb:bx7m01z6
 - id: 05-06/GRU4Rec-Feb-09-2026_10-25-10
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/GRU4Rec-Feb-09-2026_10-25-10.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
+  checkpoint: /exp_path/mg/05-06/GRU4Rec-Feb-09-2026_10-25-10.pth
+  data_path: /exp_path/mg/05-06
   dataset: realestate
   model: GRU4Rec
   run_full: true
@@ -339,8 +339,8 @@ experiments:
   wandb_config: wandb:u5s3yfhi
 - id: 05-06/SASRec-Feb-09-2026_13-33-54
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/SASRec-Feb-09-2026_13-33-54.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
+  checkpoint: /exp_path/mg/05-06/SASRec-Feb-09-2026_13-33-54.pth
+  data_path: /exp_path/mg/05-06
   dataset: realestate
   model: SASRec
   run_full: true
@@ -349,8 +349,8 @@ experiments:
   wandb_config: wandb:odcz9atq
 - id: 05-06/NARM-Feb-09-2026_11-37-22
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/NARM-Feb-09-2026_11-37-22.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
+  checkpoint: /exp_path/mg/05-06/NARM-Feb-09-2026_11-37-22.pth
+  data_path: /exp_path/mg/05-06
   dataset: realestate
   model: NARM
   run_full: true
@@ -358,8 +358,8 @@ experiments:
   wandb_config: wandb:6vkr1m15
 - id: 05-06/LightGCN-Feb-09-2026_11-37-53
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/LightGCN-Feb-09-2026_11-37-53.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
+  checkpoint: /exp_path/mg/05-06/LightGCN-Feb-09-2026_11-37-53.pth
+  data_path: /exp_path/mg/05-06
   dataset: realestate
   model: LightGCN
   run_full: true
@@ -367,8 +367,8 @@ experiments:
   wandb_config: wandb:c5npwfbl
 - id: 05-06/ItemKNN-Feb-09-2026_09-40-38
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/ItemKNN-Feb-09-2026_09-40-38.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
+  checkpoint: /exp_path/mg/05-06/ItemKNN-Feb-09-2026_09-40-38.pth
+  data_path: /exp_path/mg/05-06
   dataset: realestate
   model: ItemKNN
   run_full: true
@@ -376,8 +376,8 @@ experiments:
   wandb_config: wandb:c7xe77f2
 - id: 05-06/BPR-Feb-09-2026_09-30-55
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/BPR-Feb-09-2026_09-30-55.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
+  checkpoint: /exp_path/mg/05-06/BPR-Feb-09-2026_09-30-55.pth
+  data_path: /exp_path/mg/05-06
   dataset: realestate
   model: BPR
   run_full: true
@@ -385,8 +385,8 @@ experiments:
   wandb_config: wandb:2k4u5pv1
 - id: 05-06/TransRec-Feb-09-2026_13-34-07
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/05-06/TransRec-Feb-09-2026_13-34-07.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/05-06
+  checkpoint: /exp_path/mg/05-06/TransRec-Feb-09-2026_13-34-07.pth
+  data_path: /exp_path/mg/05-06
   dataset: realestate
   model: TransRec
   run_full: true
@@ -395,8 +395,8 @@ experiments:
   wandb_config: wandb:axmxh411
 - id: 06-07/SASRec-Feb-10-2026_15-09-50
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/SASRec-Feb-10-2026_15-09-50.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
+  checkpoint: /exp_path/mg/06-07/SASRec-Feb-10-2026_15-09-50.pth
+  data_path: /exp_path/mg/06-07
   dataset: realestate
   model: SASRec
   run_full: true
@@ -405,8 +405,8 @@ experiments:
   eval_batch_size: 2048
 - id: 06-07/NARM-Feb-10-2026_03-21-00
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/NARM-Feb-10-2026_03-21-00.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
+  checkpoint: /exp_path/mg/06-07/NARM-Feb-10-2026_03-21-00.pth
+  data_path: /exp_path/mg/06-07
   dataset: realestate
   model: NARM
   run_full: true
@@ -414,8 +414,8 @@ experiments:
   wandb_config: wandb:oo1cwxxv
 - id: 06-07/GRU4Rec-Feb-10-2026_05-43-51
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/GRU4Rec-Feb-10-2026_05-43-51.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
+  checkpoint: /exp_path/mg/06-07/GRU4Rec-Feb-10-2026_05-43-51.pth
+  data_path: /exp_path/mg/06-07
   dataset: realestate
   model: GRU4Rec
   run_full: true
@@ -424,8 +424,8 @@ experiments:
 
 - id: 06-07/BERT4Rec-Feb-11-2026_01-45-54
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/BERT4Rec-Feb-11-2026_01-45-54.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
+  checkpoint: /exp_path/mg/06-07/BERT4Rec-Feb-11-2026_01-45-54.pth
+  data_path: /exp_path/mg/06-07
   dataset: realestate
   model: BERT4Rec
   run_full: true
@@ -433,8 +433,8 @@ experiments:
   wandb_config: wandb:744prjvb
 - id: 06-07/TransRec-Feb-10-2026_08-18-43
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/TransRec-Feb-10-2026_08-18-43.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
+  checkpoint: /exp_path/mg/06-07/TransRec-Feb-10-2026_08-18-43.pth
+  data_path: /exp_path/mg/06-07
   dataset: realestate
   model: TransRec
   run_full: true
@@ -443,8 +443,8 @@ experiments:
   eval_batch_size: 64
 - id: 06-07/Caser-Feb-11-2026_18-28-06
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/Caser-Feb-11-2026_18-28-06.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
+  checkpoint: /exp_path/mg/06-07/Caser-Feb-11-2026_18-28-06.pth
+  data_path: /exp_path/mg/06-07
   dataset: realestate
   model: Caser
   run_full: true
@@ -453,8 +453,8 @@ experiments:
   eval_batch_size: 64
 - id: 06-07/FOSSIL-Feb-09-2026_23-20-06
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/FOSSIL-Feb-09-2026_23-20-06.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
+  checkpoint: /exp_path/mg/06-07/FOSSIL-Feb-09-2026_23-20-06.pth
+  data_path: /exp_path/mg/06-07
   dataset: realestate
   model: FOSSIL
   run_full: true
@@ -462,8 +462,8 @@ experiments:
   wandb_config: wandb:23qg5r2d
 - id: 06-07/FPMC-Feb-10-2026_00-03-11
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/FPMC-Feb-10-2026_00-03-11.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
+  checkpoint: /exp_path/mg/06-07/FPMC-Feb-10-2026_00-03-11.pth
+  data_path: /exp_path/mg/06-07
   dataset: realestate
   model: FPMC
   run_full: true
@@ -471,8 +471,8 @@ experiments:
   wandb_config: wandb:24as5qb7
 - id: 06-07/Pop-Feb-11-2026_13-48-42
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/Pop-Feb-11-2026_13-48-42.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
+  checkpoint: /exp_path/mg/06-07/Pop-Feb-11-2026_13-48-42.pth
+  data_path: /exp_path/mg/06-07
   dataset: realestate
   model: Pop
   run_full: true
@@ -480,8 +480,8 @@ experiments:
   wandb_config: wandb:0uiap5ox
 - id: 06-07/NextItNet-Feb-10-2026_22-42-41
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/NextItNet-Feb-10-2026_22-42-41.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
+  checkpoint: /exp_path/mg/06-07/NextItNet-Feb-10-2026_22-42-41.pth
+  data_path: /exp_path/mg/06-07
   dataset: realestate
   model: NextItNet
   run_full: true
@@ -489,8 +489,8 @@ experiments:
   wandb_config: wandb:zkvuknbp
 - id: 06-07/Random-Feb-09-2026_23-16-27
   enabled: true
-  checkpoint: /home/hygo2025/Documents/experimentos/mg/06-07/Random-Feb-09-2026_23-16-27.pth
-  data_path: /home/hygo2025/Documents/experimentos/mg/06-07
+  checkpoint: /exp_path/mg/06-07/Random-Feb-09-2026_23-16-27.pth
+  data_path: /exp_path/mg/06-07
   dataset: realestate
   model: Random
   run_full: true

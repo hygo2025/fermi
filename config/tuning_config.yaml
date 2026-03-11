@@ -1,5 +1,5 @@
 dataset: realestate
-data_path: /home/hygo2025/Development/projects/fermi/outputs/data/recbole
+data_path: /full_path_project_folder/outputs/data/recbole
 
 USER_ID_FIELD: user_id
 ITEM_ID_FIELD: item_id
